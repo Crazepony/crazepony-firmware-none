@@ -1,41 +1,24 @@
+/*    
+      ____                      _____                  +---+
+     / ___\                     / __ \                 | R |
+    / /                        / /_/ /                 +---+
+   / /   ________  ____  ___  / ____/___  ____  __   __
+  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
+ / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
+ \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
+                                                 / /
+                                            ____/ /
+                                           /_____/
+*/
+//现在NRF遥控传输数据还是连续的32个字节，不会影响控制，后续可以加入更多的控制参数，这里不用改了
+//最后修改：2013-06-11
 
- /*    
-  *      ____                      _____                  +---+
-  *     / ___\                     / __ \                 | R |
-  *    / /                        / /_/ /                 +---+
-  *   / /   ________  ____  ___  / ____/___  ____  __   __
-  *  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
-  * / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
-  * \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
-  *                                                 / /
-  *                                            ____/ /
-  *                                           /_____/
-  *                                       
-  *  Crazyfile control firmware                                        
-  *  Copyright (C) 2011-2014 Crazepony-II                                        
-  *
-  *  This program is free software: you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License as published by
-  *  the Free Software Foundation, in version 3.
-  *
-  *  This program is distributed in the hope that it will be useful,
-  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  *  GNU General Public License for more details.
-  * 
-  * You should have received a copy of the GNU General Public License
-  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-  *
-  *
-  * debug.c - Debugging utility functions
-  *
-  */
 
 #include "NRF24L01.h"
 #include "spi.h"
 #include "ReceiveData.h"
 #include "delay.h"
-	 
+#include "UART1.h"
 uint8_t NRF24L01_RXDATA[RX_PLOAD_WIDTH];//nrf24l01接收到的数据
 uint8_t NRF24L01_TXDATA[RX_PLOAD_WIDTH];//nrf24l01需要发送的数据
 
@@ -115,7 +98,6 @@ void NRF_TxPacket(uint8_t * tx_buf, uint8_t len)
 //初始化
 char NRF24L01_INIT(void)
 {
-
    SPI1_INIT();
    return NRF24L01_Check();
 }
@@ -125,7 +107,6 @@ char NRF24L01_INIT(void)
 void SetRX_Mode(void)
 {
     SPI_CE_L();
-   
 	  NRF_Write_Reg(FLUSH_RX,0xff);//清除TX FIFO寄存器			 
   	NRF_Write_Buf(NRF_WRITE_REG+RX_ADDR_P0,(uint8_t*)RX_ADDRESS,RX_ADR_WIDTH);//写RX节点地址
    	NRF_Write_Reg(NRF_WRITE_REG+EN_AA,0x01);    //使能通道0的自动应答    
@@ -134,22 +115,17 @@ void SetRX_Mode(void)
   	NRF_Write_Reg(NRF_WRITE_REG+RX_PW_P0,RX_PLOAD_WIDTH);//选择通道0的有效数据宽度 	    
   	NRF_Write_Reg(NRF_WRITE_REG+RF_SETUP,0x0f);//设置TX发射参数,0db增益,2Mbps,低噪声增益开启   
   	NRF_Write_Reg(NRF_WRITE_REG+CONFIG, 0x0f);//配置基本工作模式的参数;PWR_UP,EN_CRC,16BIT_CRC,接收模式 
-    
-    
     SPI_CE_H();
+    DEBUG_PRINTLN("NRF24L01设为接收模式...\r\n");
 } 
-
 
 //发送模式
 void SetTX_Mode(void)
 {
     SPI_CE_L();
-   
     NRF_Write_Reg(FLUSH_TX,0xff);										//清除TX FIFO寄存器		  
-  	
     NRF_Write_Buf(NRF_WRITE_REG+TX_ADDR,(u8*)TX_ADDRESS,TX_ADR_WIDTH);		//写TX节点地址 
   	NRF_Write_Buf(NRF_WRITE_REG+RX_ADDR_P0,(u8*)RX_ADDRESS,RX_ADR_WIDTH); 	//设置TX节点地址,主要为了使能ACK	  
-
   	NRF_Write_Reg(NRF_WRITE_REG+EN_AA,0x01);     //使能通道0的自动应答    
   	NRF_Write_Reg(NRF_WRITE_REG+EN_RXADDR,0x01); //使能通道0的接收地址  
   	NRF_Write_Reg(NRF_WRITE_REG+SETUP_RETR,0x1a);//设置自动重发间隔时间:500us + 86us;最大自动重发次数:10次

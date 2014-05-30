@@ -1,35 +1,15 @@
-
- /*    
-  *      ____                      _____                  +---+
-  *     / ___\                     / __ \                 | R |
-  *    / /                        / /_/ /                 +---+
-  *   / /   ________  ____  ___  / ____/___  ____  __   __
-  *  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
-  * / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
-  * \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
-  *                                                 / /
-  *                                            ____/ /
-  *                                           /_____/
-  *                                       
-  *  Crazyfile control firmware                                        
-  *  Copyright (C) 2011-2014 Crazepony-II                                        
-  *
-  *  This program is free software: you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License as published by
-  *  the Free Software Foundation, in version 3.
-  *
-  *  This program is distributed in the hope that it will be useful,
-  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  *  GNU General Public License for more details.
-  * 
-  * You should have received a copy of the GNU General Public License
-  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-  *
-  *
-  * debug.c - Debugging utility functions
-  *
-  */
+/*    
+      ____                      _____                  +---+
+     / ___\                     / __ \                 | R |
+    / /                        / /_/ /                 +---+
+   / /   ________  ____  ___  / ____/___  ____  __   __
+  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
+ / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
+ \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
+                                                 / /
+                                            ____/ /
+                                           /_____/
+*/
 #include "UART1.h"
 #include "stdio.h"
 
@@ -82,13 +62,13 @@ int fputc(int ch, FILE *f)
 输入参数：无
 输出参数：没有	
 *******************************************************************************/
-void U1NVIC_Configuration(void)
+void UART1NVIC_Configuration(void)
 {
         NVIC_InitTypeDef NVIC_InitStructure; 
         /* Enable the USART1 Interrupt */
         NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-        NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-        NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+        NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+        NVIC_InitStructure.NVIC_IRQChannelSubPriority = 8;
         NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
         NVIC_Init(&NVIC_InitStructure);
 }
@@ -101,7 +81,7 @@ void U1NVIC_Configuration(void)
 输入参数：u32 baudrate   设置RS232串口的波特率
 输出参数：没有	
 *******************************************************************************/
-void Uart1_init(u32 pclk2,u32 bound)
+void UART1_init(u32 pclk2,u32 bound)
 {  	 
 	float temp;
 	u16 mantissa;
@@ -121,7 +101,8 @@ void Uart1_init(u32 pclk2,u32 bound)
 	//波特率设置
  	USART1->BRR=mantissa; // 波特率设置	 
 	USART1->CR1|=0X200C;  //1位停止,无校验位.
-  U1NVIC_Configuration();//中断配置
+  UART1NVIC_Configuration();//中断配置
+  printf("串口1初始化波特率：%d \r\n",bound);
 }
 
 
@@ -149,6 +130,40 @@ u8 UART1_Get_Char(void)
 	return(USART_ReceiveData(USART1));
 }
 
+
+/**************************实现函数********************************************
+*函数原型:		void UART2_Put_String(unsigned char *Str)
+*功　　能:		RS232发送字符串
+输入参数：
+		unsigned char *Str   要发送的字符串
+输出参数：没有	
+*******************************************************************************/
+void UART1_Put_String(unsigned char *Str)
+{
+	//判断Str指向的数据是否有效.
+	while(*Str){
+	//是否是回车字符 如果是,则发送相应的回车 0x0d 0x0a
+	if(*Str=='\r')UART1_Put_Char(0x0d);
+		else if(*Str=='\n')UART1_Put_Char(0x0a);
+			else UART1_Put_Char(*Str);
+	//等待发送完成.
+  	//while (!(USART1->SR & USART_FLAG_TXE));
+	//指针++ 指向下一个字节.
+	Str++;
+	}
+/*
+	//判断Str指向的数据是否有效.
+	while(*Str){
+	//是否是回车字符 如果是,则发送相应的回车 0x0d 0x0a
+	if(*Str=='\r')USART_SendData(USART1, 0x0d);
+		else if(*Str=='\n')USART_SendData(USART1, 0x0a);
+			else USART_SendData(USART1, *Str);
+	//等待发送完成.
+  	while (!(USART1->SR & USART_FLAG_TXE));
+	//指针++ 指向下一个字节.
+	Str++;
+	}		 */
+}
 
 /**************************实现函数********************************************
 *函数原型:		void UART2_Putc_Hex(uint8_t b)
@@ -287,3 +302,8 @@ void USART1_IRQHandler(void)
   }
 }
 
+
+void DEBUG_PRINTLN(unsigned char *Str)
+  {
+	  UART1_Put_String(Str);  //通过USART1 发送调试信息
+	}

@@ -48,16 +48,21 @@ void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
     {     
         if(SystemReady_OK)  //整个系统初始化后才开始运行
         {
-        
           Controler(); //控制函数
           LedCounter++;
-          if(LedCounter==50)   //遥控端使能后，闪灯提示        
-          {LedA_off;LedB_off;}
-          else if(LedCounter==1500)
+          if(BatteryAD>BatteryADmin)//当电池电压在设定值之上时，正常模式
           {
-            LedCounter=0;LedA_on;LedB_on;
-            
-          }  
+          if(LedCounter==50){ LedA_off;LedB_off;}   //遥控端使能后，闪灯提示        
+          else if(LedCounter==1000){LedCounter=0;LedA_on;LedB_on;}
+          }
+          else //电池电压低时，闪灯提示
+          {
+          if(LedCounter==50){ LedA_off;LedB_off;LedC_off;LedD_off;}   //遥控端使能后，闪灯提示        
+          else if(LedCounter==100){LedCounter=0;LedA_on;LedB_on;LedC_on;LedD_on;}
+          }
+          
+          if(LedCounter>=1001)LedCounter=0;
+        
         }
         TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);   //清除中断标志   
     }
@@ -73,38 +78,48 @@ void TIM3_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
     {     
         if(SystemReady_OK)  //整个系统初始化后才开始运行
         {
-         
   #ifdef Debug
           
-          
-          
-          DebugCounter++;
-          if( DebugCounter==400){
+           DebugCounter++;
+           BatteryAD=GetBatteryAD();//电池电压检测
+          if( DebugCounter==1000){
             DebugCounter=0;
-            printf("      ____                      _____                  +---+ \r\n");
-            printf("     / ___\\                     / __ \\                 | R | \r\n");
-            printf("    / /                        / /_/ /                 +---+ \r\n");
-            printf("   / /   ________  ____  ___  / ____/___  ____  __   __      \r\n");
-            printf("  / /  / ___/ __ `/_  / / _ \\/ /   / __ \\/ _  \\/ /  / /   \r\n");
-            printf(" / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /       \r\n");
-            printf(" \\___/_/   \\__,_/ /___/\\___/_/    \\___ /_/ /_/____  /    \r\n");
-            printf("                                                 / /         \r\n");
-            printf("                                            ____/ /          \r\n");
-            printf("                                           /_____/           \r\n");
-            printf("Crazepony Runing...\r\n"); 
-            printf("Pitch--> %f\r\n",(float)Q_ANGLE.Pitch);
-            printf("Roll--> %f\r\n",(float)Q_ANGLE.Roll);
-            printf("Z轴加速度--> %d\r\n",(ACC_AVG.Z/100));
-            printf("DIF_ANGLE.X--> %f\r\n",(float)DIF_ANGLE.X);
-            printf("DIF_ANGLE.Y--> %f\r\n",(float)DIF_ANGLE.Y);
+            printf(" ******************************************************************\r\n");
+            printf(" *       ____                      _____                  +---+   *\r\n");
+            printf(" *      / ___\\                     / __ \\                 | R |   *\r\n");
+            printf(" *     / /                        / /_/ /                 +---+   *\r\n");
+            printf(" *    / /   ________  ____  ___  / ____/___  ____  __   __        *\r\n");
+            printf(" *   / /  / ___/ __ `/_  / / _ \\/ /   / __ \\/ _  \\/ /  / /        *\r\n");
+            printf(" *  / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /         *\r\n");
+            printf(" *  \\___/_/   \\__,_/ /___/\\___/_/    \\___ /_/ /_/____  /          *\r\n");
+            printf(" *                                                  / /           *\r\n");
+            printf(" *                                             ____/ /            *\r\n");
+            printf(" *                                            /_____/             *\r\n");
+            printf(" ******************************************************************\r\n");
+            printf("\r\n");
+            printf(" Crazepony-II System Runing...\r\n"); 
+            printf("\r\n");
+            printf("\r\n--->MPU6050 DMP Test<---\r\n");
+            printf(" 偏航角---> %f°\r\n",(float)Q_ANGLE.Yaw);
+            printf(" 俯仰角---> %f°\r\n",(float)Q_ANGLE.Pitch);
+            printf(" 横滚角---> %f°\r\n",(float) Q_ANGLE.Roll);
+            printf(" ==================\r\n");
+            printf(" X轴期望角度---> %f°\r\n",(float)EXP_ANGLE.X);
+            printf(" Y轴期望角度---> %f°\r\n",(float)EXP_ANGLE.Y);
+            printf(" ==================\r\n");
+            printf(" X轴差分角度---> %f°\r\n",(float)DIF_ANGLE.X);
+            printf(" Y轴差分角度---> %f°\r\n",(float)DIF_ANGLE.Y);
+            
+            printf(" Z轴加速度---> %f\r\n",(float) DMP_DATA.ACCz);
+            printf(" ==================\r\n");
+            printf(" X轴DMP角速度---> %f\r\n",(float) DMP_DATA.GYROx);
+            printf(" Y轴DMP角速度---> %f\r\n",(float) DMP_DATA.GYROy);
+            printf(" Z轴DMP角速度---> %f\r\n",(float) DMP_DATA.GYROz);
             printf("==================\r\n");
-            printf("EXP_ANGLE.X--> %f\r\n",(float)EXP_ANGLE.X);
-            printf("EXP_ANGLE.Y--> %f\r\n",(float)EXP_ANGLE.Y);
+            printf(" 电池电压---> %d\r\n",(int) BatteryAD);
             printf("==================\r\n");
-            printf("GYRO_F.X--> %f\r\n",(float)GYRO_F.X);
-            printf("GYRO_F.Y--> %f\r\n",(float)GYRO_F.Y);
-            printf("GYRO_F.Z--> %f\r\n",(float)GYRO_F.Z);
-
+            
+          
             }
 #else      
              
@@ -135,6 +150,7 @@ void TIM4_Init(char clock,int Preiod)
 
     TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE);
     TIM_Cmd(TIM4,ENABLE);
+    DEBUG_PRINTLN("定时器4初始化完成...\r\n");
     
 }	
 
@@ -158,7 +174,7 @@ void TIM3_Init(char clock,int Preiod)
 
     TIM_ITConfig(TIM3,TIM_IT_Update,ENABLE);
     TIM_Cmd(TIM3,ENABLE);
-    
+    DEBUG_PRINTLN("定时器3初始化完成...\r\n");
 }		
 
 

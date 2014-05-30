@@ -1,36 +1,26 @@
+/*    
+      ____                      _____                  +---+
+     / ___\                     / __ \                 | R |
+    / /                        / /_/ /                 +---+
+   / /   ________  ____  ___  / ____/___  ____  __   __
+  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
+ / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
+ \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
+                                                 / /
+                                            ____/ /
+                                           /_____/
+*/
+/* Control.c file
+编写者：小马  (Camel)
+作者E-mail：375836945@qq.com
+编译环境：MDK-Lite  Version: 4.23
+初版时间: 2014-01-28
+功能：
+1.PID参数初始化
+2.控制函数
 
- /*    
-  *      ____                      _____                  +---+
-  *     / ___\                     / __ \                 | R |
-  *    / /                        / /_/ /                 +---+
-  *   / /   ________  ____  ___  / ____/___  ____  __   __
-  *  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
-  * / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
-  * \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
-  *                                                 / /
-  *                                            ____/ /
-  *                                           /_____/
-  *                                       
-  *  Crazyfile control firmware                                        
-  *  Copyright (C) 2011-2014 Crazepony-II                                        
-  *
-  *  This program is free software: you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License as published by
-  *  the Free Software Foundation, in version 3.
-  *
-  *  This program is distributed in the hope that it will be useful,
-  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  *  GNU General Public License for more details.
-  * 
-  * You should have received a copy of the GNU General Public License
-  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-  *
-  *
-  * debug.c - Debugging utility functions
-  *
-  */
-
+------------------------------------
+*/
 #include "control.h"
 #include "moto.h"
 #include "sys_fun.h"
@@ -40,10 +30,10 @@
 #include "led.h"
 #include "stmflash.h"
 #include "ReceiveData.h"
-
+#include "DMP.h"
+#include "Battery.h"
 
 PID  PID_Motor;//定义一个PID结构体
-
 //函数名：CONTROL()
 //输入：无
 //输出: 无
@@ -54,10 +44,8 @@ void Controler(void)
 {
     static uint8_t Control_Counter = 0;	//=2时控制一次,频率500HZ
     Control_Counter ++;
-    IMU_CYCTIME = GET_NOWTIME(&While1_Lasttime);	//更新两次读取时间间隔
-    MPU6050_Dataanl();//6050数据分析
-    MPU6050_READ();	  //将6050数据减去稳态误差后放入相应变量,并启动下一次传输
-    IMU_DataPrepare();
+    DMP_Routing();	//DMP 线程  所有的数据都在这里更新
+    DMP_getYawPitchRoll();  //读取 姿态角
 
     if(Control_Counter==2)
     {
@@ -79,26 +67,22 @@ void PID_Calculate(void)
 {
     static float Thr=0,Rool=0,Pitch=0,Yaw=0;
     long Motor[4];   //定义电机PWM数组，分别对应M1-M4
-    IMU_Output();	   //角度融合
     GET_EXPRAD();    //得到期望角度
- 
+
     //ROOL
     Rool = PID_Motor.P * DIF_ANGLE.X;
-    Rool -= PID_Motor.D * GYRO_F.X; 
-    //Rool = Rool*10;
+    Rool -= PID_Motor.D * DMP_DATA.GYROx; 
    //PITCH 
     Pitch = PID_Motor.P * DIF_ANGLE.Y;
-    Pitch -= PID_Motor.D * GYRO_F.Y;
-    //Pitch = Pitch*10;
+    Pitch -= PID_Motor.D * DMP_DATA.GYROy;
+
    //基础动力
-    Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;  //RC_DATA.THROTTLE为0到1000,
-                                                     //将摇杆油门曲线转换为下凹的抛物线
+    Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;  //RC_DATA.THROTTLE为0到1000,将摇杆油门曲线转换为下凹的抛物线
     Thr -=30*DIF_ACC.Z;      //对Z轴用一次负反馈控制
+  
    // YAW
-   
-    GYRO_I[0].Z += EXP_ANGLE.Z/250;
-    Yaw = -40*GYRO_I[0].Z;
-      
+   DMP_DATA.GYROz+=EXP_ANGLE.Z/100;
+   Yaw=-20*DMP_DATA.GYROz;  
 
     //将输出值融合到四个电机 
     Motor[2] = (int16_t)(Thr - Pitch -Rool- Yaw );    //右  
@@ -106,8 +90,11 @@ void PID_Calculate(void)
     Motor[3] = (int16_t)(Thr - Pitch +Rool+ Yaw );    //上 
     Motor[1] = (int16_t)(Thr + Pitch -Rool+ Yaw );    //下    
 
-    if((FLY_ENABLE==0xA5))    {MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);}
-    else                      {MotorPwmFlash(0,0,0,0);GYRO_I[0].Z=0;GYRO_I[1].Z=0;GYRO_I[2].Z=0;}//避免飞机落地重启时突然打转 
+    if((FLY_ENABLE==0xA5))    
+    {
+      MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);
+    }
+    else  {MotorPwmFlash(0,0,0,0);}//避免飞机落地重启时突然打转 
 
 
   
@@ -177,9 +164,9 @@ void PID_INIT(void)
     PID_Motor.D = PIDreadBuf[2]/10.0;//微分增益  //通过上位机写入到飞机的片内flash，开机初始化时读取。目前只能我这边能用此功能
   
 #else
-    PID_Motor.P = 0.4;//比例增益
-    PID_Motor.I = 0;//积分增益
-    PID_Motor.D = 1.5;//微分增益  改组参数是测试过程中最好优秀的一组
+    PID_Motor.P = 0.08;  //比例增益
+    PID_Motor.I = 0;    //积分增益
+    PID_Motor.D = 1.1;    //微分增益  改组参数是测试过程中最好优秀的一组
 #endif
   
     PID_Motor.POUT = 0;
@@ -189,6 +176,7 @@ void PID_INIT(void)
     PID_Motor.IMAX = 300;
     PID_Motor.LastError = 0;
     PID_Motor.PrerError = 0;
+    DEBUG_PRINTLN("PID初始化完成...\r\n");
 }
 
 //函数名：ParameterRead()
@@ -202,7 +190,7 @@ void  ParameterRead()
   u16 PitchRoolBuf[2];
   STMFLASH_Read(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PIDParameterAdd,PIDreadBuf,3);
   STMFLASH_Read(STM32_FLASH_BASE+STM32_FLASH_OFFEST+ErrorParameterAdd,PitchRoolBuf,2);
-
+  DEBUG_PRINTLN("从FLASH中读取参数...\r\n");
 #ifdef ParameterReadFromFlash
   
   Pitch_error_init= PitchRoolBuf[0];
@@ -211,10 +199,12 @@ void  ParameterRead()
 #else
   
     Pitch_error_init= 0;  //如果飞机起飞朝前偏，Pitch_error_init朝负向增大修改;朝吼偏，Pitch_error_init朝正向增大修改
-    Rool_error_init = 1;//如果飞机起飞朝左偏，Rool_error_init朝正向增大修改;朝右偏，Rool_error_init朝负向增大修改,单位 ：度
+    Rool_error_init = 0;//如果飞机起飞朝左偏，Rool_error_init朝正向增大修改;朝右偏，Rool_error_init朝负向增大修改
 
 #endif
 
+  DEBUG_PRINTLN("FLASH参数读取完成...\r\n");
+  
 }
 
 

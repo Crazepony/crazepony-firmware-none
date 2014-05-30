@@ -1,38 +1,18 @@
-
- /*    
-  *      ____                      _____                  +---+
-  *     / ___\                     / __ \                 | R |
-  *    / /                        / /_/ /                 +---+
-  *   / /   ________  ____  ___  / ____/___  ____  __   __
-  *  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
-  * / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
-  * \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
-  *                                                 / /
-  *                                            ____/ /
-  *                                           /_____/
-  *                                       
-  *  Crazyfile control firmware                                        
-  *  Copyright (C) 2011-2014 Crazepony-II                                        
-  *
-  *  This program is free software: you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License as published by
-  *  the Free Software Foundation, in version 3.
-  *
-  *  This program is distributed in the hope that it will be useful,
-  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  *  GNU General Public License for more details.
-  * 
-  * You should have received a copy of the GNU General Public License
-  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-  *
-  *
-  * debug.c - Debugging utility functions
-  *
-  */
+/*    
+      ____                      _____                  +---+
+     / ___\                     / __ \                 | R |
+    / /                        / /_/ /                 +---+
+   / /   ________  ____  ___  / ____/___  ____  __   __
+  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
+ / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
+ \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
+                                                 / /
+                                            ____/ /
+                                           /_____/
+*/
 #include "stm32f10x.h"
 #include "moto.h"
-
+#include "UART1.h"
 int16_t MOTO1_PWM = 0;
 int16_t MOTO2_PWM = 0;
 int16_t MOTO3_PWM = 0;
@@ -76,19 +56,22 @@ void MotorInit(void)
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
     TIM_OCInitTypeDef  TIM_OCInitStructure;
     uint16_t PrescalerValue = 0;    //控制电机PWM频率
-
+    
+    
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); //打开外设A的时钟和复用时钟
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 ,ENABLE);   //打开定时器2时钟  
-
+    
+    
     // 设置GPIO功能。
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
     
+    
     // 复位定时器。
     TIM_DeInit(TIM2);
-  
+    
     // 配置计时器。
     PrescalerValue = (uint16_t) (SystemCoreClock / 24000000) - 1;
     
@@ -119,4 +102,5 @@ void MotorInit(void)
     
     // 启动计时器。
     TIM_Cmd(TIM2,ENABLE);
+    DEBUG_PRINTLN("电机初始化完成...\r\n");
 }

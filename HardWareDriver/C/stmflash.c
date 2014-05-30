@@ -1,38 +1,18 @@
-
- /*    
-  *      ____                      _____                  +---+
-  *     / ___\                     / __ \                 | R |
-  *    / /                        / /_/ /                 +---+
-  *   / /   ________  ____  ___  / ____/___  ____  __   __
-  *  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
-  * / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
-  * \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
-  *                                                 / /
-  *                                            ____/ /
-  *                                           /_____/
-  *                                       
-  *  Crazyfile control firmware                                        
-  *  Copyright (C) 2011-2014 Crazepony-II                                        
-  *
-  *  This program is free software: you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License as published by
-  *  the Free Software Foundation, in version 3.
-  *
-  *  This program is distributed in the hope that it will be useful,
-  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  *  GNU General Public License for more details.
-  * 
-  * You should have received a copy of the GNU General Public License
-  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-  *
-  *
-  * debug.c - Debugging utility functions
-  *
-  */
+/*    
+      ____                      _____                  +---+
+     / ___\                     / __ \                 | R |
+    / /                        / /_/ /                 +---+
+   / /   ________  ____  ___  / ____/___  ____  __   __
+  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
+ / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
+ \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
+                                                 / /
+                                            ____/ /
+                                           /_____/
+*/
 #include "stmflash.h"
 #include "delay.h"
-
+#include "UART1.h"
 
 //////////////////////////////////////////////////////////////////////////////////	 
 //stm32f103t8u6--->64K Bytes  flash
@@ -45,6 +25,7 @@ void STMFLASH_Unlock(void)
 {
   FLASH->KEYR=FLASH_KEY1;//写入解锁序列.
   FLASH->KEYR=FLASH_KEY2;
+  DEBUG_PRINTLN("内部FLASH解锁完成...\r\n");
 }
 //flash上锁
 void STMFLASH_Lock(void)

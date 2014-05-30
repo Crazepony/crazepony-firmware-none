@@ -1,42 +1,29 @@
+/*    
+      ____                      _____                  +---+
+     / ___\                     / __ \                 | R |
+    / /                        / /_/ /                 +---+
+   / /   ________  ____  ___  / ____/___  ____  __   __
+  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
+ / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
+ \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
+                                                 / /
+                                            ____/ /
+                                           /_____/
+*/
 
- /*    
-  *      ____                      _____                  +---+
-  *     / ___\                     / __ \                 | R |
-  *    / /                        / /_/ /                 +---+
-  *   / /   ________  ____  ___  / ____/___  ____  __   __
-  *  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
-  * / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
-  * \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
-  *                                                 / /
-  *                                            ____/ /
-  *                                           /_____/
-  *                                       
-  *  Crazyfile control firmware                                        
-  *  Copyright (C) 2011-2014 Crazepony-II                                        
-  *
-  *  This program is free software: you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License as published by
-  *  the Free Software Foundation, in version 3.
-  *
-  *  This program is distributed in the hope that it will be useful,
-  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  *  GNU General Public License for more details.
-  * 
-  * You should have received a copy of the GNU General Public License
-  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-  *
-  *
-  * debug.c - Debugging utility functions
-  *
-  */
-
-#include "Battery.h"
 
 
 
-//初始化ADC
-//这里我们仅以规则通道为例
+#include "Battery.h"
+#include "UART1.h"
+
+
+
+
+
+int BatteryAD;
+
+//初始化电池检测ADC
 //开启ADC1的通道8	
 //BatteryCheck---->PB0
 void BatteryCheckInit()
@@ -79,6 +66,8 @@ void BatteryCheckInit()
 	ADC1->CR2|=1<<2;        //开启AD校准	   
 	while(ADC1->CR2&1<<2);  //等待校准结束
 	//该位由软件设置以开始校准，并在校准结束时由硬件清除  
+  DEBUG_PRINTLN("电压监测AD初始完成...\r\n");
+  
 }
 
 
@@ -97,6 +86,7 @@ u16 Get_Adc(u8 ch)
 	while(!(ADC1->SR&1<<1));//等待转换结束	 	   
 	return ADC1->DR;		    //返回adc值	
 }
+
 //获取通道ch的转换值，取times次,然后平均 
 //ch:通道编号
 //times:获取次数
@@ -128,9 +118,14 @@ int Get_Temp(void)
 	temperate=(1.43-temperate)/0.0043+25;//计算出当前温度值	 
 	temperate*=10;//扩大十倍,使用小数点后一位
 	return (int)temperate;	 
-
 }
 
+
+//返回电池电压AD值
+int GetBatteryAD()
+{
+ return Get_Adc_Average(8,10);
+}
 
 
 

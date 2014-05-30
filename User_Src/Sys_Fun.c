@@ -7,7 +7,7 @@ uint32_t IMU_CYCTIME;
 void NVIC_INIT(void)
 {
     TimerNVIC_Configuration();//定时器中断配置
-    U1NVIC_Configuration();  //串口1中断配置
+    UART1NVIC_Configuration();//串口1中断配置
 }
 
 /**************************实现函数********************************************

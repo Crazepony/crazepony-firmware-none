@@ -1,39 +1,28 @@
-
- /*    
-  *      ____                      _____                  +---+
-  *     / ___\                     / __ \                 | R |
-  *    / /                        / /_/ /                 +---+
-  *   / /   ________  ____  ___  / ____/___  ____  __   __
-  *  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
-  * / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
-  * \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
-  *                                                 / /
-  *                                            ____/ /
-  *                                           /_____/
-  *                                       
-  *  Crazyfile control firmware                                        
-  *  Copyright (C) 2011-2014 Crazepony-II                                        
-  *
-  *  This program is free software: you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License as published by
-  *  the Free Software Foundation, in version 3.
-  *
-  *  This program is distributed in the hope that it will be useful,
-  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  *  GNU General Public License for more details.
-  * 
-  * You should have received a copy of the GNU General Public License
-  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-  *
-  *
-  * debug.c - Debugging utility functions
-  *
-  */
+/*    
+      ____                      _____                  +---+
+     / ___\                     / __ \                 | R |
+    / /                        / /_/ /                 +---+
+   / /   ________  ____  ___  / ____/___  ____  __   __
+  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
+ / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
+ \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
+                                                 / /
+                                            ____/ /
+                                           /_____/
+*/
+ /* main.c file
+编写者：小马  (Camel)
+作者E-mail：375836945@qq.com
+编译环境：MDK-Lite  Version: 4.23
+初版时间: 2014-01-28
+功能：
+提供精确的延时API  有微秒级 和毫秒级延时
+------------------------------------
+*/
  
  
 #include "delay.h"
-	 
+#include "UART1.h"
 static u8  fac_us=0;//us延时倍乘数
 static u16 fac_ms=0;//ms延时倍乘数
 
@@ -53,6 +42,7 @@ void delay_init(u8 SYSCLK)
 	SysTick->CTRL&=0xfffffffb;//bit2清空,选择外部时钟  HCLK/8
 	fac_us=SYSCLK/8;		    
 	fac_ms=(u16)fac_us*1000;
+  DEBUG_PRINTLN("延时函数初始化完成...\r\n");
 }				
 				    
 //延时nms
@@ -76,7 +66,7 @@ void delay_ms(u16 nms)
 	}
 	while(temp&0x01&&!(temp&(1<<16)));//等待时间到达   
 	SysTick->CTRL=0x00;       //关闭计数器
-	SysTick->VAL =0X00;       //清空计数器	  	    
+	SysTick->VAL =0X00;       //清空计数器	  
 }   
 
 //延时nus
@@ -98,6 +88,9 @@ void delay_us(u32 nus)
 	while(temp&0x01&&!(temp&(1<<16)));//等待时间到达   
 	SysTick->CTRL=0x00;       //关闭计数器
 	SysTick->VAL =0X00;       //清空计数器	 
+
+  
+  
 }
 
 

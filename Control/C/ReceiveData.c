@@ -40,7 +40,7 @@
 
 
 //定义飞机最大倾斜角度
-#define  Angle_Max  30.0
+#define  Angle_Max  40.0
 
 //纠正姿态误差，可以用来抵抗重心偏移等带来的初始不平衡
 int  Rool_error_init;      //如果飞机起飞朝左偏，Rool_error_init朝正向增大修改;朝右偏，Rool_error_init朝负向增大修改
@@ -59,18 +59,17 @@ RC_GETDATA   RC_DATA;	//经过处理的RC数据
 //备注：没考上研，心情不好
 void Get_ReceiveData(void)
 {
- 
-    //这几个数据遥控器直接发给飞行器的，要经过处理才能使用 
-    //ROOL
-    RC_DATA.ROOL=NRF24L01_RXDATA[3]-50;//减50做负数传输
-    RC_DATA.ROOL =Rool_error_init+(RC_DATA.ROOL/50.0)*Angle_Max; 
-    RC_DATA.ROOL=(RC_DATA.ROOL > Angle_Max)  ? (Angle_Max):(RC_DATA.ROOL);
-    RC_DATA.ROOL=(RC_DATA.ROOL < -Angle_Max) ? (-Angle_Max):(RC_DATA.ROOL);
     //PITCH
-    RC_DATA.PITCH=NRF24L01_RXDATA[2]-50+Pitch_error_init;//减50做负数传输
-    RC_DATA.PITCH =Pitch_error_init+(RC_DATA.PITCH/50.0)*Angle_Max;
+    RC_DATA.PITCH=NRF24L01_RXDATA[2]-50;//减50做负数传输
+    RC_DATA.PITCH = (RC_DATA.PITCH/50.0)*Angle_Max+Pitch_error_init;
     RC_DATA.PITCH=(RC_DATA.PITCH > Angle_Max)  ? (Angle_Max):(RC_DATA.PITCH);
     RC_DATA.PITCH=(RC_DATA.PITCH < -Angle_Max) ? (-Angle_Max):(RC_DATA.PITCH);
+    //ROOL
+    RC_DATA.ROOL=NRF24L01_RXDATA[3]-50;//减50做负数传输
+    RC_DATA.ROOL = (RC_DATA.ROOL/50.0)*Angle_Max+Rool_error_init; 
+    RC_DATA.ROOL=(RC_DATA.ROOL > Angle_Max)  ? (Angle_Max):(RC_DATA.ROOL);
+    RC_DATA.ROOL=(RC_DATA.ROOL < -Angle_Max) ? (-Angle_Max):(RC_DATA.ROOL);
+
     //YAW
     RC_DATA.YAW = 50-NRF24L01_RXDATA[4];
     //RC_DATA.YAW = 0;                      //YAW角控制与否
@@ -81,3 +80,8 @@ void Get_ReceiveData(void)
     RC_DATA.THROTTLE=NRF24L01_RXDATA[0]+(NRF24L01_RXDATA[1]<<8);
     FLY_ENABLE = NRF24L01_RXDATA[31];   //0xA5或0，决定是否使能飞行，由遥控器决定
 }
+
+
+
+
+
