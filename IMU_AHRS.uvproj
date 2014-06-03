@@ -471,6 +471,11 @@
               <FileType>1</FileType>
               <FilePath>.\HardWareDriver\C\DMP.c</FilePath>
             </File>
+            <File>
+              <FileName>BT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HardWareDriver\C\BT.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -545,11 +550,6 @@
               <FileName>Control.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Control\C\Control.c</FilePath>
-            </File>
-            <File>
-              <FileName>IMU.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Control\C\IMU.c</FilePath>
             </File>
             <File>
               <FileName>ReceiveData.c</FileName>

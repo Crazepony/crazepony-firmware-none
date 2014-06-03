@@ -38,7 +38,6 @@
 ********************************************/
 int main(void)
 {
-    int MotoPWM;
     SystemClock(9);               //系统时钟初始化
     UART1_init(SysClock,115200); 	//串口1初始化
     NVIC_INIT();	                //中断初始化
@@ -57,7 +56,6 @@ int main(void)
     BT_on;                        //蓝牙开
     TIM3_Init(36,2000);	  //定时器3初始化，调试串口输出
     TIM4_Init(36,1000);	  //定时器4初始化，定时采样传感器数据，更新PID输出
-  
     while (1);                     //等待数据更新中断到来
 }
 
