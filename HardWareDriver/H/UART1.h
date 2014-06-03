@@ -4,6 +4,9 @@
 #include "stm32f10x.h"
 
 
+// USART Receiver buffer
+#define RX_BUFFER_SIZE   3
+#define TX_BUFFER_SIZE   32
 
 
 
@@ -17,6 +20,8 @@ void UART1_Putw_Hex(uint16_t w);
 void UART1_Putdw_Hex(uint32_t dw);
 void UART1_Putw_Dec(uint32_t w);
 void UART1_Put_String(unsigned char *Str);
+void UART1_Put_Package(u8 *Package);
+extern u8 U1TxPackage[TX_BUFFER_SIZE];
 #endif
 
 

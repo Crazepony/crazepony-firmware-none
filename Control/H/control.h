@@ -29,7 +29,6 @@ void  ParameterRead(void);
 extern u16 PIDWriteBuf[3];//写入flash的临时数字，由NRF24L01_RXDATA[i]赋值 
 extern u16 PRWriteBuf[2];//写入flash的临时数字，由NRF24L01_RXDATA[i]赋值 
 extern PID  PID_RP;//定义一个PIID结构体
-
 #endif
 
 

@@ -33,7 +33,12 @@
 #include "DMP.h"
 #include "Battery.h"
 
-PID  PID_Motor;//定义一个PID结构体
+PID  PID_Motor;         //定义一个PID结构体
+S_FLOAT_XYZ DIF_ACC;		//实际去期望相差的加速度
+S_FLOAT_XYZ EXP_ANGLE;	//期望角度	
+S_FLOAT_XYZ DIF_ANGLE;	//实际与期望相差的角度	
+
+
 //函数名：CONTROL()
 //输入：无
 //输出: 无
@@ -44,18 +49,20 @@ void Controler(void)
 {
     static uint8_t Control_Counter = 0;	//=2时控制一次,频率500HZ
     Control_Counter ++;
-    DMP_Routing();	//DMP 线程  所有的数据都在这里更新
+    DMP_Routing();	        //DMP 线程  所有的数据都在这里更新
     DMP_getYawPitchRoll();  //读取 姿态角
 
     if(Control_Counter==2)
     {
         Control_Counter = 0;   
-        Nrf_Irq();   //接收控制目标参数
+        Nrf_Irq();         //接收控制目标参数
         PID_Calculate();   //=2时控制一次,频率500HZ	
     }
        
     
 }
+
+
 
 //函数名：PID_Calculate()
 //输入：无
@@ -67,37 +74,45 @@ void PID_Calculate(void)
 {
     static float Thr=0,Rool=0,Pitch=0,Yaw=0;
     long Motor[4];   //定义电机PWM数组，分别对应M1-M4
-    GET_EXPRAD();    //得到期望角度
-
+    /*********************************************************
+     计算期望姿态与实际姿态的差值
+    *********************************************************/
+    EXP_ANGLE.X = (float)(RC_DATA.ROOL);
+    EXP_ANGLE.Y = (float)(RC_DATA.PITCH);
+    EXP_ANGLE.Z = (float)(RC_DATA.YAW);
+    
+    DIF_ANGLE.X = EXP_ANGLE.X - Q_ANGLE.Roll;
+    DIF_ANGLE.X = DIF_ANGLE.X*20;
+  
+    DIF_ANGLE.Y = EXP_ANGLE.Y - Q_ANGLE.Pitch;
+    DIF_ANGLE.Y = DIF_ANGLE.Y*20;
+  
+    DIF_ACC.Z =  (DMP_DATA.ACCz/100)-85;//Z轴加速度差分值，保证飞机起飞不会很冲
+    /*********************************************************
+     PID核心算法部分
+    *********************************************************/
     //ROOL
-    Rool = PID_Motor.P * DIF_ANGLE.X;
-    Rool -= PID_Motor.D * DMP_DATA.GYROx; 
+    Rool = PID_Motor.P * DIF_ANGLE.X;    //DIF_ANGLE.x为X轴的期望角度和当前实际角度的误差角度
+    Rool -= PID_Motor.D * DMP_DATA.GYROx;   //DMP_DATA.GYROx为X轴的误差角度的微分，即X轴的角速度 单位 °/s
    //PITCH 
-    Pitch = PID_Motor.P * DIF_ANGLE.Y;
-    Pitch -= PID_Motor.D * DMP_DATA.GYROy;
-
+    Pitch =  PID_Motor.P * DIF_ANGLE.Y;   //DIF_ANGLE.Y为Y轴的期望角度和当前实际角度的误差角度
+    Pitch -= PID_Motor.D * DMP_DATA.GYROy;   //DMP_DATA.GYROy为Y轴的误差角度的微分，即Y轴的角速度 单位 °/s
    //基础动力
     Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;  //RC_DATA.THROTTLE为0到1000,将摇杆油门曲线转换为下凹的抛物线
-    Thr -=30*DIF_ACC.Z;      //对Z轴用一次负反馈控制
-  
+    Thr -=20*DIF_ACC.Z;                             //对Z轴用一次负反馈控制
    // YAW
-   DMP_DATA.GYROz+=EXP_ANGLE.Z/100;
+   DMP_DATA.GYROz+=EXP_ANGLE.Z;
    Yaw=-20*DMP_DATA.GYROz;  
-
-    //将输出值融合到四个电机 
-    Motor[2] = (int16_t)(Thr - Pitch -Rool- Yaw );    //右  
-    Motor[0] = (int16_t)(Thr + Pitch +Rool- Yaw );    //左
-    Motor[3] = (int16_t)(Thr - Pitch +Rool+ Yaw );    //上 
-    Motor[1] = (int16_t)(Thr + Pitch -Rool+ Yaw );    //下    
-
-    if((FLY_ENABLE==0xA5))    
-    {
-      MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);
-    }
-    else  {MotorPwmFlash(0,0,0,0);}//避免飞机落地重启时突然打转 
+   //将输出值融合到四个电机 
+    Motor[2] = (int16_t)(Thr - Pitch -Rool- Yaw );    //M3  
+    Motor[0] = (int16_t)(Thr + Pitch +Rool- Yaw );    //M1
+    Motor[3] = (int16_t)(Thr - Pitch +Rool+ Yaw );    //M4 
+    Motor[1] = (int16_t)(Thr + Pitch -Rool+ Yaw );    //M2    
+    
+    if((FLY_ENABLE==0xA5))MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);   
+    else                  MotorPwmFlash(0,0,0,0);//避免飞机落地重启时突然打转 
 
 
-  
 }
 
 
@@ -164,8 +179,8 @@ void PID_INIT(void)
     PID_Motor.D = PIDreadBuf[2]/10.0;//微分增益  //通过上位机写入到飞机的片内flash，开机初始化时读取。目前只能我这边能用此功能
   
 #else
-    PID_Motor.P = 0.08;  //比例增益
-    PID_Motor.I = 0;    //积分增益
+    PID_Motor.P = 0.07;   //比例增益
+    PID_Motor.I = 0;      //积分增益
     PID_Motor.D = 1.1;    //微分增益  改组参数是测试过程中最好优秀的一组
 #endif
   

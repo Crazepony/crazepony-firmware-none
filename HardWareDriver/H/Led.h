@@ -17,12 +17,6 @@
 #define LedD_on    GPIO_SetBits(GPIOB, GPIO_Pin_3)
 #define LedD_off   GPIO_ResetBits(GPIOB, GPIO_Pin_3)
 
-#define BT_on      GPIO_SetBits(GPIOB, GPIO_Pin_2)
-#define BT_off     GPIO_ResetBits(GPIOB, GPIO_Pin_2)
-
-
-
-
 
 void LedInit(void);   //Led初始化函数外部声明
 

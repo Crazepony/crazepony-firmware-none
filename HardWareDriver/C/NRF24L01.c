@@ -132,9 +132,9 @@ void SetTX_Mode(void)
   	NRF_Write_Reg(NRF_WRITE_REG+RF_CH,40);       //设置RF通道为40
   	NRF_Write_Reg(NRF_WRITE_REG+RF_SETUP,0x0f);  //设置TX发射参数,0db增益,2Mbps,低噪声增益开启   
   	NRF_Write_Reg(NRF_WRITE_REG+CONFIG,0x0e);    //配置基本工作模式的参数;PWR_UP,EN_CRC,16BIT_CRC,接收模式,开启所有中断
-    
-    
     SPI_CE_H();
+  
+  
 } 
 
 
@@ -146,7 +146,7 @@ void Nrf_Irq(void)
     {
         NRF_Read_Buf(RD_RX_PLOAD,NRF24L01_RXDATA,RX_PLOAD_WIDTH);// read receive payload from RX_FIFO buffer
          
-        Get_ReceiveData();      //自己做修改
+        ReceiveDataFormNRF();      //自己做修改
 
     }
  
@@ -192,7 +192,7 @@ u8 NRF24L01_Check(void)
       break; 
    } 
   
-   if (i==5)   return 1 ;        //MCU 与NRF 成功连接 
-   else        return 0 ;        //MCU与NRF不正常连接    
+   if (i==5)   {DEBUG_PRINTLN("初始化NRF24L01成功...\r\n");return 1 ;}        //MCU 与NRF 成功连接 
+   else        {DEBUG_PRINTLN("初始化NRF24L01出错...\r\n");return 0 ;}        //MCU与NRF不正常连接    
 } 
 

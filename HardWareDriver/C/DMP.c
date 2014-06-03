@@ -10,6 +10,9 @@
 
 #define M_PI  3.1415926f
 
+S_FLOAT_ANGLE  Q_ANGLE;	
+
+
 
 void DMP_Covert_Data(void);
 

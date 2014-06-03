@@ -18,12 +18,13 @@
 #define b_uart_head  0x80
 #define b_rx_over    0x40
 
-// USART Receiver buffer
-#define RX_BUFFER_SIZE 100
 
-u8 U1TxBuffer[258];
+u8 U1TxBuffer[256];
+u8 U1TxPackage[TX_BUFFER_SIZE];
 u8 U1TxCounter=0;
+u8 U1RxCounter=0;
 u8 U1count=0; 
+char TxPackFlag;//发送预定格式数据包标志位
 
 //////////////////////////////////////////////////////////////////
 //加入以下代码,支持printf函数,而不需要选择use MicroLIB	  
@@ -248,17 +249,36 @@ void UART1_Putw_Dec(uint32_t w)
 }
 
 
+/**************************实现函数********************************************
+*函数原型:		UART1_Put_Package(u8 *Package)
+*功　　能:		发送约定格式的数据包，长度为TX_BUFFER_SIZE	
+输入参数：Package
+输出参数：没有	
+*******************************************************************************/
+void UART1_Put_Package(u8 *Package)
+{
+    u8 i;
+    for(i=0;i<TX_BUFFER_SIZE;i++)
+    U1TxPackage[i]=*(Package+i);
+    TxPackFlag='E';//使能数据包发送
+    USART_ITConfig(USART1, USART_IT_TXE, ENABLE); 
+}
+
+
+
+
 volatile unsigned char rx_buffer[RX_BUFFER_SIZE];
 volatile unsigned char rx_wr_index;
 volatile unsigned char RC_Flag;
+u8 TxPackageCounter;
 //------------------------------------------------------
 void USART1_IRQHandler(void)
 {
-  unsigned char data;
+  //unsigned char data;
   if(USART_GetITStatus(USART1, USART_IT_TXE) != RESET)
   {   
     /* Write one byte to the transmit data register */
-    USART_SendData(USART1, U1TxBuffer[U1TxCounter++]);                    
+    USART_SendData(USART1, U1TxBuffer[U1TxCounter++]);
 
     /* Clear the USART1 transmit interrupt */
     USART_ClearITPendingBit(USART1, USART_IT_TXE); 
@@ -267,39 +287,33 @@ void USART1_IRQHandler(void)
     {
       /* Disable the USART1 Transmit interrupt */
       USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
-    }    
+    }
+    
+    if(TxPackFlag=='E')
+    {
+    USART_SendData(USART1, U1TxPackage[TxPackageCounter++]);
+    if(TxPackageCounter == TX_BUFFER_SIZE)
+    {
+      TxPackageCounter=0;
+      TxPackFlag='D';//禁止数据包发送
+      /* Disable the USART1 Transmit interrupt */
+      USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
+    }
   }
 
-  else if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-  {
-  data=USART_ReceiveData(USART1);
-  if(data==0xa5)
-  { 
-	RC_Flag|=b_uart_head;
-  rx_buffer[rx_wr_index++]=data;
   }
-  else if(data==0x5a)
-       { if(RC_Flag&b_uart_head)
-	     { rx_wr_index=0;
-		   RC_Flag&=~b_rx_over;
-         }
-         else
-		  rx_buffer[rx_wr_index++]=data;
-         RC_Flag&=~b_uart_head;
-       }
-	   else
-	   { rx_buffer[rx_wr_index++]=data;
-		 RC_Flag&=~b_uart_head;
-		 if(rx_wr_index==rx_buffer[0])
-	     {  
-			RC_Flag|=b_rx_over;
-          }
-	   }
-  if(rx_wr_index==RX_BUFFER_SIZE)
-  rx_wr_index--;
-  /* Clear the USART1 transmit interrupt */
-  USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-  }
+
+//   else if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+//   {
+//   rx_buffer[U1RxCounter++]=USART_ReceiveData(USART1);
+//   if(U1RxCounter==RX_BUFFER_SIZE)
+//   {
+//     U1RxCounter=0;
+//   /* Clear the USART1 transmit interrupt */
+//   USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+//     
+//   }
+//   }
 }
 
 

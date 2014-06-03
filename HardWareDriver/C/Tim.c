@@ -46,9 +46,11 @@ void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
 {
     if( TIM_GetITStatus(TIM4 , TIM_IT_Update) != RESET ) 
     {     
-        if(SystemReady_OK)  //整个系统初始化后才开始运行
-        {
+       
           Controler(); //控制函数
+
+      
+      
           LedCounter++;
           if(BatteryAD>BatteryADmin)//当电池电压在设定值之上时，正常模式
           {
@@ -60,26 +62,21 @@ void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
           if(LedCounter==50){ LedA_off;LedB_off;LedC_off;LedD_off;}   //遥控端使能后，闪灯提示        
           else if(LedCounter==100){LedCounter=0;LedA_on;LedB_on;LedC_on;LedD_on;}
           }
-          
           if(LedCounter>=1001)LedCounter=0;
-        
-        }
-        TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);   //清除中断标志   
+      
+          TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);   //清除中断标志   
     }
 }
 
 
 
-int DebugCounter;
-
-void TIM3_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
+int DebugCounter;             //打印信息输出时间间隔计数值
+void TIM3_IRQHandler(void)		//打印中断服务程序
 {
     if( TIM_GetITStatus(TIM3 , TIM_IT_Update) != RESET ) 
     {     
-        if(SystemReady_OK)  //整个系统初始化后才开始运行
-        {
+       
   #ifdef Debug
-          
            DebugCounter++;
            BatteryAD=GetBatteryAD();//电池电压检测
           if( DebugCounter==1000){
@@ -97,9 +94,10 @@ void TIM3_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
             printf(" *                                            /_____/             *\r\n");
             printf(" ******************************************************************\r\n");
             printf("\r\n");
-            printf(" Crazepony-II System Runing...\r\n"); 
+            printf(" Crazepony-II报告：系统正在运行...\r\n"); 
             printf("\r\n");
-            printf("\r\n--->MPU6050 DMP Test<---\r\n");
+            printf("\r\n--->机身实时姿态广播信息<---\r\n");
+            printf("\r\n");
             printf(" 偏航角---> %f°\r\n",(float)Q_ANGLE.Yaw);
             printf(" 俯仰角---> %f°\r\n",(float)Q_ANGLE.Pitch);
             printf(" 横滚角---> %f°\r\n",(float) Q_ANGLE.Roll);
@@ -107,20 +105,25 @@ void TIM3_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
             printf(" X轴期望角度---> %f°\r\n",(float)EXP_ANGLE.X);
             printf(" Y轴期望角度---> %f°\r\n",(float)EXP_ANGLE.Y);
             printf(" ==================\r\n");
-            printf(" X轴差分角度---> %f°\r\n",(float)DIF_ANGLE.X);
-            printf(" Y轴差分角度---> %f°\r\n",(float)DIF_ANGLE.Y);
-            
+            printf(" X轴误差角度---> %f°\r\n",(float)DIF_ANGLE.X);
+            printf(" Y轴误差角度---> %f°\r\n",(float)DIF_ANGLE.Y);
+            printf("==================\r\n");
+            printf(" X轴加速度---> %f\r\n",(float) DMP_DATA.ACCx);
+            printf(" Y轴加速度---> %f\r\n",(float) DMP_DATA.ACCy);
             printf(" Z轴加速度---> %f\r\n",(float) DMP_DATA.ACCz);
             printf(" ==================\r\n");
             printf(" X轴DMP角速度---> %f\r\n",(float) DMP_DATA.GYROx);
             printf(" Y轴DMP角速度---> %f\r\n",(float) DMP_DATA.GYROy);
             printf(" Z轴DMP角速度---> %f\r\n",(float) DMP_DATA.GYROz);
             printf("==================\r\n");
+            printf(" 电机M1 PWM值---> %d\r\n",TIM2->CCR1);
+            printf(" 电机M2 PWM值---> %d\r\n",TIM2->CCR2);
+            printf(" 电机M3 PWM值---> %d\r\n",TIM2->CCR3);
+            printf(" 电机M4 PWM值---> %d\r\n",TIM2->CCR4);
+            printf("==================\r\n");
             printf(" 电池电压---> %d\r\n",(int) BatteryAD);
             printf("==================\r\n");
-            
-          
-            }
+                
 #else      
              
 #endif

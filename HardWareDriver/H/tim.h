@@ -1,5 +1,5 @@
-#ifndef _DELAY_H_
-#define _DELAY_H
+#ifndef _tim_H_
+#define _tim_H_
 #include "stm32f10x.h"
 
 

@@ -31,12 +31,11 @@ BT_EN-->PB2
 void LedInit(void)
 {
     RCC->APB2ENR|=1<<3;    //使能PORTB时钟	
-    RCC->APB2ENR|=1<<4;    //使能PORTC时钟	
-    
+
     RCC->APB2ENR|=1<<0;      //使能复用时钟	   
-    GPIOB->CRL&=0XFF00000F;  //PB1,2,3,4,5推挽输出
-    GPIOB->CRL|=0X00333330;
-    GPIOB->ODR|=31<<1;        //PB1,2,3,4,5上拉
+    GPIOB->CRL&=0XFF000F0F;  //PB1,3,4,5推挽输出
+    GPIOB->CRL|=0X00333030;
+    GPIOB->ODR|=29<<1;        //PB1,3,4,5上拉
 
     AFIO->MAPR|=2<<24;      //关闭JATG,千万不能将SWD也关闭，否则芯片作废，亲测!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     LedA_off;LedB_off;LedC_off;LedD_off;
