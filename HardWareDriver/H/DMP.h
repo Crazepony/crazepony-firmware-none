@@ -3,7 +3,7 @@
 #include "UART1.h"
 
 
-
+#define  g     9.27f                         //宏定义当地重力加速度
 
   
 // MotionApps 2.0 DMP implementation,

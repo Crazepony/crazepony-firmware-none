@@ -10,6 +10,10 @@
 
 #define M_PI  3.1415926f
 
+
+
+
+
 S_FLOAT_ANGLE  Q_ANGLE;	
 
 
@@ -493,17 +497,17 @@ float dmpsafe_asin(float v)
 	return asin(v);
 }
 
-// 将从DMP读取到的FIFO数据 进行转换，得到载体的姿态角。并把传感器的ADC值转成标准单位。
+//将从DMP读取到的FIFO数据 进行转换，得到载体的姿态角。并把传感器的ADC值转成标准单位。
 void DMP_Covert_Data(void){
 	volatile float q[4] , norm ; // 四元数
-	//gyro sensitivity to +/- 2000 deg/se
-	DMP_DATA.dmp_gyrox = ((float)DMP_DATA.GYROx)/16.4f;	//角速度 转成单位：度每秒
+	//gyro sensitivity to +/-   2000°/s
+	DMP_DATA.dmp_gyrox = ((float)DMP_DATA.GYROx)/16.4f;	//角速度 转成单位：rad/s
 	DMP_DATA.dmp_gyroy = ((float)DMP_DATA.GYROy)/16.4f;
 	DMP_DATA.dmp_gyroz = ((float)DMP_DATA.GYROz)/16.4f;
-	//acc sensitivity to +/- 4 g
-	DMP_DATA.dmp_accx = ((float)DMP_DATA.ACCx)/8192.0f;	//加速度 转成单位：g [9.8 m/S^2]
-	DMP_DATA.dmp_accy = ((float)DMP_DATA.ACCy)/8192.0f;
-	DMP_DATA.dmp_accz = ((float)DMP_DATA.ACCz)/8192.0f;
+	//acc sensitivity to +/-    4 g
+	DMP_DATA.dmp_accx = (((float)DMP_DATA.ACCx)/8192.0f)*g;	//加速度 转成单位： m/S^2
+	DMP_DATA.dmp_accy = (((float)DMP_DATA.ACCy)/8192.0f)*g;
+	DMP_DATA.dmp_accz = (((float)DMP_DATA.ACCz)/8192.0f)*g;
 
 	  q[0] = (float)DMP_DATA.qw; 	//提取DMP的四元数
   	q[1] = (float)DMP_DATA.qx;
@@ -519,7 +523,7 @@ void DMP_Covert_Data(void){
 	DMP_DATA.dmp_roll = (atan2(2.0*(q[0]*q[1] + q[2]*q[3]),
 	                       1 - 2.0*(q[1]*q[1] + q[2]*q[2])))* 180/M_PI;
 	 // we let safe_asin() handle the singularities near 90/-90 in pitch
-	DMP_DATA.dmp_pitch = -dmpsafe_asin(2.0*(q[0]*q[2] - q[3]*q[1]))* 180/M_PI;
+	DMP_DATA.dmp_pitch = dmpsafe_asin(2.0*(q[0]*q[2] - q[3]*q[1]))* 180/M_PI;
 
 	DMP_DATA.dmp_yaw = -atan2(2.0*(q[0]*q[3] + q[1]*q[2]),
 	                     1 - 2.0*(q[2]*q[2] + q[3]*q[3]))* 180/M_PI;
@@ -528,7 +532,7 @@ void DMP_Covert_Data(void){
 //读取载体的姿态角 数组的顺序 航向  俯仰  滚转
 void DMP_getYawPitchRoll(){
 	Q_ANGLE.Yaw =   DMP_DATA.dmp_yaw;
-	Q_ANGLE.Pitch = -DMP_DATA.dmp_pitch; 
+	Q_ANGLE.Pitch = DMP_DATA.dmp_pitch; 
   Q_ANGLE.Roll =  DMP_DATA.dmp_roll;
 }
 

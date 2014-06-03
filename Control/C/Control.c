@@ -51,7 +51,6 @@ void Controler(void)
     Control_Counter ++;
     DMP_Routing();	        //DMP 线程  所有的数据都在这里更新
     DMP_getYawPitchRoll();  //读取 姿态角
-
     if(Control_Counter==2)
     {
         Control_Counter = 0;   
@@ -82,26 +81,26 @@ void PID_Calculate(void)
     EXP_ANGLE.Z = (float)(RC_DATA.YAW);
     
     DIF_ANGLE.X = EXP_ANGLE.X - Q_ANGLE.Roll;
-    DIF_ANGLE.X = DIF_ANGLE.X*20;
+    DIF_ANGLE.X = DIF_ANGLE.X;
   
     DIF_ANGLE.Y = EXP_ANGLE.Y - Q_ANGLE.Pitch;
-    DIF_ANGLE.Y = DIF_ANGLE.Y*20;
+    DIF_ANGLE.Y = DIF_ANGLE.Y;
   
-    DIF_ACC.Z =  (DMP_DATA.ACCz/100)-85;//Z轴加速度差分值，保证飞机起飞不会很冲
+    DIF_ACC.Z =  DMP_DATA.dmp_accz - g;     //Z 轴加速度实际与静止时的差值，g为当地重力加速度，在DMP.h中宏定义
     /*********************************************************
      PID核心算法部分
     *********************************************************/
-    //ROOL
-    Rool = PID_Motor.P * DIF_ANGLE.X;    //DIF_ANGLE.x为X轴的期望角度和当前实际角度的误差角度
-    Rool -= PID_Motor.D * DMP_DATA.GYROx;   //DMP_DATA.GYROx为X轴的误差角度的微分，即X轴的角速度 单位 °/s
-   //PITCH 
-    Pitch =  PID_Motor.P * DIF_ANGLE.Y;   //DIF_ANGLE.Y为Y轴的期望角度和当前实际角度的误差角度
+     // 俯仰角
+    Pitch =  PID_Motor.P * DIF_ANGLE.Y;      //DIF_ANGLE.Y为Y轴的期望角度和当前实际角度的误差角度
     Pitch -= PID_Motor.D * DMP_DATA.GYROy;   //DMP_DATA.GYROy为Y轴的误差角度的微分，即Y轴的角速度 单位 °/s
-   //基础动力
+    //横滚角
+    Rool = PID_Motor.P* DIF_ANGLE.X;        //DIF_ANGLE.x为X轴的期望角度和当前实际角度的误差角度
+    Rool -= PID_Motor.D * DMP_DATA.GYROx;   //DMP_DATA.GYROx为X轴的误差角度的微分，即X轴的角速度 单位 °/s
+   //基础油门动力
     Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;  //RC_DATA.THROTTLE为0到1000,将摇杆油门曲线转换为下凹的抛物线
-    Thr -=20*DIF_ACC.Z;                             //对Z轴用一次负反馈控制
+    Thr -=80*DIF_ACC.Z;                             //对Z轴用一次负反馈控制
    // YAW
-   DMP_DATA.GYROz+=EXP_ANGLE.Z;
+   DMP_DATA.GYROz+=EXP_ANGLE.Z/1.2;
    Yaw=-20*DMP_DATA.GYROz;  
    //将输出值融合到四个电机 
     Motor[2] = (int16_t)(Thr - Pitch -Rool- Yaw );    //M3  
@@ -111,16 +110,16 @@ void PID_Calculate(void)
     
     if((FLY_ENABLE==0xA5))MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);   
     else                  MotorPwmFlash(0,0,0,0);//避免飞机落地重启时突然打转 
-
-
 }
 
+int PowerCounterAdd=0;//开机次数统计值存放地址，占1个字节
+int PIDParameterAdd=2;//PID参数写入首地址为0,占3个字节
+int ErrorParameterAdd=5;//初始俯仰横滚误差写入地址为10,占2个字节
 
-int PIDParameterAdd=0;//PID参数写入首地址为0,占3个字节
-int ErrorParameterAdd=10;//初始俯仰横滚误差写入地址为10,占2个字节
+
 u16 PIDWriteBuf[3];       //写入flash的临时数组  PID参数
 u16 PRWriteBuf[2];        //写入flash的临时数组  俯仰误差
-
+u16 PowerCouter[1];       //开机次数统计值
 //函数名：ParameterWrite()
 //输入：无
 //输出：当收到地址29的字节为0xA5时，返回1，否则返回0
@@ -138,7 +137,6 @@ if(NRF24L01_RXDATA[29]==0xA5)
         PIDWriteBuf[2]=NRF24L01_RXDATA[2];//写PID参数
         PRWriteBuf[0] =NRF24L01_RXDATA[3];
         PRWriteBuf[1] =NRF24L01_RXDATA[4];//写俯仰误差，为了便于处理负数，整体偏移了100
-  
         STMFLASH_Write(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PIDParameterAdd,PIDWriteBuf,3); //PID 参数写入
         STMFLASH_Write(STM32_FLASH_BASE+STM32_FLASH_OFFEST+ErrorParameterAdd,PRWriteBuf,2); //俯仰误差 参数写入，在缓冲数组的第三个字节开始
      
@@ -154,9 +152,7 @@ return 0;
 条件编译PID和初始零漂参数的来源
 *********************************/
 
-
 //#define ParameterReadFromFlash
-
 
 //PID初始化参数读取数组缓存，全局数组
 u16 PIDreadBuf[3]; 
@@ -168,29 +164,21 @@ u16 PIDreadBuf[3];
 //备注：没考上研，心情不好
 void PID_INIT(void)
 {
-    
     //PID_RP.P--->PIDreadBuf[0]//
     //PID_RP.I--->PIDreadBuf[1]//
     //PID_RP.D--->PIDreadBuf[2]// 初始化时从内部flash读取设定值，方便调试  不用下程序就能调节PID参数
 #ifdef ParameterReadFromFlash
-  
     PID_Motor.P = PIDreadBuf[0]/10.0;//比例增益
     PID_Motor.I = PIDreadBuf[1]/10.0;//积分增益
     PID_Motor.D = PIDreadBuf[2]/10.0;//微分增益  //通过上位机写入到飞机的片内flash，开机初始化时读取。目前只能我这边能用此功能
-  
+
 #else
-    PID_Motor.P = 0.07;   //比例增益
-    PID_Motor.I = 0;      //积分增益
-    PID_Motor.D = 1.1;    //微分增益  改组参数是测试过程中最好优秀的一组
+    PID_Motor.P = 1.4;                 //比例增益
+    PID_Motor.I = 0;                   //积分增益
+    PID_Motor.D = 1.1;                 //微分增益 
+
 #endif
   
-    PID_Motor.POUT = 0;
-    PID_Motor.IOUT = 0;
-    PID_Motor.DOUT = 0;
-  
-    PID_Motor.IMAX = 300;
-    PID_Motor.LastError = 0;
-    PID_Motor.PrerError = 0;
     DEBUG_PRINTLN("PID初始化完成...\r\n");
 }
 
@@ -202,9 +190,11 @@ void PID_INIT(void)
 //备注：没考上研，心情不好
 void  ParameterRead()
 {
-  u16 PitchRoolBuf[2];
+  u16 PitchRoolBuf[2];   //俯仰横滚初始误差读取数组
+
   STMFLASH_Read(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PIDParameterAdd,PIDreadBuf,3);
   STMFLASH_Read(STM32_FLASH_BASE+STM32_FLASH_OFFEST+ErrorParameterAdd,PitchRoolBuf,2);
+  STMFLASH_Read(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PowerCounterAdd,PowerCouter,1);
   DEBUG_PRINTLN("从FLASH中读取参数...\r\n");
 #ifdef ParameterReadFromFlash
   
@@ -215,7 +205,9 @@ void  ParameterRead()
   
     Pitch_error_init= 0;  //如果飞机起飞朝前偏，Pitch_error_init朝负向增大修改;朝吼偏，Pitch_error_init朝正向增大修改
     Rool_error_init = 0;//如果飞机起飞朝左偏，Rool_error_init朝正向增大修改;朝右偏，Rool_error_init朝负向增大修改
-
+//     PowerCouter[0]++;
+//     STMFLASH_Write(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PowerCounterAdd,PowerCouter,1); 
+  
 #endif
 
   DEBUG_PRINTLN("FLASH参数读取完成...\r\n");

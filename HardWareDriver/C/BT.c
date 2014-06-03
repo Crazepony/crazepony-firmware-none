@@ -41,8 +41,8 @@ void BT_PowerInit(void)
     GPIOB->CRL&=0XFFFFF0FF;  //PB2推挽输出
     GPIOB->CRL|=0X00000300;
     GPIOB->ODR|=1<<2;        //PB2上拉
-    BT_off;                  //默认关闭
-    DEBUG_PRINTLN("蓝牙电源初始化关闭完成...\r\n");
+    BT_off();                  //默认关闭
+
 }
 
 

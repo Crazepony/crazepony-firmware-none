@@ -105,16 +105,16 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf(" X轴期望角度---> %f°\r\n",(float)EXP_ANGLE.X);
             printf(" Y轴期望角度---> %f°\r\n",(float)EXP_ANGLE.Y);
             printf(" ==================\r\n");
-            printf(" X轴误差角度---> %f°\r\n",(float)DIF_ANGLE.X);
             printf(" Y轴误差角度---> %f°\r\n",(float)DIF_ANGLE.Y);
+            printf(" X轴误差角度---> %f°\r\n",(float)DIF_ANGLE.X);
             printf("==================\r\n");
-            printf(" X轴加速度---> %f\r\n",(float) DMP_DATA.ACCx);
-            printf(" Y轴加速度---> %f\r\n",(float) DMP_DATA.ACCy);
-            printf(" Z轴加速度---> %f\r\n",(float) DMP_DATA.ACCz);
+            printf(" X轴加速度---> %fm/s2\r\n",(float) DMP_DATA.dmp_accx);
+            printf(" Y轴加速度---> %fm/s2\r\n",(float) DMP_DATA.dmp_accy);
+            printf(" Z轴加速度---> %fm/s2\r\n",(float) DMP_DATA.dmp_accz);
             printf(" ==================\r\n");
-            printf(" X轴DMP角速度---> %f\r\n",(float) DMP_DATA.GYROx);
-            printf(" Y轴DMP角速度---> %f\r\n",(float) DMP_DATA.GYROy);
-            printf(" Z轴DMP角速度---> %f\r\n",(float) DMP_DATA.GYROz);
+            printf(" X轴角速度---> %f °/s\r\n",(float) DMP_DATA.dmp_gyrox);
+            printf(" Y轴角速度---> %f °/s\r\n",(float) DMP_DATA.dmp_gyroy);
+            printf(" Z轴角速度---> %f °/s\r\n",(float) DMP_DATA.dmp_gyroz);
             printf("==================\r\n");
             printf(" 电机M1 PWM值---> %d\r\n",TIM2->CCR1);
             printf(" 电机M2 PWM值---> %d\r\n",TIM2->CCR2);
@@ -123,6 +123,7 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf("==================\r\n");
             printf(" 电池电压---> %d\r\n",(int) BatteryAD);
             printf("==================\r\n");
+            printf(" 开机次数---> %d\r\n",PowerCouter[0]);
                 
 #else      
              
