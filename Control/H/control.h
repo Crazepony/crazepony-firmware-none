@@ -3,7 +3,7 @@
 #include "stm32f10x.h"
 
 
-//¶¨ÒåPID²ÎÊı
+//å®šä¹‰PIDå‚æ•°
 typedef struct PID
 {
     float P,
@@ -26,10 +26,10 @@ void PID_Calculate(void);
 char  ParameterWrite(void);
 void  ParameterRead(void);
 
-extern u16 PIDWriteBuf[3];//Ğ´ÈëflashµÄÁÙÊ±Êı×Ö£¬ÓÉNRF24L01_RXDATA[i]¸³Öµ 
-extern u16 PRWriteBuf[2];//Ğ´ÈëflashµÄÁÙÊ±Êı×Ö£¬ÓÉNRF24L01_RXDATA[i]¸³Öµ 
-extern u16 PowerCouter[1];//¿ª»ú´ÎÊıÍ³¼ÆÖµ
-extern PID  PID_RP;//¶¨ÒåÒ»¸öPIID½á¹¹Ìå
+extern u16 PIDWriteBuf[3];//å†™å…¥flashçš„ä¸´æ—¶æ•°å­—ï¼Œç”±NRF24L01_RXDATA[i]èµ‹å€¼ 
+extern u16 PRWriteBuf[2];//å†™å…¥flashçš„ä¸´æ—¶æ•°å­—ï¼Œç”±NRF24L01_RXDATA[i]èµ‹å€¼ 
+extern u16 PowerCouter[1];//å¼€æœºæ¬¡æ•°ç»Ÿè®¡å€¼
+extern PID  PID_RP;//å®šä¹‰ä¸€ä¸ªPIIDç»“æ„ä½“
 #endif
 
 

@@ -40,77 +40,77 @@
 
 
 
-//¶¨Òå·É»ú×î´óÇãÐ±½Ç¶È
+//å®šä¹‰é£žæœºæœ€å¤§å€¾æ–œè§’åº¦
 #define  Angle_Max  40.0
 
 
-uint8_t FLY_ENABLE=0;//·ÉÐÐÊ¹ÄÜ¶Ë
-//¾ÀÕý×ËÌ¬Îó²î£¬¿ÉÒÔÓÃÀ´µÖ¿¹ÖØÐÄÆ«ÒÆµÈ´øÀ´µÄ³õÊ¼²»Æ½ºâ
-int  Rool_error_init;      //Èç¹û·É»úÆð·É³¯×óÆ«£¬Rool_error_init³¯ÕýÏòÔö´óÐÞ¸Ä;³¯ÓÒÆ«£¬Rool_error_init³¯¸ºÏòÔö´óÐÞ¸Ä
-int  Pitch_error_init;     //Èç¹û·É»úÆð·É³¯Ç°Æ«£¬Pitch_error_init³¯¸ºÏòÔö´óÐÞ¸Ä;³¯ºðÆ«£¬Pitch_error_init³¯ÕýÏòÔö´óÐÞ¸Ä
+uint8_t FLY_ENABLE=0;//é£žè¡Œä½¿èƒ½ç«¯
+//çº æ­£å§¿æ€è¯¯å·®ï¼Œå¯ä»¥ç”¨æ¥æŠµæŠ—é‡å¿ƒåç§»ç­‰å¸¦æ¥çš„åˆå§‹ä¸å¹³è¡¡
+int  Rool_error_init;      //å¦‚æžœé£žæœºèµ·é£žæœå·¦åï¼ŒRool_error_initæœæ­£å‘å¢žå¤§ä¿®æ”¹;æœå³åï¼ŒRool_error_initæœè´Ÿå‘å¢žå¤§ä¿®æ”¹
+int  Pitch_error_init;     //å¦‚æžœé£žæœºèµ·é£žæœå‰åï¼ŒPitch_error_initæœè´Ÿå‘å¢žå¤§ä¿®æ”¹;æœå¼åï¼ŒPitch_error_initæœæ­£å‘å¢žå¤§ä¿®æ”¹
 
-RC_GETDATA   RC_DATA;	//¾­¹ý´¦ÀíµÄRCÊý¾Ý
+RC_GETDATA   RC_DATA;	//ç»è¿‡å¤„ç†çš„RCæ•°æ®
 
 
-//º¯ÊýÃû£ºReceiveDataFormNRF()
-//ÊäÈë£ºÎÞ
-//Êä³ö: ÎÞ
-//ÃèÊö£º½«ÊÕµ½µÄ2.4GÒ£¿ØÊý¾Ý¸³Öµ¸ø¶ÔÓ¦µÄ±äÁ¿
-//×÷Õß£ºÂí¿¥
-//±¸×¢£ºÃ»¿¼ÉÏÑÐ£¬ÐÄÇé²»ºÃ
+//å‡½æ•°åï¼šReceiveDataFormNRF()
+//è¾“å…¥ï¼šæ— 
+//è¾“å‡º: æ— 
+//æè¿°ï¼šå°†æ”¶åˆ°çš„2.4Gé¥æŽ§æ•°æ®èµ‹å€¼ç»™å¯¹åº”çš„å˜é‡
+//ä½œè€…ï¼šé©¬éª
+//å¤‡æ³¨ï¼šæ²¡è€ƒä¸Šç ”ï¼Œå¿ƒæƒ…ä¸å¥½
 void ReceiveDataFormNRF(void)
 {
     //PITCH
-    RC_DATA.PITCH=NRF24L01_RXDATA[2]-50;//¼õ50×ö¸ºÊý´«Êä
+    RC_DATA.PITCH=NRF24L01_RXDATA[2]-50;//å‡50åšè´Ÿæ•°ä¼ è¾“
     RC_DATA.PITCH = (RC_DATA.PITCH/50.0)*Angle_Max+Pitch_error_init;
     RC_DATA.PITCH=(RC_DATA.PITCH > Angle_Max)  ? (Angle_Max):(RC_DATA.PITCH);
     RC_DATA.PITCH=(RC_DATA.PITCH < -Angle_Max) ? (-Angle_Max):(RC_DATA.PITCH);
     //ROOL
-    RC_DATA.ROOL=NRF24L01_RXDATA[3]-50;//¼õ50×ö¸ºÊý´«Êä
+    RC_DATA.ROOL=NRF24L01_RXDATA[3]-50;//å‡50åšè´Ÿæ•°ä¼ è¾“
     RC_DATA.ROOL = (RC_DATA.ROOL/50.0)*Angle_Max+Rool_error_init; 
     RC_DATA.ROOL=(RC_DATA.ROOL > Angle_Max)  ? (Angle_Max):(RC_DATA.ROOL);
     RC_DATA.ROOL=(RC_DATA.ROOL < -Angle_Max) ? (-Angle_Max):(RC_DATA.ROOL);
 
     //YAW
     RC_DATA.YAW = 50-NRF24L01_RXDATA[4];
-    //RC_DATA.YAW = 0;                      //YAW½Ç¿ØÖÆÓë·ñ
+    //RC_DATA.YAW = 0;                      //YAWè§’æŽ§åˆ¶ä¸Žå¦
     RC_DATA.YAW = (RC_DATA.YAW/50.0)*Angle_Max;
     RC_DATA.YAW=(RC_DATA.YAW > Angle_Max)  ? (Angle_Max):(RC_DATA.YAW);
     RC_DATA.YAW=(RC_DATA.YAW < -Angle_Max) ? (-Angle_Max):(RC_DATA.YAW);
 
     RC_DATA.THROTTLE=NRF24L01_RXDATA[0]+(NRF24L01_RXDATA[1]<<8);
-    FLY_ENABLE = NRF24L01_RXDATA[31];   //0xA5»ò0£¬¾ö¶¨ÊÇ·ñÊ¹ÄÜ·ÉÐÐ£¬ÓÉÒ£¿ØÆ÷¾ö¶¨
+    FLY_ENABLE = NRF24L01_RXDATA[31];   //0xA5æˆ–0ï¼Œå†³å®šæ˜¯å¦ä½¿èƒ½é£žè¡Œï¼Œç”±é¥æŽ§å™¨å†³å®š
 }
 
 
-//º¯ÊýÃû£ºReceiveDataFormUART()
-//ÊäÈë£ºÎÞ
-//Êä³ö: ÎÞ
-//ÃèÊö£º½«ÊÕµ½µÄ´®¿ÚÒ£¿ØÊý¾Ý¸³Öµ¸ø¶ÔÓ¦µÄ±äÁ¿
-//×÷Õß£ºÂí¿¥
-//±¸×¢£ºÃ»¿¼ÉÏÑÐ£¬ÐÄÇé²»ºÃ
+//å‡½æ•°åï¼šReceiveDataFormUART()
+//è¾“å…¥ï¼šæ— 
+//è¾“å‡º: æ— 
+//æè¿°ï¼šå°†æ”¶åˆ°çš„ä¸²å£é¥æŽ§æ•°æ®èµ‹å€¼ç»™å¯¹åº”çš„å˜é‡
+//ä½œè€…ï¼šé©¬éª
+//å¤‡æ³¨ï¼šæ²¡è€ƒä¸Šç ”ï¼Œå¿ƒæƒ…ä¸å¥½
 void ReceiveDataFormUART(void)
 {
 //PITCH
-//     RC_DATA.PITCH=NRF24L01_RXDATA[2]-50;//¼õ50×ö¸ºÊý´«Êä
+//     RC_DATA.PITCH=NRF24L01_RXDATA[2]-50;//å‡50åšè´Ÿæ•°ä¼ è¾“
 //     RC_DATA.PITCH = (RC_DATA.PITCH/50.0)*Angle_Max+Pitch_error_init;
 //     RC_DATA.PITCH=(RC_DATA.PITCH > Angle_Max)  ? (Angle_Max):(RC_DATA.PITCH);
 //     RC_DATA.PITCH=(RC_DATA.PITCH < -Angle_Max) ? (-Angle_Max):(RC_DATA.PITCH);
 //     //ROOL
-//     RC_DATA.ROOL=NRF24L01_RXDATA[3]-50;//¼õ50×ö¸ºÊý´«Êä
+//     RC_DATA.ROOL=NRF24L01_RXDATA[3]-50;//å‡50åšè´Ÿæ•°ä¼ è¾“
 //     RC_DATA.ROOL = (RC_DATA.ROOL/50.0)*Angle_Max+Rool_error_init; 
 //     RC_DATA.ROOL=(RC_DATA.ROOL > Angle_Max)  ? (Angle_Max):(RC_DATA.ROOL);
 //     RC_DATA.ROOL=(RC_DATA.ROOL < -Angle_Max) ? (-Angle_Max):(RC_DATA.ROOL);
 
 //     //YAW
 //     RC_DATA.YAW = 50-NRF24L01_RXDATA[4];
-//     //RC_DATA.YAW = 0;                      //YAW½Ç¿ØÖÆÓë·ñ
+//     //RC_DATA.YAW = 0;                      //YAWè§’æŽ§åˆ¶ä¸Žå¦
 //     RC_DATA.YAW = (RC_DATA.YAW/50.0)*Angle_Max;
 //     RC_DATA.YAW=(RC_DATA.YAW > Angle_Max)  ? (Angle_Max):(RC_DATA.YAW);
 //     RC_DATA.YAW=(RC_DATA.YAW < -Angle_Max) ? (-Angle_Max):(RC_DATA.YAW);
 
 //     RC_DATA.THROTTLE=NRF24L01_RXDATA[0]+(NRF24L01_RXDATA[1]<<8);
-//     FLY_ENABLE = NRF24L01_RXDATA[31];   //0xA5»ò0£¬¾ö¶¨ÊÇ·ñÊ¹ÄÜ·ÉÐÐ£¬ÓÉÒ£¿ØÆ÷¾ö¶¨
+//     FLY_ENABLE = NRF24L01_RXDATA[31];   //0xA5æˆ–0ï¼Œå†³å®šæ˜¯å¦ä½¿èƒ½é£žè¡Œï¼Œç”±é¥æŽ§å™¨å†³å®š
 }
 
 

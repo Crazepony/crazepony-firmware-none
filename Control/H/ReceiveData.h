@@ -8,8 +8,8 @@
 void ReceiveDataFormNRF(void);
 void ReceiveDataFormUART(void);
 
-extern int  Rool_error_init;     //Èç¹û·É»úÆğ·É³¯×óÆ«£¬Rool_error_init³¯ÕıÏòÔö´óĞŞ¸Ä;³¯ÓÒÆ«£¬Rool_error_init³¯¸ºÏòÔö´óĞŞ¸Ä
-extern int  Pitch_error_init;     //Èç¹û·É»úÆğ·É³¯Ç°Æ«£¬Pitch_error_init³¯¸ºÏòÔö´óĞŞ¸Ä;³¯ºğÆ«£¬Pitch_error_init³¯ÕıÏòÔö´óĞŞ¸Ä
+extern int  Rool_error_init;     //å¦‚æœé£æœºèµ·é£æœå·¦åï¼ŒRool_error_initæœæ­£å‘å¢å¤§ä¿®æ”¹;æœå³åï¼ŒRool_error_initæœè´Ÿå‘å¢å¤§ä¿®æ”¹
+extern int  Pitch_error_init;     //å¦‚æœé£æœºèµ·é£æœå‰åï¼ŒPitch_error_initæœè´Ÿå‘å¢å¤§ä¿®æ”¹;æœå¼åï¼ŒPitch_error_initæœæ­£å‘å¢å¤§ä¿®æ”¹
 
 
 
