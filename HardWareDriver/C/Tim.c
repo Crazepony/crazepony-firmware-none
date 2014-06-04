@@ -35,50 +35,50 @@
 
 
 
-#define Debug  //µ÷ÊÔÓë·ñµÄÌõ¼ş±àÒë
+#define Debug  //è°ƒè¯•ä¸å¦çš„æ¡ä»¶ç¼–è¯‘
 
 
-int LedCounter;//LEDÉÁË¸¼ÆÊıÖµ
+int LedCounter;//LEDé—ªçƒè®¡æ•°å€¼
 
 
-//¿ØÖÆÈë¿Ú
-void TIM4_IRQHandler(void)		//1msÖĞ¶ÏÒ»´Î,ÓÃÓÚ³ÌĞò¶ÁÈ¡6050µÈ
+//æ§åˆ¶å…¥å£
+void TIM4_IRQHandler(void)		//1msä¸­æ–­ä¸€æ¬¡,ç”¨äºç¨‹åºè¯»å–6050ç­‰
 {
     if( TIM_GetITStatus(TIM4 , TIM_IT_Update) != RESET ) 
     {     
        
-          Controler(); //¿ØÖÆº¯Êı
+          Controler(); //æ§åˆ¶å‡½æ•°
 
       
       
           LedCounter++;
-          if(BatteryAD>BatteryADmin)//µ±µç³ØµçÑ¹ÔÚÉè¶¨ÖµÖ®ÉÏÊ±£¬Õı³£Ä£Ê½
+          if(BatteryAD>BatteryADmin)//å½“ç”µæ± ç”µå‹åœ¨è®¾å®šå€¼ä¹‹ä¸Šæ—¶ï¼Œæ­£å¸¸æ¨¡å¼
           {
-          if(LedCounter==50){ LedA_off;LedB_off;}   //Ò£¿Ø¶ËÊ¹ÄÜºó£¬ÉÁµÆÌáÊ¾        
+          if(LedCounter==50){ LedA_off;LedB_off;}   //é¥æ§ç«¯ä½¿èƒ½åï¼Œé—ªç¯æç¤º        
           else if(LedCounter==1000){LedCounter=0;LedA_on;LedB_on;}
           }
-          else //µç³ØµçÑ¹µÍÊ±£¬ÉÁµÆÌáÊ¾
+          else //ç”µæ± ç”µå‹ä½æ—¶ï¼Œé—ªç¯æç¤º
           {
-          if(LedCounter==50){ LedA_off;LedB_off;LedC_off;LedD_off;}   //Ò£¿Ø¶ËÊ¹ÄÜºó£¬ÉÁµÆÌáÊ¾        
+          if(LedCounter==50){ LedA_off;LedB_off;LedC_off;LedD_off;}   //é¥æ§ç«¯ä½¿èƒ½åï¼Œé—ªç¯æç¤º        
           else if(LedCounter==100){LedCounter=0;LedA_on;LedB_on;LedC_on;LedD_on;}
           }
           if(LedCounter>=1001)LedCounter=0;
       
-          TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);   //Çå³ıÖĞ¶Ï±êÖ¾   
+          TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);   //æ¸…é™¤ä¸­æ–­æ ‡å¿—   
     }
 }
 
 
 
-int DebugCounter;             //´òÓ¡ĞÅÏ¢Êä³öÊ±¼ä¼ä¸ô¼ÆÊıÖµ
-void TIM3_IRQHandler(void)		//´òÓ¡ÖĞ¶Ï·şÎñ³ÌĞò
+int DebugCounter;             //æ‰“å°ä¿¡æ¯è¾“å‡ºæ—¶é—´é—´éš”è®¡æ•°å€¼
+void TIM3_IRQHandler(void)		//æ‰“å°ä¸­æ–­æœåŠ¡ç¨‹åº
 {
     if( TIM_GetITStatus(TIM3 , TIM_IT_Update) != RESET ) 
     {     
        
   #ifdef Debug
            DebugCounter++;
-           BatteryAD=GetBatteryAD();//µç³ØµçÑ¹¼ì²â
+           BatteryAD=GetBatteryAD();//ç”µæ± ç”µå‹æ£€æµ‹
           if( DebugCounter==1000){
             DebugCounter=0;
             printf(" ******************************************************************\r\n");
@@ -94,58 +94,58 @@ void TIM3_IRQHandler(void)		//´òÓ¡ÖĞ¶Ï·şÎñ³ÌĞò
             printf(" *                                            /_____/             *\r\n");
             printf(" ******************************************************************\r\n");
             printf("\r\n");
-            printf(" Crazepony-II±¨¸æ£ºÏµÍ³ÕıÔÚÔËĞĞ...\r\n"); 
+            printf(" Crazepony-IIæŠ¥å‘Šï¼šç³»ç»Ÿæ­£åœ¨è¿è¡Œ...\r\n"); 
             printf("\r\n");
-            printf("\r\n--->»úÉíÊµÊ±×ËÌ¬¹ã²¥ĞÅÏ¢<---\r\n");
+            printf("\r\n--->æœºèº«å®æ—¶å§¿æ€å¹¿æ’­ä¿¡æ¯<---\r\n");
             printf("\r\n");
-            printf(" Æ«º½½Ç---> %f¡ã\r\n",(float)Q_ANGLE.Yaw);
-            printf(" ¸©Ñö½Ç---> %f¡ã\r\n",(float)Q_ANGLE.Pitch);
-            printf(" ºá¹ö½Ç---> %f¡ã\r\n",(float) Q_ANGLE.Roll);
+            printf(" åèˆªè§’---> %fÂ°\r\n",(float)Q_ANGLE.Yaw);
+            printf(" ä¿¯ä»°è§’---> %fÂ°\r\n",(float)Q_ANGLE.Pitch);
+            printf(" æ¨ªæ»šè§’---> %fÂ°\r\n",(float) Q_ANGLE.Roll);
             printf(" ==================\r\n");
-            printf(" XÖáÆÚÍû½Ç¶È---> %f¡ã\r\n",(float)EXP_ANGLE.X);
-            printf(" YÖáÆÚÍû½Ç¶È---> %f¡ã\r\n",(float)EXP_ANGLE.Y);
+            printf(" Xè½´æœŸæœ›è§’åº¦---> %fÂ°\r\n",(float)EXP_ANGLE.X);
+            printf(" Yè½´æœŸæœ›è§’åº¦---> %fÂ°\r\n",(float)EXP_ANGLE.Y);
             printf(" ==================\r\n");
-            printf(" YÖáÎó²î½Ç¶È---> %f¡ã\r\n",(float)DIF_ANGLE.Y);
-            printf(" XÖáÎó²î½Ç¶È---> %f¡ã\r\n",(float)DIF_ANGLE.X);
+            printf(" Yè½´è¯¯å·®è§’åº¦---> %fÂ°\r\n",(float)DIF_ANGLE.Y);
+            printf(" Xè½´è¯¯å·®è§’åº¦---> %fÂ°\r\n",(float)DIF_ANGLE.X);
             printf("==================\r\n");
-            printf(" XÖá¼ÓËÙ¶È---> %fm/s2\r\n",(float) DMP_DATA.dmp_accx);
-            printf(" YÖá¼ÓËÙ¶È---> %fm/s2\r\n",(float) DMP_DATA.dmp_accy);
-            printf(" ZÖá¼ÓËÙ¶È---> %fm/s2\r\n",(float) DMP_DATA.dmp_accz);
+            printf(" Xè½´åŠ é€Ÿåº¦---> %fm/s2\r\n",(float) DMP_DATA.dmp_accx);
+            printf(" Yè½´åŠ é€Ÿåº¦---> %fm/s2\r\n",(float) DMP_DATA.dmp_accy);
+            printf(" Zè½´åŠ é€Ÿåº¦---> %fm/s2\r\n",(float) DMP_DATA.dmp_accz);
             printf(" ==================\r\n");
-            printf(" XÖá½ÇËÙ¶È---> %f ¡ã/s\r\n",(float) DMP_DATA.dmp_gyrox);
-            printf(" YÖá½ÇËÙ¶È---> %f ¡ã/s\r\n",(float) DMP_DATA.dmp_gyroy);
-            printf(" ZÖá½ÇËÙ¶È---> %f ¡ã/s\r\n",(float) DMP_DATA.dmp_gyroz);
+            printf(" Xè½´è§’é€Ÿåº¦---> %f Â°/s\r\n",(float) DMP_DATA.dmp_gyrox);
+            printf(" Yè½´è§’é€Ÿåº¦---> %f Â°/s\r\n",(float) DMP_DATA.dmp_gyroy);
+            printf(" Zè½´è§’é€Ÿåº¦---> %f Â°/s\r\n",(float) DMP_DATA.dmp_gyroz);
             printf("==================\r\n");
-            printf(" µç»úM1 PWMÖµ---> %d\r\n",TIM2->CCR1);
-            printf(" µç»úM2 PWMÖµ---> %d\r\n",TIM2->CCR2);
-            printf(" µç»úM3 PWMÖµ---> %d\r\n",TIM2->CCR3);
-            printf(" µç»úM4 PWMÖµ---> %d\r\n",TIM2->CCR4);
+            printf(" ç”µæœºM1 PWMå€¼---> %d\r\n",TIM2->CCR1);
+            printf(" ç”µæœºM2 PWMå€¼---> %d\r\n",TIM2->CCR2);
+            printf(" ç”µæœºM3 PWMå€¼---> %d\r\n",TIM2->CCR3);
+            printf(" ç”µæœºM4 PWMå€¼---> %d\r\n",TIM2->CCR4);
             printf("==================\r\n");
-            printf(" µç³ØµçÑ¹---> %d\r\n",(int) BatteryAD);
+            printf(" ç”µæ± ç”µå‹---> %d\r\n",(int) BatteryAD);
             printf("==================\r\n");
-            printf(" ¿ª»ú´ÎÊı---> %d\r\n",PowerCouter[0]);
+            printf(" å¼€æœºæ¬¡æ•°---> %d\r\n",PowerCouter[0]);
                 
 #else      
              
 #endif
         }
-        TIM_ClearITPendingBit(TIM3 , TIM_FLAG_Update);   //Çå³ıÖĞ¶Ï±êÖ¾   
+        TIM_ClearITPendingBit(TIM3 , TIM_FLAG_Update);   //æ¸…é™¤ä¸­æ–­æ ‡å¿—   
     }
 }
 
 
 
-//¶¨Ê±Æ÷4³õÊ¼»¯£ºÓÃÀ´ÖĞ¶Ï´¦ÀíPID
+//å®šæ—¶å™¨4åˆå§‹åŒ–ï¼šç”¨æ¥ä¸­æ–­å¤„ç†PID
 void TIM4_Init(char clock,int Preiod)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4,ENABLE);  //´ò¿ªÊ±ÖÓ
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4,ENABLE);  //æ‰“å¼€æ—¶é’Ÿ
     
     TIM_DeInit(TIM4);
 
     TIM_TimeBaseStructure.TIM_Period = Preiod;
-    TIM_TimeBaseStructure.TIM_Prescaler = clock-1;//¶¨Ê±1ms
+    TIM_TimeBaseStructure.TIM_Prescaler = clock-1;//å®šæ—¶1ms
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     
@@ -154,22 +154,22 @@ void TIM4_Init(char clock,int Preiod)
 
     TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE);
     TIM_Cmd(TIM4,ENABLE);
-    DEBUG_PRINTLN("¶¨Ê±Æ÷4³õÊ¼»¯Íê³É...\r\n");
+    DEBUG_PRINTLN("å®šæ—¶å™¨4åˆå§‹åŒ–å®Œæˆ...\r\n");
     
 }	
 
 
-//¶¨Ê±Æ÷3³õÊ¼»¯
+//å®šæ—¶å™¨3åˆå§‹åŒ–
 void TIM3_Init(char clock,int Preiod)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);  //´ò¿ªÊ±ÖÓ
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);  //æ‰“å¼€æ—¶é’Ÿ
     
     TIM_DeInit(TIM3);
 
     TIM_TimeBaseStructure.TIM_Period = Preiod;
-    TIM_TimeBaseStructure.TIM_Prescaler = clock-1;//¶¨Ê±1ms
+    TIM_TimeBaseStructure.TIM_Prescaler = clock-1;//å®šæ—¶1ms
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     
@@ -178,7 +178,7 @@ void TIM3_Init(char clock,int Preiod)
 
     TIM_ITConfig(TIM3,TIM_IT_Update,ENABLE);
     TIM_Cmd(TIM3,ENABLE);
-    DEBUG_PRINTLN("¶¨Ê±Æ÷3³õÊ¼»¯Íê³É...\r\n");
+    DEBUG_PRINTLN("å®šæ—¶å™¨3åˆå§‹åŒ–å®Œæˆ...\r\n");
 }		
 
 

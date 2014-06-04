@@ -18,12 +18,12 @@ int16_t MOTO2_PWM = 0;
 int16_t MOTO3_PWM = 0;
 int16_t MOTO4_PWM = 0;
 /***********************************************
-º¯ÊıÃû£ºMotorPwmFlash(int16_t MOTO1_PWM,int16_t MOTO2_PWM,int16_t MOTO3_PWM,int16_t MOTO4_PWM)
-¹¦ÄÜ£º¸üĞÂËÄÂ·PWMÖµ
-ÊäÈë²ÎÊı£ºMOTO1_PWM,MOTO2_PWM,MOTO3_PWM,MOTO4_PWM
-Êä³ö:ÎŞ
-ÃèÊö£ºËÄÂ·PWMÓÉ¶¨Ê±Æ÷2Êä³ö£¬ÊäÈë·¶Î§0-999
-±¸×¢£º
+å‡½æ•°åï¼šMotorPwmFlash(int16_t MOTO1_PWM,int16_t MOTO2_PWM,int16_t MOTO3_PWM,int16_t MOTO4_PWM)
+åŠŸèƒ½ï¼šæ›´æ–°å››è·¯PWMå€¼
+è¾“å…¥å‚æ•°ï¼šMOTO1_PWM,MOTO2_PWM,MOTO3_PWM,MOTO4_PWM
+è¾“å‡º:æ— 
+æè¿°ï¼šå››è·¯PWMç”±å®šæ—¶å™¨2è¾“å‡ºï¼Œè¾“å…¥èŒƒå›´0-999
+å¤‡æ³¨ï¼š
 ***********************************************/
 void MotorPwmFlash(int16_t MOTO1_PWM,int16_t MOTO2_PWM,int16_t MOTO3_PWM,int16_t MOTO4_PWM)
 {		
@@ -34,56 +34,56 @@ void MotorPwmFlash(int16_t MOTO1_PWM,int16_t MOTO2_PWM,int16_t MOTO3_PWM,int16_t
      if(MOTO1_PWM<=0)	MOTO1_PWM = 0;
      if(MOTO2_PWM<=0)	MOTO2_PWM = 0;
      if(MOTO3_PWM<=0)	MOTO3_PWM = 0;
-     if(MOTO4_PWM<=0)	MOTO4_PWM = 0;//ÏŞ¶¨ÊäÈë²»ÄÜĞ¡ÓÚ0£¬´óÓÚ999
+     if(MOTO4_PWM<=0)	MOTO4_PWM = 0;//é™å®šè¾“å…¥ä¸èƒ½å°äº0ï¼Œå¤§äº999
     
     TIM2->CCR1 = MOTO1_PWM;
     TIM2->CCR2 = MOTO2_PWM;
     TIM2->CCR3 = MOTO3_PWM;
-    TIM2->CCR4 = MOTO4_PWM;        //¶Ô¶¨Ê±Æ÷¼Ä´æÆ÷¸³Öµ
+    TIM2->CCR4 = MOTO4_PWM;        //å¯¹å®šæ—¶å™¨å¯„å­˜å™¨èµ‹å€¼
 }
 
 /***********************************************
-º¯ÊıÃû£ºMotorInit(void)
-¹¦ÄÜ£ºÊä³öPWMµÄ¶¨Ê±Æ÷2³õÊ¼»¯
-ÊäÈë²ÎÊı£ºÎŞ
-Êä³ö:ÎŞ
-ÃèÊö£ºµ÷ÓÃ¸Ãº¯Êı£¬¼´³õÊ¼»¯¶¨Ê±Æ÷2ÎªPWMÊä³öÄ£Ê½
-±¸×¢£º
+å‡½æ•°åï¼šMotorInit(void)
+åŠŸèƒ½ï¼šè¾“å‡ºPWMçš„å®šæ—¶å™¨2åˆå§‹åŒ–
+è¾“å…¥å‚æ•°ï¼šæ— 
+è¾“å‡º:æ— 
+æè¿°ï¼šè°ƒç”¨è¯¥å‡½æ•°ï¼Œå³åˆå§‹åŒ–å®šæ—¶å™¨2ä¸ºPWMè¾“å‡ºæ¨¡å¼
+å¤‡æ³¨ï¼š
 ***********************************************/
 void MotorInit(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
     TIM_OCInitTypeDef  TIM_OCInitStructure;
-    uint16_t PrescalerValue = 0;    //¿ØÖÆµç»úPWMÆµÂÊ
+    uint16_t PrescalerValue = 0;    //æ§åˆ¶ç”µæœºPWMé¢‘ç‡
     
     
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); //´ò¿ªÍâÉèAµÄÊ±ÖÓºÍ¸´ÓÃÊ±ÖÓ
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 ,ENABLE);   //´ò¿ª¶¨Ê±Æ÷2Ê±ÖÓ  
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); //æ‰“å¼€å¤–è®¾Açš„æ—¶é’Ÿå’Œå¤ç”¨æ—¶é’Ÿ
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 ,ENABLE);   //æ‰“å¼€å®šæ—¶å™¨2æ—¶é’Ÿ  
     
     
-    // ÉèÖÃGPIO¹¦ÄÜ¡£
+    // è®¾ç½®GPIOåŠŸèƒ½ã€‚
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
     
     
-    // ¸´Î»¶¨Ê±Æ÷¡£
+    // å¤ä½å®šæ—¶å™¨ã€‚
     TIM_DeInit(TIM2);
     
-    // ÅäÖÃ¼ÆÊ±Æ÷¡£
+    // é…ç½®è®¡æ—¶å™¨ã€‚
     PrescalerValue = (uint16_t) (SystemCoreClock / 24000000) - 1;
     
-    TIM_TimeBaseStructure.TIM_Period = 999;		            //¼ÆÊıÉÏÏß	
-    TIM_TimeBaseStructure.TIM_Prescaler = PrescalerValue;	//pwmÊ±ÖÓ·ÖÆµ
+    TIM_TimeBaseStructure.TIM_Period = 999;		            //è®¡æ•°ä¸Šçº¿	
+    TIM_TimeBaseStructure.TIM_Prescaler = PrescalerValue;	//pwmæ—¶é’Ÿåˆ†é¢‘
     TIM_TimeBaseStructure.TIM_ClockDivision = 0;	
-    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up; //ÏòÉÏ¼ÆÊı
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up; //å‘ä¸Šè®¡æ•°
     
     TIM_TimeBaseInit(TIM2,&TIM_TimeBaseStructure);
     
     
-    // ÅäÖÃTIM2ÎªPWMÊä³öÄ£Ê½
+    // é…ç½®TIM2ä¸ºPWMè¾“å‡ºæ¨¡å¼
     TIM_OCStructInit(&TIM_OCInitStructure);
     TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
@@ -100,7 +100,7 @@ void MotorInit(void)
     TIM_OC3PreloadConfig(TIM2, TIM_OCPreload_Enable);
     TIM_OC4PreloadConfig(TIM2, TIM_OCPreload_Enable);
     
-    // Æô¶¯¼ÆÊ±Æ÷¡£
+    // å¯åŠ¨è®¡æ—¶å™¨ã€‚
     TIM_Cmd(TIM2,ENABLE);
-    DEBUG_PRINTLN("µç»ú³õÊ¼»¯Íê³É...\r\n");
+    DEBUG_PRINTLN("ç”µæœºåˆå§‹åŒ–å®Œæˆ...\r\n");
 }

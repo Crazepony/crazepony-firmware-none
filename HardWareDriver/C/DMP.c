@@ -225,16 +225,16 @@ const unsigned char dmpUpdates[MPU6050_DMP_UPDATES_SIZE] = {
     0x00,   0x60,   0x04,   0x00, 0x40, 0x00, 0x00
 };
 
-uint16_t dmpPacketSize;	 //FIFOÊı¾İ	°ü×Ö½ÚÊı
-struct DMP_FIFO_map DMP_DATA; //FIFOµÄÊı¾İ½âÎö£¬²Î¿¼Í·ÎÄ¼şµÄ½á¹¹Ìå¶¨Òå
+uint16_t dmpPacketSize;	 //FIFOæ•°æ®	åŒ…å­—èŠ‚æ•°
+struct DMP_FIFO_map DMP_DATA; //FIFOçš„æ•°æ®è§£æï¼Œå‚è€ƒå¤´æ–‡ä»¶çš„ç»“æ„ä½“å®šä¹‰
 
-//È¡Á½¸öÊıÖĞ×îĞ¡µÄÄÇ¸ö
+//å–ä¸¤ä¸ªæ•°ä¸­æœ€å°çš„é‚£ä¸ª
 uint8_t min(uint8_t x ,uint8_t y){
 	if( x < y)return x;
 	else return y;
 }
 
-//³õÊ¼»¯DMPÒıÇæ
+//åˆå§‹åŒ–DMPå¼•æ“
 uint8_t MPU6050_DMP_Initialize(void)
 {
 	uint8_t dmpUpdate[16], j;
@@ -430,7 +430,7 @@ uint8_t MPU6050_DMP_Initialize(void)
         // DEBUG_PRINTLN(("ERROR! DMP code verification failed.\r\n"));
         return 1; // main binary block loading failed
     }
-    DEBUG_PRINTLN(("DMPÒıÇæ³õÊ¼»¯Íê³É...\r\n"));
+    DEBUG_PRINTLN(("DMPå¼•æ“åˆå§‹åŒ–å®Œæˆ...\r\n"));
     return 0; // success
 }
 
@@ -442,13 +442,13 @@ uint8_t fifoBuffer[64]; // FIFO storage buffer
 void DMP_Routing(void)
 {
 	int i;
-	uint8_t* ptr = (uint8_t*)&DMP_DATA;	 //×¼±¸½«FIFOµÄÊı¾İ°ü£¬
+	uint8_t* ptr = (uint8_t*)&DMP_DATA;	 //å‡†å¤‡å°†FIFOçš„æ•°æ®åŒ…ï¼Œ
 	while((MPU6050_is_DRY() == 0) && (fifoCount < dmpPacketSize));
 		mpuIntStatus = MPU6050_getIntStatus();	
 		// get current FIFO count
 	    fifoCount = MPU6050_getFIFOCount();
 		// check for overflow (this should never happen unless our code is too inefficient)
-	    if ((mpuIntStatus & 0x10) || fifoCount == 1024) {  //¼ì²â FIFO»º³åÇøÊÇ·ñ±¬Âú Òç³ö
+	    if ((mpuIntStatus & 0x10) || fifoCount == 1024) {  //æ£€æµ‹ FIFOç¼“å†²åŒºæ˜¯å¦çˆ†æ»¡ æº¢å‡º
 	        // reset so we can continue cleanly
 	        MPU6050_resetFIFO();
 	    // otherwise, check for DMP data ready interrupt (this should happen frequently)
@@ -462,14 +462,14 @@ void DMP_Routing(void)
 	        fifoCount -= dmpPacketSize;
 	
 			for(i=0 ; i < dmpPacketSize; i+=2) {
-				ptr[i] = fifoBuffer[i+1];  //Êı¾İ´óĞ¡¶ËµÄ´¦Àí¡£
+				ptr[i] = fifoBuffer[i+1];  //æ•°æ®å¤§å°ç«¯çš„å¤„ç†ã€‚
 				ptr[i+1] = fifoBuffer[i];
 				}
-			DMP_Covert_Data(); //½«FIFOµÄÊı¾İ½øĞĞ×ª»»£¬²¢½â³öÔØÌåµÄÈı¸ö×ËÌ¬½Ç
+			DMP_Covert_Data(); //å°†FIFOçš„æ•°æ®è¿›è¡Œè½¬æ¢ï¼Œå¹¶è§£å‡ºè½½ä½“çš„ä¸‰ä¸ªå§¿æ€è§’
 			}	
 }
 
-// Fast inverse square-root	   ¿ìËÙ¼ÆËã 1/Sqrt(x) 		   
+// Fast inverse square-root	   å¿«é€Ÿè®¡ç®— 1/Sqrt(x) 		   
 float dmpinvSqrt(float x) {
 	float halfx = 0.5f * x;
 	float y = x;
@@ -497,23 +497,23 @@ float dmpsafe_asin(float v)
 	return asin(v);
 }
 
-//½«´ÓDMP¶ÁÈ¡µ½µÄFIFOÊı¾İ ½øĞĞ×ª»»£¬µÃµ½ÔØÌåµÄ×ËÌ¬½Ç¡£²¢°Ñ´«¸ĞÆ÷µÄADCÖµ×ª³É±ê×¼µ¥Î»¡£
+//å°†ä»DMPè¯»å–åˆ°çš„FIFOæ•°æ® è¿›è¡Œè½¬æ¢ï¼Œå¾—åˆ°è½½ä½“çš„å§¿æ€è§’ã€‚å¹¶æŠŠä¼ æ„Ÿå™¨çš„ADCå€¼è½¬æˆæ ‡å‡†å•ä½ã€‚
 void DMP_Covert_Data(void){
-	volatile float q[4] , norm ; // ËÄÔªÊı
-	//gyro sensitivity to +/-   2000¡ã/s
-	DMP_DATA.dmp_gyrox = ((float)DMP_DATA.GYROx)/16.4f;	//½ÇËÙ¶È ×ª³Éµ¥Î»£ºrad/s
+	volatile float q[4] , norm ; // å››å…ƒæ•°
+	//gyro sensitivity to +/-   2000Â°/s
+	DMP_DATA.dmp_gyrox = ((float)DMP_DATA.GYROx)/16.4f;	//è§’é€Ÿåº¦ è½¬æˆå•ä½ï¼šrad/s
 	DMP_DATA.dmp_gyroy = ((float)DMP_DATA.GYROy)/16.4f;
 	DMP_DATA.dmp_gyroz = ((float)DMP_DATA.GYROz)/16.4f;
 	//acc sensitivity to +/-    4 g
-	DMP_DATA.dmp_accx = (((float)DMP_DATA.ACCx)/8192.0f)*g;	//¼ÓËÙ¶È ×ª³Éµ¥Î»£º m/S^2
+	DMP_DATA.dmp_accx = (((float)DMP_DATA.ACCx)/8192.0f)*g;	//åŠ é€Ÿåº¦ è½¬æˆå•ä½ï¼š m/S^2
 	DMP_DATA.dmp_accy = (((float)DMP_DATA.ACCy)/8192.0f)*g;
 	DMP_DATA.dmp_accz = (((float)DMP_DATA.ACCz)/8192.0f)*g;
 
-	  q[0] = (float)DMP_DATA.qw; 	//ÌáÈ¡DMPµÄËÄÔªÊı
+	  q[0] = (float)DMP_DATA.qw; 	//æå–DMPçš„å››å…ƒæ•°
   	q[1] = (float)DMP_DATA.qx;
   	q[2] = (float)DMP_DATA.qy;
   	q[3] = (float)DMP_DATA.qz;
-	// ËÄÔªÊı¹éÒ»»¯
+	// å››å…ƒæ•°å½’ä¸€åŒ–
 	norm = dmpinvSqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
 	q[0] = q[0] * norm;
 	q[1] = q[1] * norm;
@@ -529,7 +529,7 @@ void DMP_Covert_Data(void){
 	                     1 - 2.0*(q[2]*q[2] + q[3]*q[3]))* 180/M_PI;
 }
 
-//¶ÁÈ¡ÔØÌåµÄ×ËÌ¬½Ç Êı×éµÄË³Ğò º½Ïò  ¸©Ñö  ¹ö×ª
+//è¯»å–è½½ä½“çš„å§¿æ€è§’ æ•°ç»„çš„é¡ºåº èˆªå‘  ä¿¯ä»°  æ»šè½¬
 void DMP_getYawPitchRoll(){
 	Q_ANGLE.Yaw =   DMP_DATA.dmp_yaw;
 	Q_ANGLE.Pitch = DMP_DATA.dmp_pitch; 

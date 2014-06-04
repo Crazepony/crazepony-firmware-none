@@ -3,7 +3,7 @@
 #include "stm32f10x.h"
 
 
-#define  BatteryADmin   1800        //½ÓÊÕ»º³åÔªËØ×î´ó¸öÊı
+#define  BatteryADmin   1800        //æ¥æ”¶ç¼“å†²å…ƒç´ æœ€å¤§ä¸ªæ•°
 
 
 void BatteryCheckInit(void);	

@@ -3,8 +3,8 @@
 #include "stm32f10x.h"
 
 
-void TIM4_Init(char clock,int Preiod);//ÓÃÓÚ¼à²âÏµÍ³
-void TIM3_Init(char clock,int Preiod);//¶¨Ê±Æ÷3µÄ³õÊ¼»¯
-void TimerNVIC_Configuration(void);//¶¨Ê±Æ÷ÖĞ¶ÏÏòÁ¿±íÅäÖÃ
+void TIM4_Init(char clock,int Preiod);//ç”¨äºç›‘æµ‹ç³»ç»Ÿ
+void TIM3_Init(char clock,int Preiod);//å®šæ—¶å™¨3çš„åˆå§‹åŒ–
+void TimerNVIC_Configuration(void);//å®šæ—¶å™¨ä¸­æ–­å‘é‡è¡¨é…ç½®
 #endif
 

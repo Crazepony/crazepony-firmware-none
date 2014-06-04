@@ -3,7 +3,7 @@
 #include "UART1.h"
 
 
-#define  g     9.27f                         //ºê¶¨Òåµ±µØÖØÁ¦¼ÓËÙ¶È
+#define  g     9.27f                         //å®å®šä¹‰å½“åœ°é‡åŠ›åŠ é€Ÿåº¦
 
   
 // MotionApps 2.0 DMP implementation,
@@ -25,7 +25,7 @@
  * ================================================================================================ */
 
 struct DMP_FIFO_map{
-int16_t qw;		 // DMPÊä³öµÄËÄÔªÊýÖµ
+int16_t qw;		 // DMPè¾“å‡ºçš„å››å…ƒæ•°å€¼
 int16_t null0;
 int16_t qx;
 int16_t null1;
@@ -33,49 +33,49 @@ int16_t qy;
 int16_t null2;
 int16_t qz;
 int16_t null3;
-int16_t GYROx;	// ÍÓÂÝÒÇ XÖá ½ÇËÙ¶È ADCÖµ
+int16_t GYROx;	// é™€èžºä»ª Xè½´ è§’é€Ÿåº¦ ADCå€¼
 int16_t null4;
-int16_t GYROy;  // ÍÓÂÝÒÇ YÖá ½ÇËÙ¶È ADCÖµ
+int16_t GYROy;  // é™€èžºä»ª Yè½´ è§’é€Ÿåº¦ ADCå€¼
 int16_t null5;
-int16_t GYROz;	// ÍÓÂÝÒÇ ZÖá ½ÇËÙ¶È ADCÖµ
+int16_t GYROz;	// é™€èžºä»ª Zè½´ è§’é€Ÿåº¦ ADCå€¼
 int16_t null6;
-int16_t ACCx;   // ¼ÓËÙ¶È¼Æ XÖá ADCÖµ
+int16_t ACCx;   // åŠ é€Ÿåº¦è®¡ Xè½´ ADCå€¼
 int16_t null7;
-int16_t ACCy;	// ¼ÓËÙ¶È¼Æ YÖá ADCÖµ
+int16_t ACCy;	// åŠ é€Ÿåº¦è®¡ Yè½´ ADCå€¼
 int16_t null8;
-int16_t ACCz;	// ¼ÓËÙ¶È¼Æ ZÖá ADCÖµ
+int16_t ACCz;	// åŠ é€Ÿåº¦è®¡ Zè½´ ADCå€¼
 int16_t null9;
 int16_t null10;
 
-//ÒÔÏÂÊý¾ÝÓÉ DMP_Routing ¸üÐÂ¡£
-float  dmp_pitch;  //DMPËã³öÀ´µÄ¸©Ñö½Ç	µ¥Î»£º¶È
-float  dmp_roll;    //DMP¹ö×ª½Ç		   µ¥Î»£º¶È
-float  dmp_yaw;		//DMP º½Ïò½Ç£¬ÓÉÓÚÃ»ÓÐ´ÅÁ¦¼Æ²ÎÓë£¬º½Ïò½Ç»áÆ®  µ¥Î»£º¶È
-float  dmp_gyrox;	// ÍÓÂÝÒÇ XÖá ½ÇËÙ¶È   µ¥Î»£º¶ÈÃ¿Ãë
-float  dmp_gyroy;   // ÍÓÂÝÒÇ YÖá ½ÇËÙ¶È   µ¥Î»£º¶ÈÃ¿Ãë
-float  dmp_gyroz;   // ÍÓÂÝÒÇ ZÖá ½ÇËÙ¶È   µ¥Î»£º¶ÈÃ¿Ãë
-float  dmp_accx;	// ¼ÓËÙ¶È¼Æ XÖá   µ¥Î»£ºg  [9.8 m/S^2]
-float  dmp_accy;	// ¼ÓËÙ¶È¼Æ YÖá   µ¥Î»£ºg  [9.8 m/S^2]
-float  dmp_accz;	// ¼ÓËÙ¶È¼Æ ZÖá   µ¥Î»£ºg  [9.8 m/S^2]
+//ä»¥ä¸‹æ•°æ®ç”± DMP_Routing æ›´æ–°ã€‚
+float  dmp_pitch;  //DMPç®—å‡ºæ¥çš„ä¿¯ä»°è§’	å•ä½ï¼šåº¦
+float  dmp_roll;    //DMPæ»šè½¬è§’		   å•ä½ï¼šåº¦
+float  dmp_yaw;		//DMP èˆªå‘è§’ï¼Œç”±äºŽæ²¡æœ‰ç£åŠ›è®¡å‚ä¸Žï¼Œèˆªå‘è§’ä¼šé£˜  å•ä½ï¼šåº¦
+float  dmp_gyrox;	// é™€èžºä»ª Xè½´ è§’é€Ÿåº¦   å•ä½ï¼šåº¦æ¯ç§’
+float  dmp_gyroy;   // é™€èžºä»ª Yè½´ è§’é€Ÿåº¦   å•ä½ï¼šåº¦æ¯ç§’
+float  dmp_gyroz;   // é™€èžºä»ª Zè½´ è§’é€Ÿåº¦   å•ä½ï¼šåº¦æ¯ç§’
+float  dmp_accx;	// åŠ é€Ÿåº¦è®¡ Xè½´   å•ä½ï¼šg  [9.8 m/S^2]
+float  dmp_accy;	// åŠ é€Ÿåº¦è®¡ Yè½´   å•ä½ï¼šg  [9.8 m/S^2]
+float  dmp_accz;	// åŠ é€Ÿåº¦è®¡ Zè½´   å•ä½ï¼šg  [9.8 m/S^2]
 };
 
 //------------------------------------------------------------------
-extern struct DMP_FIFO_map DMP_DATA;  //Êý¾ÝÒý³ö				   -
-//µ±Ï£Íû¶ÁÈ¡ ÍÓÂÝÒÇµÄXÖáÊä³öÊ±£¬±äÁ¿ÊÇ DMP_DATA.dmp_gyrox		   -
-//µ±Ï£Íû¶ÁÈ¡ ÍÓÂÝÒÇµÄYÖáÊä³öÊ±£¬±äÁ¿ÊÇ DMP_DATA.dmp_gyroy		   -
-//µ±Ï£Íû¶ÁÈ¡ ¼ÓËÙ¶È¼ÆµÄXÖáÊä³öÊ±£¬±äÁ¿ÊÇ DMP_DATA.dmp_accx		   -
-//ÔØÌå¸©Ñö½ÇµÄ ±äÁ¿ÊÇ DMP_DATA.dmp_pitch						   -
-//ÆäËûÊý¾Ý ²Î¿¼ struct DMP_FIFO_map ½á¹¹ÌåµÄ¶¨Òå				   -
-//±àÐ´Õß£ºlisn3188												   -
-//ÍøÖ·£ºwww.chiplab7.net										   -
-//×÷ÕßE-mail£ºlisn3188@163.com									   -
+extern struct DMP_FIFO_map DMP_DATA;  //æ•°æ®å¼•å‡º				   -
+//å½“å¸Œæœ›è¯»å– é™€èžºä»ªçš„Xè½´è¾“å‡ºæ—¶ï¼Œå˜é‡æ˜¯ DMP_DATA.dmp_gyrox		   -
+//å½“å¸Œæœ›è¯»å– é™€èžºä»ªçš„Yè½´è¾“å‡ºæ—¶ï¼Œå˜é‡æ˜¯ DMP_DATA.dmp_gyroy		   -
+//å½“å¸Œæœ›è¯»å– åŠ é€Ÿåº¦è®¡çš„Xè½´è¾“å‡ºæ—¶ï¼Œå˜é‡æ˜¯ DMP_DATA.dmp_accx		   -
+//è½½ä½“ä¿¯ä»°è§’çš„ å˜é‡æ˜¯ DMP_DATA.dmp_pitch						   -
+//å…¶ä»–æ•°æ® å‚è€ƒ struct DMP_FIFO_map ç»“æž„ä½“çš„å®šä¹‰				   -
+//ç¼–å†™è€…ï¼šlisn3188												   -
+//ç½‘å€ï¼šwww.chiplab7.net										   -
+//ä½œè€…E-mailï¼šlisn3188@163.com									   -
 //------------------------------------------------------------------
 
 
-//DMP API×Ó³ÌÐò
-uint8_t MPU6050_DMP_Initialize(void); //DMP³õÊ¼»¯
-void DMP_Routing(void);	 //DMP Ïß³Ì£¬Ö÷ÒªÓÃÓÚ¶ÁÈ¡ºÍ´¦ÀíDMPµÄ½á¹û   [ÐèÒª¶¨Ê±µ÷ÓÃ]
-void DMP_getYawPitchRoll(void);  //¶ÁÈ¡ÔØÌåµÄ×ËÌ¬½Ç
+//DMP APIå­ç¨‹åº
+uint8_t MPU6050_DMP_Initialize(void); //DMPåˆå§‹åŒ–
+void DMP_Routing(void);	 //DMP çº¿ç¨‹ï¼Œä¸»è¦ç”¨äºŽè¯»å–å’Œå¤„ç†DMPçš„ç»“æžœ   [éœ€è¦å®šæ—¶è°ƒç”¨]
+void DMP_getYawPitchRoll(void);  //è¯»å–è½½ä½“çš„å§¿æ€è§’
 
 #endif
 

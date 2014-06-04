@@ -10,48 +10,48 @@
 
 #define RX_PLOAD_WIDTH  32  	// 32 uints TX payload
 #define TX_PLOAD_WIDTH  32  	// 32 uints TX payload
-//***************************************NRF24L01¼Ä´æÆ÷Ö¸Áî*******************************************************
-#define NRF_READ_REG    0x00  	// ¶Á¼Ä´æÆ÷Ö¸Áî
-#define NRF_WRITE_REG   0x20 	// Ğ´¼Ä´æÆ÷Ö¸Áî
-#define RD_RX_PLOAD     0x61  	// ¶ÁÈ¡½ÓÊÕÊı¾İÖ¸Áî
-#define WR_TX_PLOAD     0xA0  	// Ğ´´ı·¢Êı¾İÖ¸Áî
-#define FLUSH_TX        0xE1 	// ³åÏ´·¢ËÍ FIFOÖ¸Áî
-#define FLUSH_RX        0xE2  	// ³åÏ´½ÓÊÕ FIFOÖ¸Áî
-#define REUSE_TX_PL     0xE3  	// ¶¨ÒåÖØ¸´×°ÔØÊı¾İÖ¸Áî
-#define NOP             0xFF  	// ±£Áô
-//*************************************SPI(nRF24L01)¼Ä´æÆ÷µØÖ·****************************************************
-#define CONFIG          0x00  // ÅäÖÃÊÕ·¢×´Ì¬£¬CRCĞ£ÑéÄ£Ê½ÒÔ¼°ÊÕ·¢×´Ì¬ÏìÓ¦·½Ê½
-#define EN_AA           0x01  // ×Ô¶¯Ó¦´ğ¹¦ÄÜÉèÖÃ
-#define EN_RXADDR       0x02  // ¿ÉÓÃĞÅµÀÉèÖÃ
-#define SETUP_AW        0x03  // ÊÕ·¢µØÖ·¿í¶ÈÉèÖÃ
-#define SETUP_RETR      0x04  // ×Ô¶¯ÖØ·¢¹¦ÄÜÉèÖÃ
-#define RF_CH           0x05  // ¹¤×÷ÆµÂÊÉèÖÃ
-#define RF_SETUP        0x06  // ·¢ÉäËÙÂÊ¡¢¹¦ºÄ¹¦ÄÜÉèÖÃ
-#define NRFRegSTATUS    0x07  // ×´Ì¬¼Ä´æÆ÷
-#define OBSERVE_TX      0x08  // ·¢ËÍ¼à²â¹¦ÄÜ
-#define CD              0x09  // µØÖ·¼ì²â           
-#define RX_ADDR_P0      0x0A  // ÆµµÀ0½ÓÊÕÊı¾İµØÖ·
-#define RX_ADDR_P1      0x0B  // ÆµµÀ1½ÓÊÕÊı¾İµØÖ·
-#define RX_ADDR_P2      0x0C  // ÆµµÀ2½ÓÊÕÊı¾İµØÖ·
-#define RX_ADDR_P3      0x0D  // ÆµµÀ3½ÓÊÕÊı¾İµØÖ·
-#define RX_ADDR_P4      0x0E  // ÆµµÀ4½ÓÊÕÊı¾İµØÖ·
-#define RX_ADDR_P5      0x0F  // ÆµµÀ5½ÓÊÕÊı¾İµØÖ·
-#define TX_ADDR         0x10  // ·¢ËÍµØÖ·¼Ä´æÆ÷
-#define RX_PW_P0        0x11  // ½ÓÊÕÆµµÀ0½ÓÊÕÊı¾İ³¤¶È
-#define RX_PW_P1        0x12  // ½ÓÊÕÆµµÀ1½ÓÊÕÊı¾İ³¤¶È
-#define RX_PW_P2        0x13  // ½ÓÊÕÆµµÀ2½ÓÊÕÊı¾İ³¤¶È
-#define RX_PW_P3        0x14  // ½ÓÊÕÆµµÀ3½ÓÊÕÊı¾İ³¤¶È
-#define RX_PW_P4        0x15  // ½ÓÊÕÆµµÀ4½ÓÊÕÊı¾İ³¤¶È
-#define RX_PW_P5        0x16  // ½ÓÊÕÆµµÀ5½ÓÊÕÊı¾İ³¤¶È
-#define FIFO_STATUS     0x17  // FIFOÕ»ÈëÕ»³ö×´Ì¬¼Ä´æÆ÷ÉèÖÃ
+//***************************************NRF24L01å¯„å­˜å™¨æŒ‡ä»¤*******************************************************
+#define NRF_READ_REG    0x00  	// è¯»å¯„å­˜å™¨æŒ‡ä»¤
+#define NRF_WRITE_REG   0x20 	// å†™å¯„å­˜å™¨æŒ‡ä»¤
+#define RD_RX_PLOAD     0x61  	// è¯»å–æ¥æ”¶æ•°æ®æŒ‡ä»¤
+#define WR_TX_PLOAD     0xA0  	// å†™å¾…å‘æ•°æ®æŒ‡ä»¤
+#define FLUSH_TX        0xE1 	// å†²æ´—å‘é€ FIFOæŒ‡ä»¤
+#define FLUSH_RX        0xE2  	// å†²æ´—æ¥æ”¶ FIFOæŒ‡ä»¤
+#define REUSE_TX_PL     0xE3  	// å®šä¹‰é‡å¤è£…è½½æ•°æ®æŒ‡ä»¤
+#define NOP             0xFF  	// ä¿ç•™
+//*************************************SPI(nRF24L01)å¯„å­˜å™¨åœ°å€****************************************************
+#define CONFIG          0x00  // é…ç½®æ”¶å‘çŠ¶æ€ï¼ŒCRCæ ¡éªŒæ¨¡å¼ä»¥åŠæ”¶å‘çŠ¶æ€å“åº”æ–¹å¼
+#define EN_AA           0x01  // è‡ªåŠ¨åº”ç­”åŠŸèƒ½è®¾ç½®
+#define EN_RXADDR       0x02  // å¯ç”¨ä¿¡é“è®¾ç½®
+#define SETUP_AW        0x03  // æ”¶å‘åœ°å€å®½åº¦è®¾ç½®
+#define SETUP_RETR      0x04  // è‡ªåŠ¨é‡å‘åŠŸèƒ½è®¾ç½®
+#define RF_CH           0x05  // å·¥ä½œé¢‘ç‡è®¾ç½®
+#define RF_SETUP        0x06  // å‘å°„é€Ÿç‡ã€åŠŸè€—åŠŸèƒ½è®¾ç½®
+#define NRFRegSTATUS    0x07  // çŠ¶æ€å¯„å­˜å™¨
+#define OBSERVE_TX      0x08  // å‘é€ç›‘æµ‹åŠŸèƒ½
+#define CD              0x09  // åœ°å€æ£€æµ‹           
+#define RX_ADDR_P0      0x0A  // é¢‘é“0æ¥æ”¶æ•°æ®åœ°å€
+#define RX_ADDR_P1      0x0B  // é¢‘é“1æ¥æ”¶æ•°æ®åœ°å€
+#define RX_ADDR_P2      0x0C  // é¢‘é“2æ¥æ”¶æ•°æ®åœ°å€
+#define RX_ADDR_P3      0x0D  // é¢‘é“3æ¥æ”¶æ•°æ®åœ°å€
+#define RX_ADDR_P4      0x0E  // é¢‘é“4æ¥æ”¶æ•°æ®åœ°å€
+#define RX_ADDR_P5      0x0F  // é¢‘é“5æ¥æ”¶æ•°æ®åœ°å€
+#define TX_ADDR         0x10  // å‘é€åœ°å€å¯„å­˜å™¨
+#define RX_PW_P0        0x11  // æ¥æ”¶é¢‘é“0æ¥æ”¶æ•°æ®é•¿åº¦
+#define RX_PW_P1        0x12  // æ¥æ”¶é¢‘é“1æ¥æ”¶æ•°æ®é•¿åº¦
+#define RX_PW_P2        0x13  // æ¥æ”¶é¢‘é“2æ¥æ”¶æ•°æ®é•¿åº¦
+#define RX_PW_P3        0x14  // æ¥æ”¶é¢‘é“3æ¥æ”¶æ•°æ®é•¿åº¦
+#define RX_PW_P4        0x15  // æ¥æ”¶é¢‘é“4æ¥æ”¶æ•°æ®é•¿åº¦
+#define RX_PW_P5        0x16  // æ¥æ”¶é¢‘é“5æ¥æ”¶æ•°æ®é•¿åº¦
+#define FIFO_STATUS     0x17  // FIFOæ ˆå…¥æ ˆå‡ºçŠ¶æ€å¯„å­˜å™¨è®¾ç½®
 //**************************************************************************************
-#define RX_DR			6		//ÖĞ¶Ï±êÖ¾
+#define RX_DR			6		//ä¸­æ–­æ ‡å¿—
 #define TX_DS			5
 #define MAX_RT	  4
 
-#define MAX_TX  		0x10  //´ïµ½×î´ó·¢ËÍ´ÎÊıÖĞ¶Ï
-#define TX_OK   		0x20  //TX·¢ËÍÍê³ÉÖĞ¶Ï
-#define RX_OK   		0x40  //½ÓÊÕµ½Êı¾İÖĞ¶Ï
+#define MAX_TX  		0x10  //è¾¾åˆ°æœ€å¤§å‘é€æ¬¡æ•°ä¸­æ–­
+#define TX_OK   		0x20  //TXå‘é€å®Œæˆä¸­æ–­
+#define RX_OK   		0x40  //æ¥æ”¶åˆ°æ•°æ®ä¸­æ–­
 
 
 char NRF24L01_INIT(void);

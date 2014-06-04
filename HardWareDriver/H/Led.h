@@ -18,7 +18,7 @@
 #define LedD_off   GPIO_ResetBits(GPIOB, GPIO_Pin_3)
 
 
-void LedInit(void);   //Led³õÊ¼»¯º¯ÊıÍâ²¿ÉùÃ÷
+void LedInit(void);   //Ledåˆå§‹åŒ–å‡½æ•°å¤–éƒ¨å£°æ˜
 
 
 
