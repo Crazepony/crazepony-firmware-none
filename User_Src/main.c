@@ -11,57 +11,57 @@
 //                                            ____/ /                 |
 //                                           /_____/                  |                
 //---------------------------------------------------------------------
-//�ļ���mian.c
-//��д�ߣ�С��
-//���뻷����keil4
-//����ʱ��: 2014-05-24
-//���ð汾��Crazepony-II������
-//���ܣ�
-//1.�ɻ�Ӳ����ʼ��
-//2.������ʼ��
-//3.��ʱ����
-//4.�ȴ��жϵ���
+//文件：mian.c
+//编写者：小马
+//编译环境：keil4
+//初版时间: 2014-05-24
+//适用版本：Crazepony-II第三版
+//功能：
+//1.飞机硬件初始化
+//2.参数初始化
+//3.定时器开
+//4.等待中断到来
 
 
-#include "config.h"        //�������е�����ͷ�ļ�
+#include "config.h"        //包含所有的驱动头文件
 
 
 
 
 /********************************************
-              �ɿ����������
-���ܣ�
-1.��ʼ������Ӳ��
-2.��ʼ��ϵͳ����
-3.����ʱ��4�ȴ������жϵ���
-4.����ʱ��3���ڹ㲥ʵʱ��̬�Լ������Ϣ
+              飞控主函数入口
+功能：
+1.初始化各个硬件
+2.初始化系统参数
+3.开定时器4等待数据中断到来
+4.开定时器3串口广播实时姿态以及相关信息
 ********************************************/
 int main(void)
 {
-    SystemClock(9);               //ϵͳʱ�ӳ�ʼ��
-    UART1_init(SysClock,115200); 	//����1��ʼ��
-    NVIC_INIT();	                //�жϳ�ʼ��
-    STMFLASH_Unlock();            //�ڲ�flash����
-    LedInit();		                //IO��ʼ�� 
-    delay_init(SysClock);         //�δ���ʱ��ʼ��
-    BT_PowerInit();               //������Դ��ʼ����ɣ�Ĭ�Ϲر�
-    MotorInit();	                //�����ʼ��
-    BatteryCheckInit();           //��ص�ѹ����ʼ��
-    IIC_Init();                   //IIC��ʼ��
-    MPU6050_DMP_Initialize();     //��ʼ��DMP����
-    PID_INIT();                   //PID������ʼ�� 
-    ParameterRead();              //Flash������ȡ
-    NRF24L01_INIT();              //NRF24L01��ʼ��
-    SetRX_Mode();                 //������ģ��Ϊ����ģʽ
-    PowerOn();                    //�����ȴ�
-    BT_on();                      //������
-    TIM3_Init(36,2000);	          //��ʱ��3��ʼ�������Դ������
-    TIM4_Init(36,1000);	          //��ʱ��4��ʼ������ʱ�������������ݣ�����PID���
-    while (1)                     //�ȴ����ݸ����жϵ���
+    SystemClock(9);               //系统时钟初始化
+    UART1_init(SysClock,115200); 	//串口1初始化
+    NVIC_INIT();	                //中断初始化
+    STMFLASH_Unlock();            //内部flash解锁
+    LedInit();		                //IO初始化 
+    delay_init(SysClock);         //滴答延时初始化
+    BT_PowerInit();               //蓝牙电源初始化完成，默认关闭
+    MotorInit();	                //马达初始化
+    BatteryCheckInit();           //电池电压监测初始化
+    IIC_Init();                   //IIC初始化
+    MPU6050_DMP_Initialize();     //初始化DMP引擎
+    PID_INIT();                   //PID参数初始化 
+    ParameterRead();              //Flash参数读取
+    NRF24L01_INIT();              //NRF24L01初始化
+    SetRX_Mode();                 //设无线模块为接收模式
+    PowerOn();                    //开机等待
+    BT_on();                      //蓝牙开
+    TIM3_Init(36,2000);	          //定时器3初始化，调试串口输出
+    TIM4_Init(36,1000);	          //定时器4初始化，定时采样传感器数据，更新PID输出
+    while (1)                     //等待数据更新中断到来
     {
 
       
-//    switch(UART1_Get_Char())//��⴮�ڷ������ݣ�����Ӧ����
+//    switch(UART1_Get_Char())//检测串口发送数据，做相应处理
 //       {
 //         case 'w':
 //                  LedA_on;LedB_on;LedC_on;LedD_on;

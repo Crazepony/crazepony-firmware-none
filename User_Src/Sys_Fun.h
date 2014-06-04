@@ -4,7 +4,7 @@
 void NVIC_INIT(void);
 char SystemClock(char PLLMUL);
 void PowerOn(void);
-extern char SysClock;       //申请存储系统时钟变量，单位MHz
+extern char SysClock;       //鐢宠瀛樺偍绯荤粺鏃堕挓鍙橀噺锛屽崟浣峂Hz
 
 #endif
 
