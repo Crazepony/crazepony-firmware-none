@@ -1,35 +1,25 @@
-
- /*    
-  *      ____                      _____                  +---+
-  *     / ___\                     / __ \                 | R |
-  *    / /                        / /_/ /                 +---+
-  *   / /   ________  ____  ___  / ____/___  ____  __   __
-  *  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
-  * / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
-  * \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
-  *                                                 / /
-  *                                            ____/ /
-  *                                           /_____/
-  *                                       
-  *  Crazyfile control firmware                                        
-  *  Copyright (C) 2011-2014 Crazepony-II                                        
-  *
-  *  This program is free software: you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License as published by
-  *  the Free Software Foundation, in version 3.
-  *
-  *  This program is distributed in the hope that it will be useful,
-  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  *  GNU General Public License for more details.
-  * 
-  * You should have received a copy of the GNU General Public License
-  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-  *
-  *
-  * debug.c - Debugging utility functions
-  *
-  */
+/*    
+      ____                      _____                  +---+
+     / ___\                     / __ \                 | R |
+    / /                        / /_/ /                 +---+
+   / /   ________  ____  ___  / ____/___  ____  __   __
+  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
+ / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
+ \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
+                                                 / /
+                                            ____/ /
+                                           /_____/
+Tim.c file
+编写者：小马  (Camel)
+作者E-mail：375836945@qq.com
+编译环境：MDK-Lite  Version: 4.23
+初版时间: 2014-01-28
+功能：
+1.初始化定时器3和定时器4
+2.定时器3-->串口打印各种参数
+3.定时器4-->姿态解算以及PID输出，属于关键中断，将定时器4的主优先级以及从优先级设为最高很有必要
+------------------------------------
+*/
 #include "tim.h"
 #include "config.h"
 
@@ -39,31 +29,30 @@
 
 
 int LedCounter;//LED闪烁计数值
-
+float Compass_HMC[3];
 
 //控制入口
 void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
 {
     if( TIM_GetITStatus(TIM4 , TIM_IT_Update) != RESET ) 
     {     
-       
           Controler(); //控制函数
-
-      
-      
-          LedCounter++;
+                  
+//           HMC58X3_mgetValues(&Compass_HMC[0]);
+//          
+          LedCounter++;//led闪烁计数值
           if(BatteryAD>BatteryADmin)//当电池电压在设定值之上时，正常模式
           {
-          if(LedCounter==50){ LedA_off;LedB_off;}   //遥控端使能后，闪灯提示        
-          else if(LedCounter==1000){LedCounter=0;LedA_on;LedB_on;}
+              if(LedCounter==49){ LedA_off;LedB_off;}   //遥控端使能后，闪灯提示        
+              else if(LedCounter==50){LedCounter=0;LedA_on;LedB_on;}
           }
           else //电池电压低时，闪灯提示
           {
-          if(LedCounter==50){ LedA_off;LedB_off;LedC_off;LedD_off;}   //遥控端使能后，闪灯提示        
-          else if(LedCounter==100){LedCounter=0;LedA_on;LedB_on;LedC_on;LedD_on;}
+              if(LedCounter==10){ LedA_off;LedB_off;LedC_off;LedD_off;}   //遥控端使能后，闪灯提示        
+              else if(LedCounter==20){LedCounter=0;LedA_on;LedB_on;LedC_on;LedD_on;}
           }
-          if(LedCounter>=1001)LedCounter=0;
-      
+          if(LedCounter>=51)LedCounter=0;
+    
           TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);   //清除中断标志   
     }
 }
@@ -71,6 +60,8 @@ void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
 
 
 int DebugCounter;             //打印信息输出时间间隔计数值
+
+
 void TIM3_IRQHandler(void)		//打印中断服务程序
 {
     if( TIM_GetITStatus(TIM3 , TIM_IT_Update) != RESET ) 
@@ -78,8 +69,8 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
        
   #ifdef Debug
            DebugCounter++;
-           BatteryAD=GetBatteryAD();//电池电压检测
-          if( DebugCounter==1000){
+           BatteryAD=GetBatteryAD();//电池电压检测  
+          if( DebugCounter==500){
             DebugCounter=0;
             printf(" ******************************************************************\r\n");
             printf(" *       ____                      _____                  +---+   *\r\n");
@@ -98,33 +89,37 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf("\r\n");
             printf("\r\n--->机身实时姿态广播信息<---\r\n");
             printf("\r\n");
-            printf(" 偏航角---> %f°\r\n",(float)Q_ANGLE.Yaw);
-            printf(" 俯仰角---> %f°\r\n",(float)Q_ANGLE.Pitch);
-            printf(" 横滚角---> %f°\r\n",(float) Q_ANGLE.Roll);
+            printf(" 偏航角---> %5.2f°\r\n",(float)Q_ANGLE.Yaw);
+            printf(" 俯仰角---> %5.2f°\r\n",(float)Q_ANGLE.Pitch);
+            printf(" 横滚角---> %5.2f°\r\n",(float) Q_ANGLE.Roll);
             printf(" ==================\r\n");
-            printf(" X轴期望角度---> %f°\r\n",(float)EXP_ANGLE.X);
-            printf(" Y轴期望角度---> %f°\r\n",(float)EXP_ANGLE.Y);
+            printf(" X轴期望角度---> %5.2f°\r\n",(float)EXP_ANGLE.X);
+            printf(" Y轴期望角度---> %5.2f°\r\n",(float)EXP_ANGLE.Y);
+            printf(" Z轴期望角度---> %5.2f°\r\n",(float)EXP_ANGLE.Z);
+          
             printf(" ==================\r\n");
-            printf(" Y轴误差角度---> %f°\r\n",(float)DIF_ANGLE.Y);
-            printf(" X轴误差角度---> %f°\r\n",(float)DIF_ANGLE.X);
+            printf(" Y轴误差角度---> %5.2f°\r\n",(float)DIF_ANGLE.Y);
+            printf(" X轴误差角度---> %5.2f°\r\n",(float)DIF_ANGLE.X);
             printf("==================\r\n");
-            printf(" X轴加速度---> %fm/s2\r\n",(float) DMP_DATA.dmp_accx);
-            printf(" Y轴加速度---> %fm/s2\r\n",(float) DMP_DATA.dmp_accy);
-            printf(" Z轴加速度---> %fm/s2\r\n",(float) DMP_DATA.dmp_accz);
+            printf(" X轴加速度---> %5.2fm/s2\r\n",(float) DMP_DATA.dmp_accx);
+            printf(" Y轴加速度---> %5.2fm/s2\r\n",(float) DMP_DATA.dmp_accy);
+            printf(" Z轴加速度---> %5.2fm/s2\r\n",(float) DMP_DATA.dmp_accz);
             printf(" ==================\r\n");
-            printf(" X轴角速度---> %f °/s\r\n",(float) DMP_DATA.dmp_gyrox);
-            printf(" Y轴角速度---> %f °/s\r\n",(float) DMP_DATA.dmp_gyroy);
-            printf(" Z轴角速度---> %f °/s\r\n",(float) DMP_DATA.dmp_gyroz);
+            printf(" X轴角速度---> %5.2f °/s\r\n",(float) DMP_DATA.dmp_gyrox);
+            printf(" Y轴角速度---> %5.2f °/s\r\n",(float) DMP_DATA.dmp_gyroy);
+            printf(" Z轴角速度---> %5.2f °/s\r\n",(float) DMP_DATA.dmp_gyroz);
             printf("==================\r\n");
             printf(" 电机M1 PWM值---> %d\r\n",TIM2->CCR1);
             printf(" 电机M2 PWM值---> %d\r\n",TIM2->CCR2);
             printf(" 电机M3 PWM值---> %d\r\n",TIM2->CCR3);
             printf(" 电机M4 PWM值---> %d\r\n",TIM2->CCR4);
             printf("==================\r\n");
-            printf(" 电池电压---> %d\r\n",(int) BatteryAD);
+            printf(" 电池电压---> %3.2fv\r\n",(float) 2*(BatteryAD/4.096)*0.0033);//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
             printf("==================\r\n");
-            printf(" 开机次数---> %d\r\n",PowerCouter[0]);
-                
+//             printf(" X磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[0]);
+//             printf(" Y磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[1]);
+//             printf(" Z磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[2]);
+                  
 #else      
              
 #endif
@@ -154,7 +149,7 @@ void TIM4_Init(char clock,int Preiod)
 
     TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE);
     TIM_Cmd(TIM4,ENABLE);
-    DEBUG_PRINTLN("定时器4初始化完成...\r\n");
+    printf("定时器4初始化完成...\r\n");
     
 }	
 
@@ -178,9 +173,8 @@ void TIM3_Init(char clock,int Preiod)
 
     TIM_ITConfig(TIM3,TIM_IT_Update,ENABLE);
     TIM_Cmd(TIM3,ENABLE);
-    DEBUG_PRINTLN("定时器3初始化完成...\r\n");
+    printf("定时器3初始化完成...\r\n");
 }		
-
 
 
 void TimerNVIC_Configuration()
@@ -191,14 +185,14 @@ void TimerNVIC_Configuration()
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
     //TIM3
     NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;//定时器3作为串口打印定时器，优先级低于姿态解算
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
     //TIM4
     NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;//定时器4作为姿态解算，优先级高于串口打印
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 

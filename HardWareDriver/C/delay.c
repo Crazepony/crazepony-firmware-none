@@ -23,6 +23,8 @@
  
 #include "delay.h"
 #include "UART1.h"
+#include "config.h"
+
 static u8  fac_us=0;//us延时倍乘数
 static u16 fac_ms=0;//ms延时倍乘数
 
@@ -42,7 +44,7 @@ void delay_init(u8 SYSCLK)
 	SysTick->CTRL&=0xfffffffb;//bit2清空,选择外部时钟  HCLK/8
 	fac_us=SYSCLK/8;		    
 	fac_ms=(u16)fac_us*1000;
-  DEBUG_PRINTLN("延时函数初始化完成...\r\n");
+  printf("延时函数初始化完成...\r\n");
 }				
 				    
 //延时nms

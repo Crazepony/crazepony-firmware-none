@@ -9,14 +9,24 @@
                                                  / /
                                             ____/ /
                                            /_____/
+mpu6050.c file
+编写者：小马  (Camel)
+作者E-mail：375836945@qq.com
+编译环境：MDK-Lite  Version: 4.23
+初版时间: 2014-01-28
+功能：
+1.飞机姿态传感器初始化
+2.硬件上的数据中断int脚已连接，软件是轮训机制，大家可以在这方面做修改
+------------------------------------
 */
 #include "MPU6050.h"
 #include "IIC.h"
 #include "extern_variable.h"
+#include "config.h"
+
 
 
 uint8_t buffer[14];
-
 int16_t  MPU6050_FIFO[6][11];
 int16_t Gx_offset=0,Gy_offset=0,Gz_offset=0;
 
@@ -31,7 +41,7 @@ int16_t Gx_offset=0,Gy_offset=0,Gz_offset=0;
 0 数据寄存器还没有更新
 *******************************************************************************/
 unsigned char MPU6050_is_DRY(void){
-    if(GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_15)==Bit_SET){
+    if(GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_5)==Bit_SET){
 	  return 1;
 	 }
 	 else return 0;
@@ -109,10 +119,10 @@ uint8_t MPU6050_getDeviceID(void) {
 *函数原型:		uint8_tMPU6050_testConnection(void)
 *功　　能:	    检测MPU6050 是否已经连接
 *******************************************************************************/
-uint8_tMPU6050_testConnection(void) {
+uint8_t MPU6050_testConnection(void) {
    if(MPU6050_getDeviceID() == 0x68)  //0b01101000;
    return 1;
-   	else return 0;
+   else return 0;
 }
 
 /**************************实现函数********************************************
@@ -132,6 +142,20 @@ void MPU6050_setI2CBypassEnabled(uint8_t enabled) {
 }
 
 /**************************实现函数********************************************
+*函数原型:		void MPU6050_Check()
+*功　　能:	  检测IIC总线上的MPU6050是否存在
+*******************************************************************************/
+void MPU6050_Check(void) 
+{ 
+  switch(MPU6050_testConnection())
+  {
+    case 0:printf("未检测到MPU6050...\r\n");
+      break;
+    case 1:printf("已检测到MPU6050...\r\n");
+      break;
+  }
+} 
+/**************************实现函数********************************************
 *函数原型:		void MPU6050_initialize(void)
 *功　　能:	    初始化 	MPU6050 以进入可用状态。
 *******************************************************************************/
@@ -141,9 +165,9 @@ void MPU6050_initialize(void) {
     MPU6050_setClockSource(MPU6050_CLOCK_PLL_XGYRO); //设置时钟
     MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_1000);//陀螺仪最大量程 +-1000度每秒
     MPU6050_setFullScaleAccelRange(MPU6050_ACCEL_FS_2);	//加速度度最大量程 +-2G
-    MPU6050_setSleepEnabled(0); //进入工作状态
-	MPU6050_setI2CMasterModeEnabled(0);	 //不让MPU6050 控制AUXI2C
-	MPU6050_setI2CBypassEnabled(1);	 //主控制器的I2C与	MPU6050的AUXI2C	直通。控制器可以直接访问HMC5883L
+    MPU6050_setSleepEnabled(0);          //进入工作状态
+	  MPU6050_setI2CMasterModeEnabled(0);	 //不让MPU6050 控制AUXI2C
+	  MPU6050_setI2CBypassEnabled(1);	     //主控制器的I2C与	MPU6050的AUXI2C	直通。控制器可以直接访问HMC5883L
 	
 
 	//配置MPU6050 的中断模式 和中断电平模式
@@ -152,8 +176,8 @@ void MPU6050_initialize(void) {
 	IICwriteBit(devAddr, MPU6050_RA_INT_PIN_CFG, MPU6050_INTCFG_LATCH_INT_EN_BIT, 1);
 	IICwriteBit(devAddr, MPU6050_RA_INT_PIN_CFG, MPU6050_INTCFG_INT_RD_CLEAR_BIT, 1);
 	//开数据转换完成中断
-    IICwriteBit(devAddr, MPU6050_RA_INT_ENABLE, MPU6050_INTERRUPT_DATA_RDY_BIT, 1);
-
+  //IICwriteBit(devAddr, MPU6050_RA_INT_ENABLE, MPU6050_INTERRUPT_DATA_RDY_BIT, 1);
+  MPU6050_Check();//打印设备检测信息
 }
 
 // BANK_SEL register

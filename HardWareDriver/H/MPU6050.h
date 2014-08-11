@@ -3,7 +3,6 @@
 
 #include "stm32f10x.h"
 
-//#define devAddr  0x68
 #define devAddr  0xD0
 
 
@@ -413,7 +412,8 @@ void MPU6050_resetI2CMaster(void);
 void MPU6050_setFIFOEnabled(uint8_t enabled);
 void MPU6050_resetDMP(void);
 void MPU6050_setI2CMasterModeEnabled(uint8_t enabled);
-
+void MPU6050_setI2CBypassEnabled(uint8_t enabled);
+void MPU6050_Check(void);
 #endif
 
 

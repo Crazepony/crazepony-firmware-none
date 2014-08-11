@@ -9,16 +9,6 @@
                                                  / /
                                             ____/ /
                                            /_____/
-UART1.c file
-编写者：小马  (Camel)
-作者E-mail：375836945@qq.com
-编译环境：MDK-Lite  Version: 4.23
-初版时间: 2014-01-28
-功能：
-1.串口1初始化
-2.供参数打印回串口助手，安卓4.0以上版本蓝牙透传接口以及和PC上位机接口
-3.提供标准输入输出printf()的底层驱动，也就是说printf可以直接调用
-------------------------------------
 */
 #include "UART1.h"
 #include "stdio.h"
@@ -291,10 +281,10 @@ void USART1_IRQHandler(void)
 }
 
 
-// void DEBUG_PRINTLN(unsigned char *Str)
-//  {
-// 	  UART1_Put_String(Str);  //通过USART1 发送调试信息
-//  }
+void DEBUG_PRINTLN(unsigned char *Str)
+ {
+	  UART1_Put_String(Str);  //通过USART1 发送调试信息
+ }
 
 
 

@@ -9,10 +9,20 @@
                                                  / /
                                             ____/ /
                                            /_____/
+moto.c file
+编写者：小马  (Camel)
+作者E-mail：375836945@qq.com
+编译环境：MDK-Lite  Version: 4.23
+初版时间: 2014-01-28
+功能：
+1.飞机上四路电机驱动PWM初始化
+2.用定时器2的PWM输出模式
+------------------------------------
 */
 #include "stm32f10x.h"
 #include "moto.h"
 #include "UART1.h"
+#include "stdio.h"
 int16_t MOTO1_PWM = 0;
 int16_t MOTO2_PWM = 0;
 int16_t MOTO3_PWM = 0;
@@ -102,5 +112,5 @@ void MotorInit(void)
     
     // 启动计时器。
     TIM_Cmd(TIM2,ENABLE);
-    DEBUG_PRINTLN("电机初始化完成...\r\n");
+    printf("电机初始化完成...\r\n");
 }

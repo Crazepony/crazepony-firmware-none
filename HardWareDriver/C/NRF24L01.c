@@ -9,9 +9,17 @@
                                                  / /
                                             ____/ /
                                            /_____/
+NRF24L01.c file
+编写者：小马  (Camel)
+作者E-mail：375836945@qq.com
+编译环境：MDK-Lite  Version: 4.23
+初版时间: 2014-01-28
+功能：
+1.NRF24L01初始化
+2.接口采用stm32的硬件SPI_1接口
+------------------------------------
 */
-//现在NRF遥控传输数据还是连续的32个字节，不会影响控制，后续可以加入更多的控制参数，这里不用改了
-//最后修改：2013-06-11
+
 
 
 #include "NRF24L01.h"
@@ -19,6 +27,7 @@
 #include "ReceiveData.h"
 #include "delay.h"
 #include "UART1.h"
+#include "stdio.h"
 uint8_t NRF24L01_RXDATA[RX_PLOAD_WIDTH];//nrf24l01接收到的数据
 uint8_t NRF24L01_TXDATA[RX_PLOAD_WIDTH];//nrf24l01需要发送的数据
 
@@ -27,7 +36,6 @@ uint8_t NRF24L01_TXDATA[RX_PLOAD_WIDTH];//nrf24l01需要发送的数据
 //修改该接收和发送地址，可以供多个飞行器在同一区域飞行，数据不受干扰
 u8  TX_ADDRESS[TX_ADR_WIDTH]= {0x34,0xc3,0x10,0x10,0x11};	//本地地址
 u8  RX_ADDRESS[RX_ADR_WIDTH]= {0x34,0xc3,0x10,0x10,0x11};	//接收地址				
-
 
 
 //写寄存器
@@ -116,7 +124,7 @@ void SetRX_Mode(void)
   	NRF_Write_Reg(NRF_WRITE_REG+RF_SETUP,0x0f);//设置TX发射参数,0db增益,2Mbps,低噪声增益开启   
   	NRF_Write_Reg(NRF_WRITE_REG+CONFIG, 0x0f);//配置基本工作模式的参数;PWR_UP,EN_CRC,16BIT_CRC,接收模式 
     SPI_CE_H();
-    DEBUG_PRINTLN("NRF24L01设为接收模式...\r\n");
+    printf("NRF24L01设为接收模式...\r\n");
 } 
 
 //发送模式
@@ -145,11 +153,8 @@ void Nrf_Irq(void)
     if(sta & (1<<RX_DR))//接收中断
     {
         NRF_Read_Buf(RD_RX_PLOAD,NRF24L01_RXDATA,RX_PLOAD_WIDTH);// read receive payload from RX_FIFO buffer
-         
         ReceiveDataFormNRF();      //自己做修改
-
     }
- 
     NRF_Write_Reg(0x27, sta);//清除nrf的中断标志位
 }
 
@@ -172,7 +177,7 @@ u8 NRF24L01_RxPacket(u8 *rxbuf)
 
 
 
-//判断SPI接口是否可用
+//判断SPI接口是否接入NRF芯片是否可用
 u8 NRF24L01_Check(void) 
 { 
    u8 buf[5]={0xC2,0xC2,0xC2,0xC2,0xC2}; 
@@ -192,7 +197,7 @@ u8 NRF24L01_Check(void)
       break; 
    } 
   
-   if (i==5)   {DEBUG_PRINTLN("初始化NRF24L01成功...\r\n");return 1 ;}        //MCU 与NRF 成功连接 
-   else        {DEBUG_PRINTLN("初始化NRF24L01出错...\r\n");return 0 ;}        //MCU与NRF不正常连接    
+   if (i==5)   {printf("初始化NRF24L01成功...\r\n");return 1 ;}        //MCU 与NRF 成功连接 
+   else        {printf("初始化NRF24L01出错...\r\n");return 0 ;}        //MCU与NRF不正常连接    
 } 
 

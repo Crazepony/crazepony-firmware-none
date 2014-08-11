@@ -9,10 +9,19 @@
                                                  / /
                                             ____/ /
                                            /_____/
+moto.c file
+编写者：小马  (Camel)
+作者E-mail：375836945@qq.com
+编译环境：MDK-Lite  Version: 4.23
+初版时间: 2014-01-28
+功能：
+1.SPI1初始化
+2.供NRF24L01接口
+------------------------------------
 */
 #include "spi.h"
 #include "UART1.h"
-
+#include "stdio.h"
 
 void SPI1_INIT(void)
 {
@@ -57,7 +66,7 @@ void SPI1_INIT(void)
     SPI_Init(SPI1, &SPI_InitStructure); 
     /* Enable SPI1 */ 
     SPI_Cmd(SPI1, ENABLE);
-    DEBUG_PRINTLN("SPI总线初始化完成...\r\n");
+    printf("SPI总线初始化完成...\r\n");
 }
 
 

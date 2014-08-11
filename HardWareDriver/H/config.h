@@ -17,7 +17,6 @@
 #include "SPI.h"
 #include "control.h"
 #include "stmflash.h"
-//#include "imu.h"
 #include "math.h"
 #include "stdio.h"
 #include "UART1.h"
@@ -26,7 +25,7 @@
 #include "Battery.h"
 #include "DMP.h"
 #include "Battery.h"
-
+#include "HMC5883L.h"
 
 
 #endif

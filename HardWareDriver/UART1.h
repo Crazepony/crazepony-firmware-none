@@ -10,7 +10,7 @@
 
 
 
-// void DEBUG_PRINTLN(unsigned char *Str);
+void DEBUG_PRINTLN(unsigned char *Str);
 void UART1NVIC_Configuration(void);
 void UART1_init(u32 pclk2,u32 bound);
 void UART1_Put_Char(unsigned char DataToSend);

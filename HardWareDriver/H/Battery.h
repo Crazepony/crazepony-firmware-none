@@ -3,7 +3,7 @@
 #include "stm32f10x.h"
 
 
-#define  BatteryADmin   1800        //接收缓冲元素最大个数
+#define  BatteryADmin   1900        //接收缓冲元素最大个数
 
 
 void BatteryCheckInit(void);	

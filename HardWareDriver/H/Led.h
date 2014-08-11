@@ -2,12 +2,12 @@
 #define _Led_H_
 #include "stm32f10x.h"
 
-#define LedA_on    GPIO_SetBits(GPIOB, GPIO_Pin_5)
-#define LedA_off   GPIO_ResetBits(GPIOB, GPIO_Pin_5)
+#define LedA_on    GPIO_SetBits(GPIOA, GPIO_Pin_11)
+#define LedA_off   GPIO_ResetBits(GPIOA, GPIO_Pin_11)
 
 
-#define LedB_on    GPIO_SetBits(GPIOB, GPIO_Pin_4)
-#define LedB_off   GPIO_ResetBits(GPIOB, GPIO_Pin_4)
+#define LedB_on    GPIO_SetBits(GPIOA, GPIO_Pin_8)
+#define LedB_off   GPIO_ResetBits(GPIOA, GPIO_Pin_8)
 
 
 #define LedC_on    GPIO_SetBits(GPIOB, GPIO_Pin_1)

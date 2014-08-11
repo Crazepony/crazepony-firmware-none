@@ -27,24 +27,24 @@
 #define GPIOG_IDR_Addr    (GPIOG_BASE+8) //0x40011E08 
 
 
-#define PAout(n)   BIT_ADDR(GPIOA_ODR_Addr,n)  //输出 
-#define PAin(n)    BIT_ADDR(GPIOA_IDR_Addr,n)  //输入 
+#define PBout(n)   BIT_ADDR(GPIOB_ODR_Addr,n)  //输出 
+#define PBin(n)    BIT_ADDR(GPIOB_IDR_Addr,n)  //输入 
    	   		   
 ////驱动接口，GPIO模拟IIC
-//SCL-->PA11
-//SDA-->PA8
-#define SDA_IN()  {GPIOA->CRH&=0XFFFFFFF0;GPIOA->CRH|=0x00000008;}
-#define SDA_OUT() {GPIOA->CRH&=0XFFFFFFF0;GPIOA->CRH|=0x00000003;}
+//SCL-->PB6
+//SDA-->PB7
+#define SDA_IN()  {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=0x80000000;}
+#define SDA_OUT() {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=0x30000000;}
 
 
 //IO操作函数	 
-#define IIC_SCL    PAout(11) //SCL
-#define IIC_SDA    PAout(8) //SDA	 
-#define READ_SDA   PAin(8)  //输入SDA 
+#define IIC_SCL    PBout(6) //SCL
+#define IIC_SDA    PBout(7) //SDA	 
+#define READ_SDA   PBin(7)  //输入SDA 
 
 //IIC所有操作函数
-void IIC_Init(void);                //初始化IIC的IO口				 
-void IIC_Start(void);				//发送IIC开始信号
+void IIC_Init(void);          //初始化IIC的IO口				 
+void IIC_Start(void);			   	//发送IIC开始信号
 void IIC_Stop(void);	  			//发送IIC停止信号
 void IIC_Send_Byte(u8 txd);			//IIC发送一个字节
 u8 IIC_Read_Byte(unsigned char ack);//IIC读取一个字节

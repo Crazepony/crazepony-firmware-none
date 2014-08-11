@@ -9,14 +9,20 @@
                                                  / /
                                             ____/ /
                                            /_____/
+Battery.c file
+编写者：小马  (Camel)
+作者E-mail：375836945@qq.com
+编译环境：MDK-Lite  Version: 4.23
+初版时间: 2014-01-28
+功能：
+1.电池检测AD初始化
+2.供低压检测用，提供片内温度传感器驱动
+------------------------------------
 */
-
-
-
 
 #include "Battery.h"
 #include "UART1.h"
-
+#include "stdio.h"
 
 
 
@@ -66,7 +72,7 @@ void BatteryCheckInit()
 	ADC1->CR2|=1<<2;        //开启AD校准	   
 	while(ADC1->CR2&1<<2);  //等待校准结束
 	//该位由软件设置以开始校准，并在校准结束时由硬件清除  
-  DEBUG_PRINTLN("电压监测AD初始完成...\r\n");
+  printf("电压监测AD初始完成...\r\n");
   
 }
 

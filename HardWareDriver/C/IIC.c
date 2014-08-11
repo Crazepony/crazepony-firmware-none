@@ -9,16 +9,26 @@
                                                  / /
                                             ____/ /
                                            /_____/
+iic.c file
+编写者：小马  (Camel)
+作者E-mail：375836945@qq.com
+编译环境：MDK-Lite  Version: 4.23
+初版时间: 2014-01-28
+功能：
+1.初始化软件IIC协议
+2.软件IIC协议的引脚，也是STM32硬件IIC的引脚。只是我没有这个功能
+------------------------------------
 */
-//STM32的IIC协议（GPIO模拟的），STM32的硬件IIC有些BUGS，不好调，算了
-//这个版本可以用，细节有空再改
-//最后修改:2013-06-11
+//STM32模拟IIC协议，STM32的硬件IIC有些BUG
+//细节有空再改
+//最后修改:2014-03-11
 
 
 #include "IIC.h"
 #include "delay.h"
 #include "Led.h"
 #include "UART1.h"
+#include "stdio.h"
 /**************************实现函数********************************************
 *函数原型:		void IIC_Init(void)
 *功　　能:		初始化I2C对应的接口引脚。
@@ -26,14 +36,14 @@
 void IIC_Init(void)
 {			
 	GPIO_InitTypeDef GPIO_InitStructure;
- 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);			     
- 	//配置PA8 PA11 为开漏输出  刷新频率为10Mhz
- 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_11;	
+ 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);			     
+ 	//配置PB6 PB7 为开漏输出  刷新频率为10Mhz
+ 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;	
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;       
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   //应用配置到GPIOB 
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-  DEBUG_PRINTLN("IIC总线初始化完成...\r\n");
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  printf("IIC总线初始化完成...\r\n");
 }
 
 /**************************实现函数********************************************
