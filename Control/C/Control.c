@@ -79,7 +79,7 @@ void Controler(void)
 //备注：没考上研，心情不好
 void PID_Calculate(void)
 {
-    static float Thr=0,Rool=0,Pitch=0,Yaw=0;
+    static float Thr=0,Roll=0,Pitch=0,Yaw=0;
     long Motor[4];   //定义电机PWM数组，分别对应M1-M4
     /*********************************************************
      计算期望姿态与实际姿态的差值
@@ -102,13 +102,13 @@ void PID_Calculate(void)
     /*********************************************************
      PID核心算法部分
     *********************************************************/
-     // 俯仰角
+    //俯仰角
     Pitch =  PID_Motor.P * DIF_ANGLE.Y;      //DIF_ANGLE.Y为Y轴的期望角度和当前实际角度的误差角度
     Pitch -= PID_Motor.D * DMP_DATA.GYROy;   //DMP_DATA.GYROy为Y轴的误差角度的微分，即Y轴的角速度 单位 °/s
     //横滚角
-    Rool = PID_Motor.P* DIF_ANGLE.X;        //DIF_ANGLE.x为X轴的期望角度和当前实际角度的误差角度
-   Rool -= PID_Motor.D * DMP_DATA.GYROx;   //DMP_DATA.GYROx为X轴的误差角度的微分，即X轴的角速度 单位 °/s
-   //基础油门动力
+    Roll = PID_Motor.P* DIF_ANGLE.X;        //DIF_ANGLE.x为X轴的期望角度和当前实际角度的误差角度
+    Roll -= PID_Motor.D * DMP_DATA.GYROx;   //DMP_DATA.GYROx为X轴的误差角度的微分，即X轴的角速度 单位 °/s
+    //基础油门动力
     //Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;   //RC_DATA.THROTTLE为0到1000,将摇杆油门曲线转换为下凹的抛物线
     Thr = RC_DATA.THROTTLE;
     Thr -=30*DIF_ACC.Z;                             //对Z轴用一次负反馈控制
@@ -120,10 +120,10 @@ void PID_Calculate(void)
 
      
    //将输出值融合到四个电机 
-    Motor[2] = (int16_t)(Thr - Pitch -Rool- Yaw );    //M3  
-    Motor[0] = (int16_t)(Thr + Pitch +Rool- Yaw );    //M1
-    Motor[3] = (int16_t)(Thr - Pitch +Rool+ Yaw );    //M4 
-    Motor[1] = (int16_t)(Thr + Pitch -Rool+ Yaw );    //M2    
+    Motor[2] = (int16_t)(Thr - Pitch - Roll - Yaw );    //M3  
+    Motor[0] = (int16_t)(Thr + Pitch + Roll - Yaw );    //M1
+    Motor[3] = (int16_t)(Thr - Pitch + Roll + Yaw );    //M4 
+    Motor[1] = (int16_t)(Thr + Pitch - Roll + Yaw );    //M2    
     
     if((FLY_ENABLE==0xA5))MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);   
     else                  MotorPwmFlash(0,0,0,0);//避免飞机落地重启时突然打转 
