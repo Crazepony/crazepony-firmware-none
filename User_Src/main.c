@@ -24,7 +24,6 @@ main.c file
 
 #include "config.h"        //包含所有的驱动头文件
 
-
 /********************************************
               飞控主函数入口
 功能：                                        
@@ -37,7 +36,7 @@ int main(void)
 {
   //int i;
   SystemClock_HSE(9);           //系统时钟初始化，时钟源外部晶振HSE
-  //SystemClock_HSI(4);         //系统时钟初始化，时钟源内部HSI
+  //SystemClock_HSI(9);         //系统时钟初始化，时钟源内部HSI
   UART1_init(SysClock,115200); 	//串口1初始化
   NVIC_INIT();	                //中断初始化
   STMFLASH_Unlock();            //内部flash解锁
@@ -49,15 +48,37 @@ int main(void)
   IIC_Init();                   //IIC初始化
   MPU6050_DMP_Initialize();     //初始化DMP引擎
   //HMC5883L_SetUp();             //初始化磁力计HMC5883L
-  PID_INIT();                   //PID参数初始化 
+  ParameterWrite();             //写参数到内部模拟eeprom
   ParameterRead();              //Flash参数读取
+  PID_INIT();                   //PID参数初始化 
   NRF24L01_INIT();              //NRF24L01初始化
   SetRX_Mode();                 //设无线模块为接收模式
+  
+//   /////////////////////////
+//   NRF24L01_RXDATA[30]=0xA5;
+//   NRF24L01_RXDATA[27]=0xA5;//跳过解锁,调试用，跳过下面的poweron
+//   /////////////////////////
+//   
   PowerOn();                    //开机等待
-  BT_on();                      //蓝牙开
-  TIM3_Init(SysClock,10);	      //定时器3初始化，调试串口输出
-  TIM4_Init(SysClock,50);	      //定时器4初始化，定时采样传感器数据，更新PID输出
-  while (1);                    //等待数据更新中断到来
+  //BT_on();                      //蓝牙开
+  TIM3_Init(SysClock,1000);	    //定时器3初始化，调试串口输出
+  TIM4_Init(SysClock,1000);	    //定时器4初始化，定时采样传感器数据，更新PID输出，定时器定时基石为1us，PID更新周期为4ms，所以姿态更新频率 为250Hz
+  
+  while (1)                    //等待数据更新中断到来
+  {
+    
+//测试环形缓冲数组用，可以无视或者直接注释掉。不注释也不影响操作
+//     printf("\r\n收到数据[%d] = %d\r\n",i,rx_buffer[i++]);
+//     printf("读指针 = %d\r\n",UartRxbuf.Rd_Indx & UartRxbuf.Mask);
+//     printf("写指针 = %d\r\n",UartRxbuf.Wd_Indx & UartRxbuf.Mask);
+//     printf("可用%d字节\r\n",UartBuf_Cnt(&UartRxbuf));
+//     if(i>UartRxbuf.Mask){
+//     i=0;
+//     //UartBuf_RD(&UartRxbuf);
+//     printf("\r\n");
+//     }
+/////////////////////////////////////////////////////////////////
+  }
 }
 
 

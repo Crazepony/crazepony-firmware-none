@@ -5,23 +5,35 @@
 
 
 // USART Receiver buffer
-#define RX_BUFFER_SIZE   3
-#define TX_BUFFER_SIZE   3
+#define RX_BUFFER_SIZE   32
+#define TX_BUFFER_SIZE   32
+extern unsigned char rx_buffer[RX_BUFFER_SIZE];
+extern unsigned char tx_buffer[TX_BUFFER_SIZE];
+
+
+typedef struct 
+{
+  uint16_t volatile Wd_Indx;
+  uint16_t volatile Rd_Indx;
+  uint16_t Mask;
+  uint8_t *pbuf;
+}UartBuf;
 
 
 
-// void DEBUG_PRINTLN(unsigned char *Str);
 void UART1NVIC_Configuration(void);
 void UART1_init(u32 pclk2,u32 bound);
 void UART1_Put_Char(unsigned char DataToSend);
-u8 UART1_Get_Char(void);
-void UART1_Putc_Hex(uint8_t b);
-void UART1_Putw_Hex(uint16_t w);
-void UART1_Putdw_Hex(uint32_t dw);
-void UART1_Putw_Dec(uint32_t w);
-void UART1_Put_String(unsigned char *Str);
+uint8_t Uart1_Put_Char(unsigned char DataToSend);
 
-extern unsigned char rx_buffer[RX_BUFFER_SIZE];
+
+
+
+extern UartBuf UartTxbuf;
+extern UartBuf UartRxbuf;
+extern uint8_t UartBuf_RD(UartBuf *Ringbuf);
+extern uint16_t UartBuf_Cnt(UartBuf *Ringbuf);
+extern void UartBuf_WD(UartBuf *Ringbuf,uint8_t DataIn);
 #endif
 
 

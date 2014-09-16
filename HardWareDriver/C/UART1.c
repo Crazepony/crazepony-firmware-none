@@ -28,14 +28,6 @@ UART1.c file
 #define b_uart_head  0x80
 #define b_rx_over    0x40
 
-
-u8 U1TxBuffer[256];
-u8 U1TxPackage[TX_BUFFER_SIZE];
-u8 U1TxCounter=0;
-u8 U1RxCounter=0;
-u8 U1count=0; 
-char TxPackFlag;//发送预定格式数据包标志位
-
 //////////////////////////////////////////////////////////////////
 //加入以下代码,支持printf函数,而不需要选择use MicroLIB	  
 #if 1
@@ -115,12 +107,24 @@ void UART1_init(u32 pclk2,u32 bound)
 	USART1->CR1|=1<<5;    //接收缓冲区非空中断使能	    	
  
   UART1NVIC_Configuration();//中断配置
+  
+  
+  UartTxbuf.Wd_Indx = 0;
+  UartTxbuf.Rd_Indx = 0;
+  UartTxbuf.Mask = TX_BUFFER_SIZE - 1;
+  UartTxbuf.pbuf = &tx_buffer[0];
+  
+  UartRxbuf.Wd_Indx = 0;
+  UartRxbuf.Rd_Indx = 0;
+  UartRxbuf.Mask = RX_BUFFER_SIZE - 1;
+  UartRxbuf.pbuf = &rx_buffer[0];
+  
+  
   printf("系统时钟频率：%dMHz \r\n",pclk2);
   printf("串口1初始化波特率：%d \r\n",bound);
  
   
 }
-
 
 /**************************实现函数********************************************
 *函数原型:		void UART1_Put_Char(unsigned char DataToSend)
@@ -131,142 +135,53 @@ void UART1_init(u32 pclk2,u32 bound)
 *******************************************************************************/
 void UART1_Put_Char(unsigned char DataToSend)
 {
-	U1TxBuffer[U1count++] = DataToSend;  
-  USART_ITConfig(USART1, USART_IT_TXE, ENABLE);  
+  
+  UartBuf_WD(&UartTxbuf,DataToSend);//将待发送数据放在环形缓冲数组中
+  USART_ITConfig(USART1, USART_IT_TXE, ENABLE);  //启动发送中断开始啪啪啪发送缓冲中的数据
 }
-/**************************实现函数********************************************
-*函数原型:		u8 UART1_Get_Char(void)
-*功　　能:		RS232接收一个字节  一直等待，直到UART1接收到一个字节的数据。
-输入参数：		 没有
-输出参数：     UART1接收到的数据	
-*******************************************************************************/
-u8 UART1_Get_Char(void)
+
+
+uint8_t Uart1_Put_Char(unsigned char DataToSend)
 {
-	while (!(USART1->SR & USART_FLAG_RXNE));
-	return(USART_ReceiveData(USART1));
+  UartBuf_WD(&UartTxbuf,DataToSend);//将待发送数据放在环形缓冲数组中
+  USART_ITConfig(USART1, USART_IT_TXE, ENABLE);  //启动发送中断开始啪啪啪发送缓冲中的数据
+	return DataToSend;
 }
 
-
-/**************************实现函数********************************************
-*函数原型:		void UART2_Put_String(unsigned char *Str)
-*功　　能:		RS232发送字符串
-输入参数：
-		unsigned char *Str   要发送的字符串
-输出参数：没有	
-*******************************************************************************/
-void UART1_Put_String(unsigned char *Str)
-{
-	//判断Str指向的数据是否有效.
-	while(*Str){
-	//是否是回车字符 如果是,则发送相应的回车 0x0d 0x0a
-	if(*Str=='\r')UART1_Put_Char(0x0d);
-		else if(*Str=='\n')UART1_Put_Char(0x0a);
-			else UART1_Put_Char(*Str);
-	//等待发送完成.
-  	//while (!(USART1->SR & USART_FLAG_TXE));
-	//指针++ 指向下一个字节.
-	Str++;
-	}
-/*
-	//判断Str指向的数据是否有效.
-	while(*Str){
-	//是否是回车字符 如果是,则发送相应的回车 0x0d 0x0a
-	if(*Str=='\r')USART_SendData(USART1, 0x0d);
-		else if(*Str=='\n')USART_SendData(USART1, 0x0a);
-			else USART_SendData(USART1, *Str);
-	//等待发送完成.
-  	while (!(USART1->SR & USART_FLAG_TXE));
-	//指针++ 指向下一个字节.
-	Str++;
-	}		 */
-}
-
-/**************************实现函数********************************************
-*函数原型:		void UART2_Putc_Hex(uint8_t b)
-*功　　能:		RS232以十六进制ASCII码的方式发送一个字节数据
-				先将目标字节数据高4位转成ASCCII ，发送，再将低4位转成ASCII发送
-				如:0xF2 将发送 " F2 "
-输入参数：
-		uint8_t b   要发送的字节
-输出参数：没有	
-*******************************************************************************/
-void UART1_Putc_Hex(uint8_t b)
-{
-      /* 判断目标字节的高4位是否小于10 */
-    if((b >> 4) < 0x0a)
-        UART1_Put_Char((b >> 4) + '0'); //小于10  ,则相应发送0-9的ASCII
-    else
-        UART1_Put_Char((b >> 4) - 0x0a + 'A'); //大于等于10 则相应发送 A-F
-
-    /* 判断目标字节的低4位 是否小于10*/
-    if((b & 0x0f) < 0x0a)
-        UART1_Put_Char((b & 0x0f) + '0');//小于10  ,则相应发送0-9的ASCII
-    else
-        UART1_Put_Char((b & 0x0f) - 0x0a + 'A');//大于等于10 则相应发送 A-F
-   UART1_Put_Char(' '); //发送一个空格,以区分开两个字节
-}
-
-/**************************实现函数********************************************
-*函数原型:		void UART2_Putw_Hex(uint16_t w)
-*功　　能:		RS232以十六进制ASCII码的方式发送一个字的数据.就是发送一个int
-				如:0x3456 将发送 " 3456 "
-输入参数：
-		uint16_t w   要发送的字
-输出参数：没有	
-*******************************************************************************/
-void UART1_Putw_Hex(uint16_t w)
-{
-	//发送高8位数据,当成一个字节发送
-    UART1_Putc_Hex((uint8_t) (w >> 8));
-	//发送低8位数据,当成一个字节发送
-    UART1_Putc_Hex((uint8_t) (w & 0xff));
-}
-
-/**************************实现函数********************************************
-*函数原型:		void UART2_Putdw_Hex(uint32_t dw)
-*功　　能:		RS232以十六进制ASCII码的方式发送32位的数据.
-				如:0xF0123456 将发送 " F0123456 "
-输入参数：
-		uint32_t dw   要发送的32位数据值
-输出参数：没有	
-*******************************************************************************/
-void UART1_Putdw_Hex(uint32_t dw)
-{
-    UART1_Putw_Hex((uint16_t) (dw >> 16));
-    UART1_Putw_Hex((uint16_t) (dw & 0xffff));
-}
-
-/**************************实现函数********************************************
-*函数原型:		void UART2_Putw_Dec(uint16_t w)
-*功　　能:		RS232以十进制ASCII码的方式发送16位的数据.
-				如:0x123 将发送它的十进制数据 " 291 "
-输入参数：
-		uint16_t w   要发送的16位数据值
-输出参数：没有	
-*******************************************************************************/
-void UART1_Putw_Dec(uint32_t w)
-{
-    uint32_t num = 100000;
-    uint8_t started = 0;
-
-    while(num > 0)
-    {
-        uint8_t b = w / num;
-        if(b > 0 || started || num == 1)
-        {
-            UART1_Put_Char('0' + b);
-            started = 1;
-        }
-        w -= b * num;
-
-        num /= 10;
-    }
-}
-
-
-
+//环形 数组结构体实例化两个变量
+UartBuf UartTxbuf;//环形发送结构体
+UartBuf UartRxbuf;//环形接收结构体
 
 unsigned char rx_buffer[RX_BUFFER_SIZE];
+unsigned char tx_buffer[TX_BUFFER_SIZE];
+
+//读取环形数据中的一个字节
+uint8_t UartBuf_RD(UartBuf *Ringbuf)
+{
+  uint8_t temp;
+  temp = Ringbuf->pbuf[Ringbuf->Rd_Indx & Ringbuf->Mask];//数据长度掩码很重要，这是决定数据环形的关键
+  Ringbuf->Rd_Indx++;//读取完成一次，读指针加1，为下一次 读取做 准备
+  return temp;
+}
+//将一个字节写入一个环形结构体中
+void UartBuf_WD(UartBuf *Ringbuf,uint8_t DataIn)
+{
+  
+  Ringbuf->pbuf[Ringbuf->Wd_Indx & Ringbuf->Mask] = DataIn;//数据长度掩码很重要，这是决定数据环形的关键
+  Ringbuf->Wd_Indx++;//写完一次，写指针加1，为下一次写入做准备
+
+}
+//环形数据区的可用字节长度，当写指针写完一圈，追上了读指针
+//那么证明数据写满了，此时应该增加缓冲区长度，或者缩短外围数据处理时间
+uint16_t UartBuf_Cnt(UartBuf *Ringbuf)
+{
+  return (Ringbuf->Wd_Indx - Ringbuf->Rd_Indx) & Ringbuf->Mask;//数据长度掩码很重要，这是决定数据环形的关键
+}
+
+
+
+
+volatile uint8_t Udatatmp;//串口接收临时数据字节
 
 //------------------------------------------------------
 void USART1_IRQHandler(void)
@@ -274,28 +189,22 @@ void USART1_IRQHandler(void)
   
   if(USART_GetITStatus(USART1, USART_IT_TXE) != RESET)
   {   
-    USART_SendData(USART1, U1TxBuffer[U1TxCounter++]);
-    USART_ClearITPendingBit(USART1, USART_IT_TXE);  
-    if(U1TxCounter == U1count){USART_ITConfig(USART1, USART_IT_TXE, DISABLE);}
+    USART_SendData(USART1, UartBuf_RD(&UartTxbuf)); //环形数据缓存发送
+    if(UartBuf_Cnt(&UartTxbuf)==0)  USART_ITConfig(USART1, USART_IT_TXE, DISABLE);//假如缓冲空了，就关闭串口发送中断
   }
-
+ 
   else if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
   {
-  rx_buffer[U1RxCounter++]=USART_ReceiveData(USART1);
-  if(U1RxCounter==RX_BUFFER_SIZE)
-  {
-  U1RxCounter=0;
-  USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+    //此种环形缓冲数组串口接收方式，适用于解包各种数据，很方便。对数据的要求是:
+    //发送方必须要求有数据包头，以便解决串口数据无地址的问题
+    Udatatmp = USART_ReceiveData(USART1);          //临时数据赋值
+    UartBuf_WD(&UartRxbuf,Udatatmp);               //写串口接收缓冲数组
+
+    if(UartBuf_Cnt(&UartRxbuf)==0) USART_SendData(USART1, 'E');//串口接收数组长度等于0时，发送接收数组空标志
+    if(UartBuf_Cnt(&UartRxbuf)==UartRxbuf.Mask) USART_SendData(USART1, 'F');//串口接收数组长度等于掩码时，发送接收缓冲满标志
+    USART_ClearITPendingBit(USART1, USART_IT_RXNE);//清除接收中断标志
   }
-  }
+  
 }
-
-
-// void DEBUG_PRINTLN(unsigned char *Str)
-//  {
-// 	  UART1_Put_String(Str);  //通过USART1 发送调试信息
-//  }
-
-
 
 
