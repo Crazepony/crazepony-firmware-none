@@ -150,7 +150,7 @@ void SetTX_Mode(void)
 void Nrf_Irq(void)
 {
     uint8_t sta = NRF_Read_Reg(NRF_READ_REG + NRFRegSTATUS);
-    if(sta & (1<<RX_DR))//接收中断
+    if(sta & (1<<RX_DR))//接收轮训标志位
     {
         NRF_Read_Buf(RD_RX_PLOAD,NRF24L01_RXDATA,RX_PLOAD_WIDTH);// read receive payload from RX_FIFO buffer
         ReceiveDataFormNRF();      //自己做修改

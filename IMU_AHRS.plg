@@ -1,0 +1,75 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+E:\IMU\STM32_AHRS_WorkDir\4.IMU_AHRS\IMU_AHRS.uvproj
+Project File Date:  04/27/2012
+
+<h2>Output:</h2>
+Build target 'IMU_AHRS'
+compiling core_cm3.c...
+compiling system_stm32f10x.c...
+assembling startup_stm32f10x_md.s...
+compiling delay.c...
+compiling IOI2C.c...
+compiling BMP085.c...
+compiling HMC5883L.c...
+compiling IMU.c...
+compiling LED.c...
+compiling MPU6050.c...
+compiling UART2.c...
+compiling UARTs.c...
+compiling main.c...
+User_Src\main.c(62): warning:  #167-D: argument of type "unsigned char *" is incompatible with parameter of type "char *"
+compiling stm32f10x_it.c...
+compiling misc.c...
+compiling stm32f10x_gpio.c...
+compiling stm32f10x_rcc.c...
+compiling stm32f10x_tim.c...
+compiling stm32f10x_usart.c...
+linking...
+Program Size: Code=29964 RO-data=644 RW-data=448 ZI-data=2672  
+FromELF: creating hex file...
+".\Output\IMU_AHRS.axf" - 0 Error(s), 1 Warning(s).
+Load "E:\\IMU\\STM32_AHRS_WorkDir\\4.IMU_AHRS\\Output\\IMU_AHRS.AXF" 
+* JLink Info: Device "STM32F103T8" selected (64 KB flash, 20 KB RAM).
+Set JLink Project File to "E:\IMU\STM32_AHRS_WorkDir\4.IMU_AHRS\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.36l, compiled Dec  2 2011 18:52:36
+Firmware: J-Link ARM-OB STM32 compiled Dec 15 2010 11:30:03
+Hardware: V7.00
+S/N : 20090928 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
+ 
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: TPIU fitted.
+* JLink Info:   FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: Found Cortex-M3 r1p1, Little endian.
+ROMTableAddr = 0xE00FF003
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: TPIU fitted.
+* JLink Info:   FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: Found Cortex-M3 r1p1, Little endian.
+ 
+Target info:
+------------
+Device: STM32F103T8
+VTarget = 3.300V
+State of Pins: 
+TCK: 0, TDI: 1, TDO: 1, TMS: 0, TRES: 1, TRST: 1
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 2000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: TPIU fitted.
+* JLink Info:   FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: Found Cortex-M3 r1p1, Little endian.
+Application running ...

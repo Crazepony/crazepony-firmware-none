@@ -27,7 +27,8 @@ Battery.c file
 
 
 
-int BatteryAD;
+int    BatteryAD;//电压AD值
+float  BatteryVal;//电压实际值
 
 //初始化电池检测ADC
 //开启ADC1的通道8	
@@ -130,7 +131,7 @@ int Get_Temp(void)
 //返回电池电压AD值
 int GetBatteryAD()
 {
- return Get_Adc_Average(8,10);
+ return Get_Adc_Average(8,5);
 }
 
 

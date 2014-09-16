@@ -3,13 +3,14 @@
 #include "stm32f10x.h"
 
 
-#define  BatteryADmin   1900        //接收缓冲元素最大个数
-
+#define  BatteryADmin   2000    //电压门限
 
 void BatteryCheckInit(void);	
 u16 Get_Adc_Average(u8 ch,u8 times);             
 int GetBatteryAD(void);     
-extern int BatteryAD;
+extern int      BatteryAD;
+extern float    BatteryVal;           //电压实际值
+
 #endif
                 
         

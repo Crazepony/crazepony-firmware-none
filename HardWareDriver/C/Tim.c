@@ -25,9 +25,6 @@ Tim.c file
 
 
 
-#define Debug  //调试与否的条件编译
-
-
 int LedCounter;//LED闪烁计数值
 float Compass_HMC[3];
 
@@ -38,21 +35,22 @@ void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
     {     
           Controler(); //控制函数
                   
-//           HMC58X3_mgetValues(&Compass_HMC[0]);
-//          
+          //HMC58X3_mgetValues(&Compass_HMC[0]);       
           LedCounter++;//led闪烁计数值
           if(BatteryAD>BatteryADmin)//当电池电压在设定值之上时，正常模式
           {
-              if(LedCounter==49){ LedA_off;LedB_off;}   //遥控端使能后，闪灯提示        
-              else if(LedCounter==50){LedCounter=0;LedA_on;LedB_on;}
+              if(LedCounter==10){ LedA_off;LedB_off;}   //遥控端使能后，闪灯提示        
+              else if(LedCounter==30){LedCounter=0;LedA_on;LedB_on;}
           }
           else //电池电压低时，闪灯提示
           {
               if(LedCounter==10){ LedA_off;LedB_off;LedC_off;LedD_off;}   //遥控端使能后，闪灯提示        
               else if(LedCounter==20){LedCounter=0;LedA_on;LedB_on;LedC_on;LedD_on;}
           }
-          if(LedCounter>=51)LedCounter=0;
-    
+          if(LedCounter>=31)LedCounter=0;
+
+          
+          
           TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);   //清除中断标志   
     }
 }
@@ -67,10 +65,16 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
     if( TIM_GetITStatus(TIM3 , TIM_IT_Update) != RESET ) 
     {     
        
-  #ifdef Debug
-           DebugCounter++;
-           BatteryAD=GetBatteryAD();//电池电压检测  
-          if( DebugCounter==500){
+
+           
+           BatteryAD  = GetBatteryAD();            //电池电压检测  
+           BatteryVal = (float) 2*(BatteryAD/4.096)*0.0033;
+
+      
+#ifdef Debug
+      DebugCounter++;
+      if( DebugCounter==500)
+            {
             DebugCounter=0;
             printf(" ******************************************************************\r\n");
             printf(" *       ____                      _____                  +---+   *\r\n");
@@ -96,7 +100,7 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf(" X轴期望角度---> %5.2f°\r\n",(float)EXP_ANGLE.X);
             printf(" Y轴期望角度---> %5.2f°\r\n",(float)EXP_ANGLE.Y);
             printf(" Z轴期望角度---> %5.2f°\r\n",(float)EXP_ANGLE.Z);
-          
+            
             printf(" ==================\r\n");
             printf(" Y轴误差角度---> %5.2f°\r\n",(float)DIF_ANGLE.Y);
             printf(" X轴误差角度---> %5.2f°\r\n",(float)DIF_ANGLE.X);
@@ -104,6 +108,7 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf(" X轴加速度---> %5.2fm/s2\r\n",(float) DMP_DATA.dmp_accx);
             printf(" Y轴加速度---> %5.2fm/s2\r\n",(float) DMP_DATA.dmp_accy);
             printf(" Z轴加速度---> %5.2fm/s2\r\n",(float) DMP_DATA.dmp_accz);
+            
             printf(" ==================\r\n");
             printf(" X轴角速度---> %5.2f °/s\r\n",(float) DMP_DATA.dmp_gyrox);
             printf(" Y轴角速度---> %5.2f °/s\r\n",(float) DMP_DATA.dmp_gyroy);
@@ -114,16 +119,22 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf(" 电机M3 PWM值---> %d\r\n",TIM2->CCR3);
             printf(" 电机M4 PWM值---> %d\r\n",TIM2->CCR4);
             printf("==================\r\n");
-            printf(" 电池电压---> %3.2fv\r\n",(float) 2*(BatteryAD/4.096)*0.0033);//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
+            printf(" 电池电压---> %3.2fv\r\n",BatteryVal);//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
+            printf(" 电池电压AD值---> %d\r\n",BatteryAD);//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
             printf("==================\r\n");
+            
+
 //             printf(" X磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[0]);
 //             printf(" Y磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[1]);
 //             printf(" Z磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[2]);
-                  
+//       
+
+
+        }
 #else      
              
 #endif
-        }
+        
         TIM_ClearITPendingBit(TIM3 , TIM_FLAG_Update);   //清除中断标志   
     }
 }

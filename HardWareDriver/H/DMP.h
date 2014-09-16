@@ -2,8 +2,7 @@
 #define __DMP_H
 #include "UART1.h"
 
-
-#define  g     9.27f                         //宏定义当地重力加速度
+#define   g  9.27f
 
   
 // MotionApps 2.0 DMP implementation,
@@ -41,9 +40,9 @@ int16_t GYROz;	// 陀螺仪 Z轴 角速度 ADC值
 int16_t null6;
 int16_t ACCx;   // 加速度计 X轴 ADC值
 int16_t null7;
-int16_t ACCy;	// 加速度计 Y轴 ADC值
+int16_t ACCy;	  // 加速度计 Y轴 ADC值
 int16_t null8;
-int16_t ACCz;	// 加速度计 Z轴 ADC值
+int16_t ACCz;	  // 加速度计 Z轴 ADC值
 int16_t null9;
 int16_t null10;
 
