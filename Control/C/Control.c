@@ -166,7 +166,7 @@ void PID_Calculate(void)
     //基础油门动力
     //Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;   //RC_DATA.THROTTLE为0到1000,将摇杆油门曲线转换为下凹的抛物线
     Thr = RC_DATA.THROTTLE;
-    Thr -=100*DIF_ACC.Z;                             //对Z轴用一次负反馈控制
+    Thr -=50*DIF_ACC.Z;                             //对Z轴用一次负反馈控制
    
    
     Pitch = pitch_rate_PID.Output;
