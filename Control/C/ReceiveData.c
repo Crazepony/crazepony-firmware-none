@@ -34,7 +34,7 @@ ReceiveData.c file
 
 
 //定义飞机最大倾斜角度
-#define  Angle_Max  20.0
+#define  Angle_Max  30.0
 
 uint8_t FLY_ENABLE=0;//飞行使能端
 //纠正姿态误差，可以用来抵抗重心偏移等带来的初始不平衡

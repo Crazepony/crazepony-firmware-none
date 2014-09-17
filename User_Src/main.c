@@ -34,7 +34,7 @@ main.c file
 ********************************************/
 int main(void)
 {
-  //int i;
+  int i;
   SystemClock_HSE(9);           //系统时钟初始化，时钟源外部晶振HSE
   //SystemClock_HSI(9);         //系统时钟初始化，时钟源内部HSI
   UART1_init(SysClock,115200); 	//串口1初始化
@@ -53,12 +53,6 @@ int main(void)
   PID_INIT();                   //PID参数初始化 
   NRF24L01_INIT();              //NRF24L01初始化
   SetRX_Mode();                 //设无线模块为接收模式
-  
-//   /////////////////////////
-//   NRF24L01_RXDATA[30]=0xA5;
-//   NRF24L01_RXDATA[27]=0xA5;//跳过解锁,调试用，跳过下面的poweron
-//   /////////////////////////
-//   
   PowerOn();                    //开机等待
   //BT_on();                      //蓝牙开
   TIM3_Init(SysClock,1000);	    //定时器3初始化，调试串口输出
@@ -76,8 +70,8 @@ int main(void)
 //     i=0;
 //     //UartBuf_RD(&UartRxbuf);
 //     printf("\r\n");
-//     }
 /////////////////////////////////////////////////////////////////
+    }
   }
 }
 

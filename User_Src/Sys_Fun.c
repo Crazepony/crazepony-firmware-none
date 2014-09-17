@@ -107,7 +107,11 @@ void PowerOn()
         LedA_on;LedB_on;LedC_on;LedD_on;Delay(900000);LedA_off;LedB_off;LedC_off;LedD_off;Delay(900000*3);
     }
     printf("已检测到遥控信号...\r\n");
-
+//     while((NRF24L01_RXDATA[30]==0xA5)&&(!ParameterWrite())&&NRF24L01_RXDATA[28]==0xA5)//从上位机读取需要写入的参数，方便上位机调试时使用，不用每次都下程序改参数
+//     {   
+//         Nrf_Irq();printf("等待写入参数...\r\n");
+//         LedA_on;LedB_on;LedC_on;LedD_on;Delay(900000*3);LedA_off;LedB_off;LedC_off;LedD_off;Delay(900000);
+//     }
     for(i=0;i<4;i++)//循环闪烁4次
     {
     LedA_on;LedB_off;LedC_off;LedD_off;

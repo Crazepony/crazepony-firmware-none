@@ -25,6 +25,9 @@ Tim.c file
 
 
 
+//#define Debug  //调试与否的条件编译
+
+
 int LedCounter;//LED闪烁计数值
 float Compass_HMC[3];
 
@@ -37,7 +40,7 @@ void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
                   
           //HMC58X3_mgetValues(&Compass_HMC[0]);       
           LedCounter++;//led闪烁计数值
-          if(BatteryAD>BatteryADmin)//当电池电压在设定值之上时，正常模式
+          if(BatteryVal>BatteryADmin)//当电池电压在设定值之上时，正常模式
           {
               if(LedCounter==10){ LedA_off;LedB_off;}   //遥控端使能后，闪灯提示        
               else if(LedCounter==30){LedCounter=0;LedA_on;LedB_on;}
@@ -48,9 +51,7 @@ void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
               else if(LedCounter==20){LedCounter=0;LedA_on;LedB_on;LedC_on;LedD_on;}
           }
           if(LedCounter>=31)LedCounter=0;
-
-          
-          
+    
           TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);   //清除中断标志   
     }
 }
@@ -67,10 +68,8 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
        
 
            
-           BatteryAD  = GetBatteryAD();            //电池电压检测  
+           BatteryAD  = GetBatteryAD();//电池电压检测  
            BatteryVal = (float) 2*(BatteryAD/4.096)*0.0033;
-
-      
 #ifdef Debug
       DebugCounter++;
       if( DebugCounter==500)
@@ -119,17 +118,18 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf(" 电机M3 PWM值---> %d\r\n",TIM2->CCR3);
             printf(" 电机M4 PWM值---> %d\r\n",TIM2->CCR4);
             printf("==================\r\n");
-            printf(" 电池电压---> %3.2fv\r\n",BatteryVal);//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
-            printf(" 电池电压AD值---> %d\r\n",BatteryAD);//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
+//             printf(" P参数----> %2.1f \r\n",(float) PID_Motor.P);
+//             printf(" I参数----> %2.1f \r\n",(float) PID_Motor.I);
+//             printf(" D参数----> %2.1f \r\n",(float) PID_Motor.D);
             printf("==================\r\n");
+            printf(" 电池电压---> %3.2fv\r\n",BatteryVal);//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
+          
             
 
 //             printf(" X磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[0]);
 //             printf(" Y磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[1]);
 //             printf(" Z磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[2]);
 //       
-
-
         }
 #else      
              
