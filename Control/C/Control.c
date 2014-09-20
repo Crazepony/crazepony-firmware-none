@@ -66,11 +66,11 @@ void Controler(void)
     Counter_Cnt++;
     DMP_Routing();	        //DMP 线程  所有的数据都在这里更新
     DMP_getYawPitchRoll();  //读取 姿态角
-  
-    /*******************向上位机发送姿态信息，如果要在PC上位机看实时姿态，需要把这里解注释****************/
-    /*******************PC姿态显示，跟串口debug不能共存****************/
+    /*******************向上位机发送姿态信息，如果要在PC上位机看实时姿态,宏开关控制***************/
+    #ifndef Debug
     Send_AtitudeToPC();     
-    
+    #else
+    #endif  
     if(Counter_Cnt==5)
     {
     Counter_Cnt=0;
@@ -166,7 +166,7 @@ void PID_Calculate(void)
     //基础油门动力
     //Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;   //RC_DATA.THROTTLE为0到1000,将摇杆油门曲线转换为下凹的抛物线
     Thr = RC_DATA.THROTTLE;
-    Thr -=50*DIF_ACC.Z;                             //对Z轴用一次负反馈控制
+    Thr -=  30*DIF_ACC.Z;                             //对Z轴用一次负反馈控制
    
    
     Pitch = pitch_rate_PID.Output;

@@ -3,22 +3,11 @@
 #include "stm32f10x.h"
 
 
-// //定义PID参数
-// typedef struct PID
-// {
-//     float P,
-//           POUT,
-//           I,
-//           IOUT,
-//           D,
-//           DOUT,
-//           IMAX,
-//           SetPoint,
-//           NowPoint,
-//           LastError,
-//           PrerError;
+ #define Debug  //调试与否的条件编译
 
-// }PID;
+
+
+
 
 
 // PID结构体

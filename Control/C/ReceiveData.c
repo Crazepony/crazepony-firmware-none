@@ -34,14 +34,16 @@ ReceiveData.c file
 
 
 //定义飞机最大倾斜角度
-#define  Angle_Max  30.0
+#define  Angle_Max  20.0
 
 uint8_t FLY_ENABLE=0;//飞行使能端
 //纠正姿态误差，可以用来抵抗重心偏移等带来的初始不平衡
-int  Rool_error_init;      //如果飞机起飞朝左偏，Rool_error_init朝正向增大修改;朝右偏，Rool_error_init朝负向增大修改
-int  Pitch_error_init;     //如果飞机起飞朝前偏，Pitch_error_init朝负向增大修改;朝吼偏，Pitch_error_init朝正向增大修改
+#define  Rool_error_init   -3      //如果飞机起飞朝左偏，Rool_error_init朝正向增大修改;朝右偏，Rool_error_init朝负向增大修改
+#define  Pitch_error_init  0      //如果飞机起飞朝前偏，Pitch_error_init朝负向增大修改;朝后偏，Pitch_error_init朝正向增大修改
 
 RC_GETDATA   RC_DATA;	//经过处理的RC数据
+
+
 
 
 //函数名：ReceiveDataFormNRF()
