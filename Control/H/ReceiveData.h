@@ -3,8 +3,18 @@
 #include "stm32f10x.h"
 
 
+//RC遥控
+typedef struct int16_rcget
+{
+    float ROOL;
+    float PITCH;
+    int THROTTLE;
+    int YAW;
+}RC_GETDATA;
 
 
+extern RC_GETDATA RC_DATA;//经过处理的RC数据
+   
 void ReceiveDataFormNRF(void);
 void ReceiveDataFormUART(void);
 void Send_PIDToPC(void);

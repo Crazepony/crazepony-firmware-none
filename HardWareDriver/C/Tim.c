@@ -119,8 +119,17 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf("==================\r\n");
             printf(" 电池电压---> %3.2fv\r\n",Battery.BatteryVal);//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
             printf("==================\r\n");
+          
+//             printf(" ---> %d\r\n",(int) PIDParameter.ReadBuf[0]);
+//             printf(" ---> %d\r\n",(int) PIDParameter.ReadBuf[1]);
+//             printf(" ---> %d\r\n",(int) PIDParameter.ReadBuf[2]);
+//             
+//             printf(" ---> %d\r\n",(int) BTParameter.ReadBuf[0]);
+//             printf(" ---> %d\r\n",(int) BTParameter.ReadBuf[1]);
+//             printf(" ---> %d\r\n",(int) BTParameter.ReadBuf[2]);
+//             
             
-
+// 
 //             printf(" X磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[0]);
 //             printf(" Y磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[1]);
 //             printf(" Z磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[2]);
@@ -181,6 +190,7 @@ void TIM3_Init(char clock,int Preiod)
 
     TIM_ITConfig(TIM3,TIM_IT_Update,ENABLE);
     TIM_Cmd(TIM3,ENABLE);
+  
     printf("定时器3初始化完成...\r\n");
 }		
 

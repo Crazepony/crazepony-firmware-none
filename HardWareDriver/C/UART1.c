@@ -192,14 +192,14 @@ void USART1_IRQHandler(void)
     USART_SendData(USART1, UartBuf_RD(&UartTxbuf)); //环形数据缓存发送
     if(UartBuf_Cnt(&UartTxbuf)==0)  USART_ITConfig(USART1, USART_IT_TXE, DISABLE);//假如缓冲空了，就关闭串口发送中断
   }
- 
+  
   else if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
   {
     //此种环形缓冲数组串口接收方式，适用于解包各种数据，很方便。对数据的要求是:
     //发送方必须要求有数据包头，以便解决串口数据无地址的问题
     Udatatmp = USART_ReceiveData(USART1);          //临时数据赋值
     UartBuf_WD(&UartRxbuf,Udatatmp);               //写串口接收缓冲数组
-
+    
     if(UartBuf_Cnt(&UartRxbuf)==0) USART_SendData(USART1, 'E');//串口接收数组长度等于0时，发送接收数组空标志
     if(UartBuf_Cnt(&UartRxbuf)==UartRxbuf.Mask) USART_SendData(USART1, 'F');//串口接收数组长度等于掩码时，发送接收缓冲满标志
     USART_ClearITPendingBit(USART1, USART_IT_RXNE);//清除接收中断标志

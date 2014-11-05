@@ -80,12 +80,11 @@ void BatteryCheckInit()
   Battery.ADinput = 1.98;//单位为v R15和R17连接处电压 校准电压时修改
   Battery.ADRef   = 3.26;//单位为v 单片机供电电压   校准电压时修改
   Battery.Bat_K   = Battery.BatReal/Battery.ADinput;//计算电压计算系数
-  
-  
-  
-  
-  
   Battery.BatteryADmin = 2000;//电压门限AD值
+  
+  
+  
+  
   printf("电压监测AD初始完成...\r\n");
   
 }

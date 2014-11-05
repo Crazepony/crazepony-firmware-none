@@ -28,7 +28,7 @@ DMP.c file
 #include "Led.h"
 #include "stdio.h"
 #include "extern_variable.h"
-
+#include "control.h"
 #define M_PI  3.1415926f
 
 S_FLOAT_ANGLE  Q_ANGLE;	
@@ -508,9 +508,13 @@ float dmpsafe_asin(float v)
 // 	                     1 - 2.0*(q[2]*q[2] + q[3]*q[3]))* 180/M_PI;
 // }
 
+float gyrox_val=0;
+float gyroy_val=0;
+
 
 void DMP_Covert_Data(void){
 	volatile float q[4] , norm ; // 四元数
+  
 	//gyro sensitivity to +/-   2000°/s
 	DMP_DATA.dmp_gyrox = ((float)DMP_DATA.GYROx)/16.4f;	    //角速度 转成单位：rad/s
 	DMP_DATA.dmp_gyroy = ((float)DMP_DATA.GYROy)/16.4f;
@@ -519,7 +523,7 @@ void DMP_Covert_Data(void){
 	DMP_DATA.dmp_accx = (((float)DMP_DATA.ACCx)/8192.0f)*g;	//加速度 转成单位： m/S^2
 	DMP_DATA.dmp_accy = (((float)DMP_DATA.ACCy)/8192.0f)*g;
 	DMP_DATA.dmp_accz = (((float)DMP_DATA.ACCz)/8192.0f)*g;
-
+  
 	  q[0] = (float)DMP_DATA.qw; 	//提取DMP的四元数
   	q[1] = (float)DMP_DATA.qx;
   	q[2] = (float)DMP_DATA.qy;
@@ -538,6 +542,13 @@ void DMP_Covert_Data(void){
 
 	DMP_DATA.dmp_yaw = -atan2(2.0*(q[0]*q[3] + q[1]*q[2]),
 	                     1 - 2.0*(q[2]*q[2] + q[3]*q[3]))* 180/M_PI;
+                       
+  gyroxGloble=0.0f*gyrox_val+1.0f*(float)DMP_DATA.GYROx;
+  gyrox_val=gyroxGloble;
+  
+  gyroyGloble=0.0f*gyroy_val+1.0f*(float)DMP_DATA.GYROy;
+  gyroy_val=gyroyGloble;
+
 }
 
 //读取载体的姿态角 数组的顺序 航向  俯仰  滚转

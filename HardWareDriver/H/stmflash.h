@@ -23,7 +23,7 @@
 
 //FLASH起始地址
 #define STM32_FLASH_BASE   0x08000000 	//STM32 FLASH的起始地址
-#define STM32_FLASH_OFFEST 0x00007c00 	//STM32 FLASH的起始地址
+#define STM32_FLASH_OFFEST 0x00007c00 	//人为定义Flash相对起始地址的偏移量
 
 //FLASH解锁键值
 #define FLASH_KEY1               0X45670123

@@ -94,10 +94,6 @@ void delay_us(u32 nus)
   
   
 }
-
-
-
-
 //´ÖÂÔÑÓÊ±
 void Delay(unsigned long delay_time)
 {

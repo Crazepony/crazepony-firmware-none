@@ -34,7 +34,7 @@
 #include "DMP.h"
 #include "Battery.h"
 #include "stdio.h"
-
+#include "BT.h"
 
 //----PID结构体实例化----
 PID_Typedef pitch_angle_PID;	//角度环的PID
@@ -46,13 +46,13 @@ PID_Typedef roll_rate_PID;
 PID_Typedef yaw_angle_PID;
 PID_Typedef yaw_rate_PID;
 
+float gyroxGloble = 0;
+float gyroyGloble = 0;
 
 
 S_FLOAT_XYZ DIF_ACC;		//实际去期望相差的加速度
 S_FLOAT_XYZ EXP_ANGLE;	//期望角度	
 S_FLOAT_XYZ DIF_ANGLE;	//实际与期望相差的角度	
-
-
 
 //函数名：Controler()
 //输入：无
@@ -70,13 +70,14 @@ void Controler(void)
     #ifndef Debug
     Send_AtitudeToPC();     
     #else
-    #endif  
+    #endif 
+  
     if(Counter_Cnt==5)
     {
     Counter_Cnt=0;
     Nrf_Irq();           //从2.4G接收控制目标参数
     //ReceiveDataFormUART();//从蓝牙透传模块接收控制目标参数，和2.4G接收控制只能选其一
-    PID_Calculate();     //=2时控制一次,频率500HZ	
+    PID_Calculate();     //=2时控制一次,频率200HZ	
     }
 }
 
@@ -103,19 +104,19 @@ void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t dertT)
 	
 }
 
-
-
 //函数名：PID_Calculate()
 //输入：无
 //输出: 无
 //描述：飞机的自稳PID实现函数
 //作者：马骏
 //备注：没考上研，心情不好
+float YawLock = 0;
+uint8_t YawLockState  = 0;
+int YawLockRange = 10; //锁定航向，偏航杆允许在中位波动的范围
 void PID_Calculate(void)
 {  
     static float Thr=0,Rool=0,Pitch=0,Yaw=0;
-//     static float  g_init = DMP_DATA.dmp_accz;        //当地重力加速度变量
-
+    static int PIDcounter=0;
     long Motor[4];   //定义电机PWM数组，分别对应M1-M4
   /*********************************************************
      计算期望姿态与实际姿态的差值
@@ -130,50 +131,65 @@ void PID_Calculate(void)
     DIF_ANGLE.Y = EXP_ANGLE.Y - Q_ANGLE.Pitch;
     DIF_ANGLE.Y = DIF_ANGLE.Y;
 
-    DIF_ACC.Z =  DMP_DATA.dmp_accz - g;     //Z 轴加速度实际与静止时的差值，g为当地重力加速度,初始化时采样
+    DIF_ACC.Z =  DMP_DATA.dmp_accz - g;    
   
-  
-  
-    /*********************************************************
-     PID核心算法部分
-    *********************************************************/
-  //------------俯仰控制------------
-    //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
+    //偏航杆位判定
+    if(EXP_ANGLE.Z <YawLockRange && EXP_ANGLE.Z>-YawLockRange)
+    {
+        if(YawLockState == 0x00)
+        {
+          YawLock = Q_ANGLE.Yaw;
+          YawLockState = 0xff;
+        }
+    }
+    else YawLockState = 0x00;
+    
+    
+    
+    PIDcounter++;
+    if(PIDcounter == 2)
+    {
+            PIDcounter = 0;
+          /*********************************************************
+           PID核心算法部分
+          *********************************************************/
+          //------------俯仰控制------------
+          //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
+          //外环控 制。输入为角度,输出为角速度。PID->Output作为内环的输入。
+          PID_Postion_Cal(&pitch_angle_PID,EXP_ANGLE.Y,Q_ANGLE.Pitch,0);   
+          //外环控 制。输入为角度,输出为角速度。PID->Output作为内环的输入。
+          PID_Postion_Cal(&roll_angle_PID,EXP_ANGLE.X,Q_ANGLE.Roll,0);
+    }
+    
+    
+    if(YawLockState == 0x00) YawLock = Q_ANGLE.Yaw; //偏航锁定状态判定  
+    else  EXP_ANGLE.Z = 0;
     //外环控 制。输入为角度,输出为角速度。PID->Output作为内环的输入。
-    PID_Postion_Cal(&pitch_angle_PID,EXP_ANGLE.Y,Q_ANGLE.Pitch,0);
+    PID_Postion_Cal(&yaw_angle_PID,YawLock,Q_ANGLE.Yaw,0);
+    
+    
     
     //内环控制，输入为角速度，输出为PWM增量
-    PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,DMP_DATA.GYROy,0);
+    PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,gyroyGloble,0);
     //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
-    
-    
-    //外环控 制。输入为角度,输出为角速度。PID->Output作为内环的输入。
-    PID_Postion_Cal(&roll_angle_PID,EXP_ANGLE.X,Q_ANGLE.Roll,0);
-    
     //内环控制，输入为角速度，输出为PWM增量
-    PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,DMP_DATA.GYROx,0);
+    PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,gyroxGloble,0);
     //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
-    
-
-    //外环控 制。输入为角度,输出为角速度。PID->Output作为内环的输入。
-    PID_Postion_Cal(&yaw_angle_PID,EXP_ANGLE.Z,Q_ANGLE.Yaw,0);
-    
     //内环控制，输入为角速度，输出为PWM增量
-    PID_Postion_Cal(&yaw_rate_PID,-2*EXP_ANGLE.Z,DMP_DATA.GYROz,0);
+    PID_Postion_Cal(&yaw_rate_PID,-yaw_angle_PID.Output - EXP_ANGLE.Z,DMP_DATA.GYROz,0);
     //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
+    
     
     
     //基础油门动力
     //Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;   //RC_DATA.THROTTLE为0到1000,将摇杆油门曲线转换为下凹的抛物线
     Thr = RC_DATA.THROTTLE;
-    Thr -=  30*DIF_ACC.Z;                             //对Z轴用一次负反馈控制
-   
-   
+    Thr -=  80*DIF_ACC.Z;                             
+    
     Pitch = pitch_rate_PID.Output;
     Rool  = roll_rate_PID.Output;
     Yaw   = yaw_rate_PID.Output; 
     
-     
    //将输出值融合到四个电机 
     Motor[2] = (int16_t)(Thr - Pitch -Rool- Yaw );    //M3  
     Motor[0] = (int16_t)(Thr + Pitch +Rool- Yaw );    //M1
@@ -191,11 +207,11 @@ void PID_Calculate(void)
 }
 
 
-int PIDParameterAdd=0;//PID参数写入首地址为0,占3个字节
+#define PIDParameterAdd   0    //PID参数写入首地址为
+#define BTParameterAdd    32   //蓝牙参数写入Flash地址为
 
-
-u16 PIDWriteBuf[3];       //写入flash的临时数组  PID参数
-u16 PIDreadBuf[3];        //
+Parameter_Typedef PIDParameter;//实例化一个PID的Flash参数
+Parameter_Typedef BTParameter; //实例化一个蓝牙Flash参数
 
 //函数名：ParameterWrite()
 //输入：无
@@ -205,15 +221,33 @@ u16 PIDreadBuf[3];        //
 //备注：没考上研，心情不好
 char  ParameterWrite()
 {
-
-        PIDWriteBuf[0]=16;
-        PIDWriteBuf[1]=0;
-        PIDWriteBuf[2]=8;//写PID参数  
-        STMFLASH_Write(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PIDParameterAdd,PIDWriteBuf,3); //PID 参数写入
+//         PIDParameter.WriteBuf[0] = 23;
+//         PIDParameter.WriteBuf[1] = 1;
+//         PIDParameter.WriteBuf[2] = 4;
+//   
+//         BTParameter.WriteBuf[1]  = 0;
+//         BTParameter.WriteBuf[2]  = 0;
   
+        //STMFLASH_Write(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PIDParameterAdd,PIDParameter.WriteBuf,3); //PID 参数写入Flash
+        STMFLASH_Write(STM32_FLASH_BASE+STM32_FLASH_OFFEST+BTParameterAdd,BTParameter.WriteBuf,3);  //蓝牙配置参数写入Flash
+       
 return 0;
 }
 
+//函数名：ParameterRead()
+//输入：无
+//输出：无
+//描述：初始化时，读取上位机最后一次设定的参数
+//作者：马骏
+//备注：没考上研，心情不好
+void  ParameterRead()
+{      
+  //STMFLASH_Read(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PIDParameterAdd,PIDParameter.ReadBuf,3);
+  STMFLASH_Read(STM32_FLASH_BASE+STM32_FLASH_OFFEST+BTParameterAdd,BTParameter.ReadBuf,3);
+  
+  printf("从FLASH中读取参数...\r\n");
+
+}
 
 
 /*********************************
@@ -230,46 +264,35 @@ return 0;
 //备注：没考上研，心情不好
 void PID_INIT(void) 
 {
-     
-     pitch_angle_PID.P = 8;
+     pitch_angle_PID.P = 3.5;
      pitch_angle_PID.I = 0;
      pitch_angle_PID.D = 0;
 
-     pitch_rate_PID.P  = 0.2; 
+     pitch_rate_PID.P  = 0.5; 
      pitch_rate_PID.I  = 0; 
-     pitch_rate_PID.D  = 1; 
+     pitch_rate_PID.D  = 1.5; 
 ////////////////////////////////////////////
-     roll_angle_PID.P = 8;
+     roll_angle_PID.P = 3.5;
      roll_angle_PID.I = 0;
      roll_angle_PID.D = 0;
 
-     roll_rate_PID.P  = 0.2;
+     roll_rate_PID.P  = 0.5;
      roll_rate_PID.I  = 0; 
-     roll_rate_PID.D  = 1; 
+     roll_rate_PID.D  = 1.5; 
 ///////////////////////////////////////////
      yaw_angle_PID.P = 1;
      yaw_angle_PID.I = 0;
      yaw_angle_PID.D = 0;
   
-     yaw_rate_PID.P  = 20;
+     yaw_rate_PID.P  = 15;
      yaw_rate_PID.I  = 0; 
      yaw_rate_PID.D  = 0; 
 
      printf("PID初始化完成...\r\n");
+  
 }
 
-//函数名：ParameterRead()
-//输入：无
-//输出：无
-//描述：初始化时，读取上位机最后一次设定的参数
-//作者：马骏
-//备注：没考上研，心情不好
-void  ParameterRead()
-{                                                                             
-  STMFLASH_Read(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PIDParameterAdd,PIDreadBuf,3);      
-  printf("从FLASH中读取参数...\r\n");
 
-}
 
 
 
