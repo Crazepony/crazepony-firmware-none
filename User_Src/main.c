@@ -34,6 +34,7 @@ main.c file
 ********************************************/
 int main(void)
 {
+  int i;
   SystemClock_HSE(9);           //系统时钟初始化，时钟源外部晶振HSE
   //SystemClock_HSI(9);         //系统时钟初始化，时钟源内部HSI
   UART1_init(SysClock,115200); 	//串口1初始化
@@ -57,16 +58,18 @@ int main(void)
 //   NRF24L01_RXDATA[27]=0xA5;//跳过解锁,调试用，跳过下面的poweron
   /////////////////////////
   PowerOn();                    //开机等待  
-  //BT_ATcmdWrite();              //蓝牙写配置
-  //BT_off();                     //蓝牙关闭
-  //ParameterWrite();             //写参数到内部模拟eeprom
+  //BT_ATcmdWrite();            //蓝牙写配置
+  //BT_off();                   //蓝牙关闭
+  //ParameterWrite();           //写参数到内部模拟eeprom
   TIM3_Init(SysClock,1000);	    //定时器3初始化，调试串口输出
   TIM4_Init(SysClock,1000);	    //定时器4初始化，定时采样传感器数据，更新PID输出，定时器定时基石为1us，PID更新周期为4ms，所以姿态更新频率 为250Hz    
                                 
   while (1)                    //等待数据更新中断到来
   {    
 
-//测试环形缓冲数组用，可以无视或者直接注释掉。不注释也不影响操作
+    
+//        
+// //测试环形缓冲数组用，可以无视或者直接注释掉。不注释也不影响操作
 //     printf("\r\n收到数据[%d] = %d\r\n",i,rx_buffer[i++]);
 //     printf("读指针 = %d\r\n",UartRxbuf.Rd_Indx & UartRxbuf.Mask);
 //     printf("写指针 = %d\r\n",UartRxbuf.Wd_Indx & UartRxbuf.Mask);

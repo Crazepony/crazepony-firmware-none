@@ -63,6 +63,7 @@ S_FLOAT_XYZ DIF_ANGLE;	//实际与期望相差的角度
 void Controler(void)
 {     
     static char Counter_Cnt=0;
+    char i;
     Counter_Cnt++;
     DMP_Routing();	        //DMP 线程  所有的数据都在这里更新
     DMP_getYawPitchRoll();  //读取 姿态角
@@ -75,8 +76,13 @@ void Controler(void)
     if(Counter_Cnt==5)
     {
     Counter_Cnt=0;
-    Nrf_Irq();           //从2.4G接收控制目标参数
-    //ReceiveDataFormUART();//从蓝牙透传模块接收控制目标参数，和2.4G接收控制只能选其一
+      
+    for(i=0;i<RX_PLOAD_WIDTH;i++)
+    NRF24L01_RXDATA[i] = 0;    
+      
+    //Nrf_Irq();           //从2.4G接收控制目标参数
+
+    ReceiveDataFormUART();//从蓝牙透传模块接收控制目标参数，和2.4G接收控制只能选其一
     PID_Calculate();     //=2时控制一次,频率200HZ	
     }
 }
@@ -199,11 +205,6 @@ void PID_Calculate(void)
     if((FLY_ENABLE==0xA5))MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);   
     else                  MotorPwmFlash(0,0,0,0);//避免飞机落地重启时突然打转 
     if(NRF24L01_RXDATA[10]==0xA5) MotorPwmFlash(5,5,Motor[2],Motor[3]); //一键操作，翻滚返航等，测试功能，不要用
-    
-    
-    
-    
-     
 }
 
 

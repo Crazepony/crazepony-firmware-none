@@ -38,7 +38,7 @@ ReceiveData.c file
 
 uint8_t FLY_ENABLE=0;//飞行使能端  7/-5    12/15
 //纠正姿态误差，可以用来抵抗重心偏移等带来的初始不平衡
-#define  Rool_error_init   -1      //如果飞机起飞朝左偏，Rool_error_init朝正向增大修改;朝右偏，Rool_error_init朝负向增大修改
+#define  Rool_error_init   0       //如果飞机起飞朝左偏，Rool_error_init朝正向增大修改;朝右偏，Rool_error_init朝负向增大修改
 #define  Pitch_error_init  0      //如果飞机起飞朝前偏，Pitch_error_init朝负向增大修改;朝后偏，Pitch_error_init朝正向增大修改
 
 RC_GETDATA   RC_DATA;	//经过处理的RC数据
@@ -71,8 +71,12 @@ void ReceiveDataFormNRF(void)
 
     RC_DATA.THROTTLE=NRF24L01_RXDATA[0]+(NRF24L01_RXDATA[1]<<8);
     FLY_ENABLE = NRF24L01_RXDATA[31];   //0xA5或0，决定是否使能飞行，由遥控器决定
+
 }
 
+
+#define pkHeader1 0xAA
+#define pkHeader2 0xBB 
 //函数名：ReceiveDataFormUART()
 //输入：无
 //输出: 无
@@ -81,32 +85,93 @@ void ReceiveDataFormNRF(void)
 //备注：没考上研，心情不好
 void ReceiveDataFormUART(void)
 {  
-	
-  if(rx_buffer[0]==0xAA&&rx_buffer[1]==0xBB)
-  {
-		//PITCH
-    RC_DATA.PITCH=rx_buffer[4]-50;//减50做负数传输
-    RC_DATA.PITCH = (RC_DATA.PITCH/50.0)*Angle_Max+Pitch_error_init;
-    RC_DATA.PITCH=(RC_DATA.PITCH > Angle_Max)  ? (Angle_Max):(RC_DATA.PITCH);
-    RC_DATA.PITCH=(RC_DATA.PITCH < -Angle_Max) ? (-Angle_Max):(RC_DATA.PITCH);
-    //ROOL
-    RC_DATA.ROOL=rx_buffer[5]-50;//减50做负数传输
-    RC_DATA.ROOL = (RC_DATA.ROOL/50.0)*Angle_Max+Rool_error_init; 
-    RC_DATA.ROOL=(RC_DATA.ROOL > Angle_Max)  ? (Angle_Max):(RC_DATA.ROOL);
-    RC_DATA.ROOL=(RC_DATA.ROOL < -Angle_Max) ? (-Angle_Max):(RC_DATA.ROOL);
+  Crazepony_get_uartpack();
+}
 
-    //YAW
-    RC_DATA.YAW = 50-rx_buffer[6];
-    //RC_DATA.YAW = 0;                      //YAW角控制与否
-    RC_DATA.YAW = 9*(RC_DATA.YAW/50.0)*Angle_Max;
-    RC_DATA.YAW=(RC_DATA.YAW > Angle_Max)  ? (Angle_Max):(RC_DATA.YAW);
-    RC_DATA.YAW=(RC_DATA.YAW < -Angle_Max) ? (-Angle_Max):(RC_DATA.YAW);
+#define parseState1 0x01
+#define parseState2 0x02
+#define parsethr1   0x03
+#define parsethr2   0x04
+#define parsepitch  0x05
+#define parseroll   0x06
+#define parseReservedByte   0x07
+#define parseEnable   0x08
+//解包
+void parse_package(u8 pkdata)
+{
+  static u8 parseState = parseState1;
+  static u8 payloadcnt = 0;
+  switch(parseState)
+  {
+    case parseState1:
+         payloadcnt ++;
+         if(pkdata == pkHeader1) parseState = parseState2;
+         else parseState = parseState1;
+      break;
+    case parseState2:
+         payloadcnt ++;
+         if(pkdata == pkHeader2) parseState = parsethr1;
+         else parseState = parseState1;
+      break;
+    case parsethr1:
+         payloadcnt ++;
+         RC_DATA.THROTTLE = pkdata;
+         parseState = parsethr2;
+      break;
+    case parsethr2:
+         payloadcnt ++;
+         RC_DATA.THROTTLE = RC_DATA.THROTTLE + (pkdata<<8);
+         parseState = parsepitch;
+      break;
+    case parsepitch:
+         payloadcnt ++;
+         RC_DATA.PITCH=pkdata-50;//减50做负数传输
+         RC_DATA.PITCH = (RC_DATA.PITCH/50.0)*Angle_Max+Pitch_error_init;
+         RC_DATA.PITCH=(RC_DATA.PITCH > Angle_Max)  ? (Angle_Max):(RC_DATA.PITCH);
+         RC_DATA.PITCH=(RC_DATA.PITCH < -Angle_Max) ? (-Angle_Max):(RC_DATA.PITCH);
+         parseState = parseroll;
+      break;  
+    case parseroll:
+         payloadcnt ++;
+         RC_DATA.PITCH=pkdata-50;//减50做负数传输
+         RC_DATA.PITCH = (RC_DATA.PITCH/50.0)*Angle_Max+Pitch_error_init;
+         RC_DATA.PITCH=(RC_DATA.PITCH > Angle_Max)  ? (Angle_Max):(RC_DATA.PITCH);
+         RC_DATA.PITCH=(RC_DATA.PITCH < -Angle_Max) ? (-Angle_Max):(RC_DATA.PITCH);
+         parseState = parseReservedByte;
+      break;  
+    case parseReservedByte:
+         payloadcnt ++;
+         if((RX_PLOAD_WIDTH - 1) == payloadcnt) parseState = parseEnable;
+      break;
+    case parseEnable:
+         payloadcnt ++;
+         if(1 == pkdata) FLY_ENABLE=0xA5;
+         else FLY_ENABLE=0;
+         if((RX_PLOAD_WIDTH) == payloadcnt) 
+           {
+             payloadcnt = 0;
+             parseState = parseState1;
+           }
+      break;
+     default :break;
     
-    RC_DATA.THROTTLE=rx_buffer[2]+(rx_buffer[3]<<8);
-		if(rx_buffer[31]==0xA5)FLY_ENABLE=0xA5;//0xA5或0，决定是否使能飞行，由遥控器决定
-		else if(rx_buffer[31]==0x00)FLY_ENABLE=0;
+  } 
+}
+
+void Crazepony_get_uartpack(void)
+{
+  static int rx_cnt;
+  u8 rx_da;
+  rx_cnt = UartBuf_Cnt(&UartRxbuf);
+  while(rx_cnt -- )
+  {
+    rx_da = UartBuf_RD(&UartRxbuf);
+    parse_package(rx_da);
   }
 }
+
+
+
 
 /*
 void Send_SaveAckToPC()

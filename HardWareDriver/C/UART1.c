@@ -202,6 +202,7 @@ void USART1_IRQHandler(void)
     
     if(UartBuf_Cnt(&UartRxbuf)==0) USART_SendData(USART1, 'E');//串口接收数组长度等于0时，发送接收数组空标志
     if(UartBuf_Cnt(&UartRxbuf)==UartRxbuf.Mask) USART_SendData(USART1, 'F');//串口接收数组长度等于掩码时，发送接收缓冲满标志
+   
     USART_ClearITPendingBit(USART1, USART_IT_RXNE);//清除接收中断标志
   }
   

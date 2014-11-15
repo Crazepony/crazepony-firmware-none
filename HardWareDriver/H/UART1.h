@@ -5,7 +5,7 @@
 
 
 // USART Receiver buffer
-#define RX_BUFFER_SIZE   128
+#define RX_BUFFER_SIZE   64
 #define TX_BUFFER_SIZE   32
 extern unsigned char rx_buffer[RX_BUFFER_SIZE];
 extern unsigned char tx_buffer[TX_BUFFER_SIZE];

@@ -107,24 +107,23 @@ void BT_ATcmdWrite(void)
     // if(BTParameter.ReadBuf[2] == false)
     // {
     printf("与蓝牙通信中...\r\n");
-    //UART1_init(SysClock,9600); 
+    UART1_init(SysClock,9600); 
     Uart1SendaBTCmd(ATcmdAsk);
     if(CmdJudgement(ATcmdAnswer) == true)//有蓝牙返回，才往下写指令
     {
         Uart1SendaBTCmd(ATcmdBaudAsk);
         if(CmdJudgement(ATcmdBaudAnswer) == false) {Uart1SendaBTCmd(ATcmdBaudSet);   }
         else ;
-        
         Uart1SendaBTCmd(ATcmdNameAsk);
         if(CmdJudgement(ATcmdNameAnswer) == false)  {Uart1SendaBTCmd(ATcmdNameSet); }   
         else ;
-
         Uart1SendaBTCmd(ATcmdCodeAsk);
         if(CmdJudgement(ATcmdCodeAnswer) == false) {Uart1SendaBTCmd(ATcmdCodeSet);  }
         else ;
     }
     else  {printf("与蓝牙通信失败\r\n");}
-    //UART1_init(SysClock,115200);
+    
+    UART1_init(SysClock,115200);
     //   }
     //   else  {printf("蓝牙参数已写入...\r\n");}
     //   
