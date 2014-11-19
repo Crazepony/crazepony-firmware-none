@@ -206,6 +206,8 @@ void calculatePressureAltitude(void)
 	p = (((d1Value * sensitivity) >> 21) - offset) >> 15;
 
 	pressureAlt50Hz = 44330.0f * (1.0f - pow((float)p / 101325.0f, 1.0f / 5.255f));
+
+	printf("calculate Pressure Altitude : %f\n",pressureAlt50Hz);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -214,13 +216,14 @@ void calculatePressureAltitude(void)
 
 void initPressure(void)
 {
+	
     uint8_t data[2];
 
-
     ms5611I2C = I2C1;
-    ms5611Address = 0x76;
+    ms5611Address = 0xEE;	 //0XEE为MS5611的八位地址，0X77为MS5611的七位地址，IIC读写函数输入参数为八位地址
 
 
+	printf("init pressure MS5611\n");
     IICwriteByte( ms5611Address, 0xFF, 0x1E);      // Reset Device
 
     delay_ms(10);
@@ -261,6 +264,7 @@ void initPressure(void)
 	    IICwriteByte( ms5611Address, 0xFF, 0x58);
     #endif
 
+
     delay_ms(10);
 
     readTemperatureRequestPressure();
@@ -274,6 +278,8 @@ void initPressure(void)
 
     calculateTemperature();
     calculatePressureAltitude();
+
+	printf("init pressure MS5611 finished\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -53,12 +53,15 @@ int main(void)
   PID_INIT();                   //PID参数初始化 
   NRF24L01_INIT();              //NRF24L01初始化
   SetRX_Mode();                 //设无线模块为接收模式
-  initPressure();				//初始化气压计
+  
   /////////////////////////
 //   NRF24L01_RXDATA[30]=0xA5;
 //   NRF24L01_RXDATA[27]=0xA5;//跳过解锁,调试用，跳过下面的poweron
   /////////////////////////
-  PowerOn();                    //开机等待  
+
+  PowerOn();                    //开机等待 
+
+  initPressure();				//初始化气压计 
   //BT_ATcmdWrite();            //蓝牙写配置
   //BT_off();                   //蓝牙关闭
   //ParameterWrite();           //写参数到内部模拟eeprom

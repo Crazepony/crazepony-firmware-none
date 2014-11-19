@@ -223,7 +223,12 @@ u8 IICreadBytes(u8 dev, u8 reg, u8 length, u8 *data){
 	u8 temp;
 	IIC_Start();
 	IIC_Send_Byte(dev);	   //发送写命令
-	IIC_Wait_Ack();
+
+	if(1 == IIC_Wait_Ack()){
+		printf("I2C Read 0x%2x no ACK\n",dev);
+		return 1;
+	}
+
 	IIC_Send_Byte(reg);   //发送地址
     IIC_Wait_Ack();	  
 	IIC_Start();
@@ -257,7 +262,12 @@ u8 IICwriteBytes(u8 dev, u8 reg, u8 length, u8* data){
  	u8 count = 0;
 	IIC_Start();
 	IIC_Send_Byte(dev);	   //发送写命令
-	IIC_Wait_Ack();
+	
+	if(1 == IIC_Wait_Ack()){
+		printf("I2C Write 0x%2x no ACK\n\n",dev);
+		return 1;
+	}
+
 	IIC_Send_Byte(reg);   //发送地址
     IIC_Wait_Ack();	  
 	for(count=0;count<length;count++){
