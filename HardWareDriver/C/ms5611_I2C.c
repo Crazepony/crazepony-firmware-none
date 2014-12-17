@@ -37,6 +37,21 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#define _MS5611_DEBUG_
+
+#ifdef _MS5611_DEBUG_
+
+#define DBG_PRINT(fmt, args...) 	\
+    do{\
+				printf(""fmt"\n\r",##args);\
+    }while(0)
+#else
+
+#define DBG_PRINT(fmt, args...)
+
+#endif
+
+
 ///////////////////////////////////////
 
 //#define OSR  256  // 0.60 mSec conversion time (1666.67 Hz)
@@ -81,6 +96,8 @@ void readTemperatureRequestPressure(void)
     d2.bytes[2] = data[0];
     d2.bytes[1] = data[1];
     d2.bytes[0] = data[2];
+	
+		DBG_PRINT("d2: 0x%2x%2x%2x\n",d2.bytes[0],d2.bytes[1],d2.bytes[2]);
 
     #if   (OSR ==  256)
 	    IICwriteByte( ms5611Address, 0xFF, 0x40);  // Request pressure conversion
@@ -108,6 +125,8 @@ void readPressureRequestPressure(void)
     d1.bytes[2] = data[0];
     d1.bytes[1] = data[1];
     d1.bytes[0] = data[2];
+	
+		DBG_PRINT("d1: 0x%2x%2x%2x\n",d1.bytes[0],d1.bytes[1],d1.bytes[2]);
 
     #if   (OSR ==  256)
 	    IICwriteByte( ms5611Address, 0xFF, 0x40);  // Request pressure conversion
@@ -157,6 +176,8 @@ void calculateTemperature(void)
 {
     dT                = (int32_t)d2Value - ((int32_t)c5.value << 8);
     ms5611Temperature = 2000 + (int32_t)(((int64_t)dT * c6.value) >> 23);
+	
+		DBG_PRINT("ms5611Temperature: %d\n",ms5611Temperature);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -207,7 +228,7 @@ void calculatePressureAltitude(void)
 
 	pressureAlt50Hz = 44330.0f * (1.0f - pow((float)p / 101325.0f, 1.0f / 5.255f));
 
-	printf("calculate Pressure Altitude : %f\n",pressureAlt50Hz);
+	DBG_PRINT("calculate Pressure Altitude : %f\n",pressureAlt50Hz);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -222,8 +243,8 @@ void initPressure(void)
     ms5611I2C = I2C1;
     ms5611Address = 0xEE;	 //0XEE为MS5611的八位地址，0X77为MS5611的七位地址，IIC读写函数输入参数为八位地址
 
-
-	printf("init pressure MS5611\n");
+		DBG_PRINT("init pressure MS5611\n");
+	
     IICwriteByte( ms5611Address, 0xFF, 0x1E);      // Reset Device
 
     delay_ms(10);
@@ -237,20 +258,27 @@ void initPressure(void)
     c2.bytes[0] = data[1];
 
     IICreadBytes( ms5611Address, 0xA6, 2, data);    // Read Calibration Data C3
-	c3.bytes[1] = data[0];
+		c3.bytes[1] = data[0];
     c3.bytes[0] = data[1];
 
     IICreadBytes( ms5611Address, 0xA8, 2, data);    // Read Calibration Data C4
-	c4.bytes[1] = data[0];
+		c4.bytes[1] = data[0];
     c4.bytes[0] = data[1];
 
     IICreadBytes( ms5611Address, 0xAA, 2, data);    // Read Calibration Data C5
-	c5.bytes[1] = data[0];
+		c5.bytes[1] = data[0];
     c5.bytes[0] = data[1];
 
     IICreadBytes( ms5611Address, 0xAC, 2, data);    // Read Calibration Data C6
-	c6.bytes[1] = data[0];
+		c6.bytes[1] = data[0];
     c6.bytes[0] = data[1];
+		
+		DBG_PRINT("c1:0x%2x%2x\n",c1.bytes[0],c1.bytes[1]);
+		DBG_PRINT("c2:0x%2x%2x\n",c2.bytes[0],c2.bytes[1]);
+		DBG_PRINT("c3:0x%2x%2x\n",c3.bytes[0],c3.bytes[1]);
+		DBG_PRINT("c4:0x%2x%2x\n",c4.bytes[0],c4.bytes[1]);
+		DBG_PRINT("c5:0x%2x%2x\n",c5.bytes[0],c5.bytes[1]);
+		DBG_PRINT("c6:0x%2x%2x\n",c6.bytes[0],c6.bytes[1]);
 
     #if   (OSR ==  256)
 	    IICwriteByte( ms5611Address, 0xFF, 0x50);  // Request temperature conversion
@@ -279,7 +307,7 @@ void initPressure(void)
     calculateTemperature();
     calculatePressureAltitude();
 
-	printf("init pressure MS5611 finished\n");
+		DBG_PRINT("init pressure MS5611 finished\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
