@@ -264,15 +264,24 @@ u8 IICwriteBytes(u8 dev, u8 reg, u8 length, u8* data){
 	IIC_Send_Byte(dev);	   //发送写命令
 	
 	if(1 == IIC_Wait_Ack()){
-		printf("I2C Write 0x%2x no ACK\n\n",dev);
+		printf("I2C Write 0x%2x no ACK\r\n",dev);
 		return 1;
 	}
 
 	IIC_Send_Byte(reg);   //发送地址
-    IIC_Wait_Ack();	  
+
+	if(1 == IIC_Wait_Ack()){
+		printf("I2C Write 0x%2x no ACK 1\r\n",dev);
+		return 1;
+	}
+  
 	for(count=0;count<length;count++){
 		IIC_Send_Byte(data[count]); 
-		IIC_Wait_Ack(); 
+		
+		if(1 == IIC_Wait_Ack()){
+			printf("I2C Write 0x%2x no ACK 2\r\n",dev);
+			return 1;
+		}
 	 }
 	IIC_Stop();//产生一个停止条件
 
@@ -349,5 +358,36 @@ u8 IICwriteBit(u8 dev, u8 reg, u8 bitNum, u8 data){
     
     return IICwriteByte(dev, reg, b);
 }
+
+/**************************实现函数********************************************
+*函数原型:		u8 IICwriteBytes(u8 dev, u8 reg, u8 length, u8* data)
+*功　　能:	    将多个字节写入指定设备 指定寄存器
+输入	dev  目标设备地址
+			data	要写的数据
+返回   返回是否成功
+*******************************************************************************/ 
+u8 IICwriteOneByte(u8 dev,u8 data){
+  
+ 	u8 count = 0;
+	IIC_Start();
+	IIC_Send_Byte(dev);	   //发送写命令
+	
+	if(1 == IIC_Wait_Ack()){
+		printf("I2C Write 0x%2x no ACK\r\n",dev);
+		return 1;
+	}
+
+	IIC_Send_Byte(data);   //发送地址
+
+	if(1 == IIC_Wait_Ack()){
+		printf("I2C Write 0x%2x no ACK 1\r\n",dev);
+		return 1;
+	}
+  
+	IIC_Stop();//产生一个停止条件
+
+  return 1; //status == 0;
+}
+
 
 //------------------End of File----------------------------

@@ -43,7 +43,7 @@
 
 #define DBG_PRINT(fmt, args...) 	\
     do{\
-				printf(""fmt"\n\r",##args);\
+				printf(""fmt"\r\n",##args);\
     }while(0)
 #else
 
@@ -58,7 +58,7 @@
 //#define OSR  512  // 1.17 mSec conversion time ( 854.70 Hz)
 //#define OSR 1024  // 2.28 mSec conversion time ( 357.14 Hz)
 //#define OSR 2048  // 4.54 mSec conversion time ( 220.26 Hz)
-  #define OSR 4096  // 9.04 mSec conversion time ( 110.62 Hz)
+#define OSR 4096  // 9.04 mSec conversion time ( 110.62 Hz)
 
 ///////////////////////////////////////
 
@@ -100,15 +100,15 @@ void readTemperatureRequestPressure(void)
 		DBG_PRINT("d2: 0x%2x%2x%2x\n",d2.bytes[0],d2.bytes[1],d2.bytes[2]);
 
     #if   (OSR ==  256)
-	    IICwriteByte( ms5611Address, 0xFF, 0x40);  // Request pressure conversion
-	#elif (OSR ==  512)
-	    IICwriteByte( ms5611Address, 0xFF, 0x42);
-	#elif (OSR == 1024)
-	    IICwriteByte( ms5611Address, 0xFF, 0x44);
-	#elif (OSR == 2048)
-	    IICwriteByte( ms5611Address, 0xFF, 0x46);
-	#elif (OSR == 4096)
-	    IICwriteByte( ms5611Address, 0xFF, 0x48);
+				IICwriteOneByte( ms5611Address, 0x40);  // Request pressure conversion
+		#elif (OSR ==  512)
+				IICwriteOneByte( ms5611Address, 0x42);
+		#elif (OSR == 1024)
+				IICwriteOneByte( ms5611Address, 0x44);
+		#elif (OSR == 2048)
+				IICwriteOneByte( ms5611Address, 0x46);
+		#elif (OSR == 4096)
+				IICwriteOneByte( ms5611Address, 0x48);
     #endif
 }
 
@@ -128,16 +128,16 @@ void readPressureRequestPressure(void)
 	
 		DBG_PRINT("d1: 0x%2x%2x%2x\n",d1.bytes[0],d1.bytes[1],d1.bytes[2]);
 
-    #if   (OSR ==  256)
-	    IICwriteByte( ms5611Address, 0xFF, 0x40);  // Request pressure conversion
-	#elif (OSR ==  512)
-		IICwriteByte( ms5611Address, 0xFF, 0x42);
-	#elif (OSR == 1024)
-	    IICwriteByte( ms5611Address, 0xFF, 0x44);
-	#elif (OSR == 2048)
-	    IICwriteByte( ms5611Address, 0xFF, 0x46);
-	#elif (OSR == 4096)
-	    IICwriteByte( ms5611Address, 0xFF, 0x48);
+    #if(OSR ==  256)
+				IICwriteOneByte( ms5611Address, 0x40);  // Request pressure conversion
+		#elif (OSR ==  512)
+			IICwriteOneByte( ms5611Address, 0x42);
+		#elif (OSR == 1024)
+				IICwriteOneByte( ms5611Address, 0x44);
+		#elif (OSR == 2048)
+				IICwriteOneByte( ms5611Address, 0x46);
+		#elif (OSR == 4096)
+				IICwriteOneByte( ms5611Address, 0x48);
     #endif
 }
 
@@ -154,17 +154,19 @@ void readPressureRequestTemperature(void)
     d1.bytes[2] = data[0];
     d1.bytes[1] = data[1];
     d1.bytes[0] = data[2];
+	
+		DBG_PRINT("d1: 0x%2x%2x%2x\n",d1.bytes[0],d1.bytes[1],d1.bytes[2]);
 
     #if   (OSR ==  256)
-	    IICwriteByte( ms5611Address, 0xFF, 0x50);   // Request temperature converison
+	    IICwriteOneByte( ms5611Address, 0x50);   // Request temperature converison
 	#elif (OSR ==  512)
-	    IICwriteByte( ms5611Address, 0xFF, 0x52);
+	    IICwriteOneByte( ms5611Address, 0x52);
 	#elif (OSR == 1024)
-	    IICwriteByte( ms5611Address, 0xFF, 0x54);
+	    IICwriteOneByte( ms5611Address, 0x54);
 	#elif (OSR == 2048)
-	    IICwriteByte( ms5611Address, 0xFF, 0x56);
+	    IICwriteOneByte( ms5611Address, 0x56);
 	#elif (OSR == 4096)
-	    IICwriteByte( ms5611Address, 0xFF, 0x58);
+	    IICwriteOneByte( ms5611Address, 0x58);
     #endif
 }
 
@@ -177,7 +179,7 @@ void calculateTemperature(void)
     dT                = (int32_t)d2Value - ((int32_t)c5.value << 8);
     ms5611Temperature = 2000 + (int32_t)(((int64_t)dT * c6.value) >> 23);
 	
-		DBG_PRINT("ms5611Temperature: %d\n",ms5611Temperature);
+		DBG_PRINT("TEMP: %d",ms5611Temperature);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -188,7 +190,7 @@ void calculatePressureAltitude(void)
 {
 	float pressureAlt50Hz;	//最后计算得到的高度值
 
-    int64_t offset;
+	int64_t offset;
 	int64_t offset2 = 0;
 
 	int64_t sensitivity;
@@ -225,6 +227,8 @@ void calculatePressureAltitude(void)
 	}
 
 	p = (((d1Value * sensitivity) >> 21) - offset) >> 15;
+	
+	DBG_PRINT("PRESS : %d",p);
 
 	pressureAlt50Hz = 44330.0f * (1.0f - pow((float)p / 101325.0f, 1.0f / 5.255f));
 
@@ -245,7 +249,7 @@ void initPressure(void)
 
 		DBG_PRINT("init pressure MS5611\n");
 	
-    IICwriteByte( ms5611Address, 0xFF, 0x1E);      // Reset Device
+    IICwriteOneByte( ms5611Address, 0x1E);      // Reset Device
 
     delay_ms(10);
 
@@ -281,15 +285,15 @@ void initPressure(void)
 		DBG_PRINT("c6:0x%2x%2x\n",c6.bytes[0],c6.bytes[1]);
 
     #if   (OSR ==  256)
-	    IICwriteByte( ms5611Address, 0xFF, 0x50);  // Request temperature conversion
-	#elif (OSR ==  512)
-	    IICwriteByte( ms5611Address, 0xFF, 0x52);
-	#elif (OSR == 1024)
-	    IICwriteByte( ms5611Address, 0xFF, 0x54);
-	#elif (OSR == 2048)
-	    IICwriteByte( ms5611Address, 0xFF, 0x56);
-	#elif (OSR == 4096)
-	    IICwriteByte( ms5611Address, 0xFF, 0x58);
+				IICwriteOneByte( ms5611Address, 0x50);  // Request temperature conversion
+		#elif (OSR ==  512)
+				IICwriteOneByte( ms5611Address, 0x52);
+		#elif (OSR == 1024)
+				IICwriteOneByte( ms5611Address, 0x54);
+		#elif (OSR == 2048)
+				IICwriteOneByte( ms5611Address, 0x56);
+		#elif (OSR == 4096)
+				IICwriteOneByte( ms5611Address, 0x58);
     #endif
 
 
