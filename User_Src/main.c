@@ -67,10 +67,7 @@ int main(void)
   TIM4_Init(SysClock,1000);	    //定时器4初始化，定时采样传感器数据，更新PID输出，定时器定时基石为1us，PID更新周期为4ms，所以姿态更新频率 为250Hz    
                                 
   while (1)                    //等待数据更新中断到来
-  {    
-
-    
-//        
+  {            
 // //测试环形缓冲数组用，可以无视或者直接注释掉。不注释也不影响操作
 //     printf("\r\n收到数据[%d] = %d\r\n",i,rx_buffer[i++]);
 //     printf("读指针 = %d\r\n",UartRxbuf.Rd_Indx & UartRxbuf.Mask);
