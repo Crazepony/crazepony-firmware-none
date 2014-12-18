@@ -24,8 +24,6 @@ mpu6050.c file
 #include "extern_variable.h"
 #include "config.h"
 
-
-
 uint8_t buffer[14];
 int16_t MPU6050_FIFO[6][11];
 int16_t Gx_offset=0,Gy_offset=0,Gz_offset=0;

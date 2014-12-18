@@ -58,9 +58,7 @@ int main(void)
 //   NRF24L01_RXDATA[30]=0xA5;
 //   NRF24L01_RXDATA[27]=0xA5;//跳过解锁,调试用，跳过下面的poweron
   /////////////////////////
-
   PowerOn();                    //开机等待 
-
   initPressure();				//初始化气压计 
   //BT_ATcmdWrite();            //蓝牙写配置
   //BT_off();                   //蓝牙关闭
