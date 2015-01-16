@@ -23,21 +23,71 @@ Tim.c file
 #include "tim.h"
 #include "config.h"
 
+#define TASK_TICK_FREQ				1000			//Hz 主任务频率
 
+uint16_t cntBaro=0;
+uint16_t cntBatChk=0;
 
 int LedCounter;//LED闪烁计数值
 float Compass_HMC[3];
+
+uint8_t accUpdated=0;
+volatile uint16_t anyCnt=0,anyCnt2=0;
+uint8_t  loop500HzFlag,loop200HzFlag,loop50HzFlag,loop600HzFlag,loop100HzFlag,loop20HzFlag,loop10HzFlag;
+volatile uint16_t loop500Hzcnt,loop200HzCnt,loop50HzCnt , loop600HzCnt,loop100HzCnt, loop20HzCnt , loop10HzCnt=0;
+
 
 //控制入口
 void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
 {
     if( TIM_GetITStatus(TIM4 , TIM_IT_Update) != RESET ) 
     {     
+					anyCnt++;
+				//	anyCnt2++;
+					loop200HzCnt++;
+//					if(++loop200HzCnt * 200 >= (1000))
+//					{
+//							loop200HzCnt=0;
+//							loop200HzFlag=1;
+//					}
+					loop100HzCnt++;
+//					if(++loop100HzCnt * 100 >= (1000))
+//					{
+//							loop100HzCnt=0;
+//							loop100HzFlag=1;
+//					}
+					if(++loop50HzCnt * 50 >= (1000))
+					{
+							loop50HzCnt=0;
+							loop50HzFlag=1;
+					}
+					if(++loop20HzCnt * 20 >=1000 )
+					{
+							loop20HzCnt=0;
+							loop20HzFlag=1;
+					}
+					if(++loop10HzCnt * 10 >=1000 )
+					{
+							loop10HzCnt=0;
+							loop10HzFlag=1;
+					}
+	/*				if(cntBatChk++>500)	//
+					{
+						Battery.BatteryAD  = GetBatteryAD();            //电池电压检测  
+            Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算
+						cntBatChk=0;
+					}
+					//IMU 
+		//			DMP_Routing();	        //DMP 线程  所有的数据都在这里更新
+		//			DMP_getYawPitchRoll();  //读取 姿态角
+
+					//control
+			//		LEDC_troggle;
           Controler(); //控制函数
-                  
+               
           //HMC58X3_mgetValues(&Compass_HMC[0]);       
           LedCounter++;//led闪烁计数值
-          if(Battery.BatteryAD > Battery.BatteryADmin)//当电池电压在设定值之上时，正常模式
+          if(Battery.BatteryAD > Battery.BatteryADmin)//当电池电压在设定值之上时，正常模式  3.17v
           {
               if(LedCounter==10){ LedA_off;LedB_off;}   //遥控端使能后，闪灯提示        
               else if(LedCounter==30){LedCounter=0;LedA_on;LedB_on;}
@@ -49,7 +99,7 @@ void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
           }
           if(LedCounter>=31)LedCounter=0;
 
-          
+          */
           
           TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);   //清除中断标志   
     }

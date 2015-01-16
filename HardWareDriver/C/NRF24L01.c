@@ -154,8 +154,9 @@ void Nrf_Irq(void)
     {
         NRF_Read_Buf(RD_RX_PLOAD,NRF24L01_RXDATA,RX_PLOAD_WIDTH);// read receive payload from RX_FIFO buffer
         ReceiveDataFormNRF();      //自己做修改
+				NRF_Write_Reg(0x27, sta);//清除nrf的中断标志位
     }
-    NRF_Write_Reg(0x27, sta);//清除nrf的中断标志位
+    
 }
 
 
@@ -168,7 +169,7 @@ u8 NRF24L01_RxPacket(u8 *rxbuf)
 	NRF_Write_Reg(NRF_WRITE_REG+NRFRegSTATUS,sta); //清除TX_DS或MAX_RT中断标志
 	if(sta&RX_OK)//接收到数据
 	{
-		NRF_Write_Buf(RD_RX_PLOAD,rxbuf,RX_PLOAD_WIDTH);//读取数据
+		NRF_Read_Buf(RD_RX_PLOAD,rxbuf,RX_PLOAD_WIDTH);//读取数据
 		NRF_Write_Reg(FLUSH_RX,0xff);//清除RX FIFO寄存器 
 		return 0; 
 	}	   

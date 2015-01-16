@@ -2,9 +2,12 @@
 #define __DMP_H
 #include "UART1.h"
 
-#define   g  9.27f
+#define   ONE_G  9.80665f //related to acc calculate 
 
-  
+#define DMP_CALC_PRD 7	//ms
+#define DMP_ACC_SCALE 8192.0f	//4G , 31276/4=8192
+#define DMP_GYRO_SCALE 16.4f	//2000deg/s , 31276/2000=16.4f 
+ 
 // MotionApps 2.0 DMP implementation,
 #define MPU6050_INCLUDE_DMP_MOTIONAPPS20
 
@@ -59,7 +62,8 @@ float  dmp_accz;	// 加速度计 Z轴   单位：g  [9.8 m/S^2]
 };
 
 //------------------------------------------------------------------
-extern struct DMP_FIFO_map DMP_DATA;  //数据引出				   -
+extern struct DMP_FIFO_map DMP_DATA;  //数据引出				
+extern  float q[4];
 //当希望读取 陀螺仪的X轴输出时，变量是 DMP_DATA.dmp_gyrox		   -
 //当希望读取 陀螺仪的Y轴输出时，变量是 DMP_DATA.dmp_gyroy		   -
 //当希望读取 加速度计的X轴输出时，变量是 DMP_DATA.dmp_accx		   -
@@ -73,6 +77,7 @@ extern struct DMP_FIFO_map DMP_DATA;  //数据引出				   -
 
 //DMP API子程序
 uint8_t MPU6050_DMP_Initialize(void); //DMP初始化
+void DMPCalibrate(void);
 void DMP_Routing(void);	 //DMP 线程，主要用于读取和处理DMP的结果   [需要定时调用]
 void DMP_getYawPitchRoll(void);  //读取载体的姿态角
 

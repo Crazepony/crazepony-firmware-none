@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <Project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="project_proj.xsd">
 
-  <SchemaVersion>1.0</SchemaVersion>
+  <SchemaVersion>1.1</SchemaVersion>
 
   <Header>### uVision Project, (C) Keil Software</Header>
 
@@ -29,6 +29,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
+          <SFDFile>SFD\ST\STM32F1xx\STM32F103xx.sfr</SFDFile>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
           <IncludePath></IncludePath>
@@ -60,6 +61,8 @@
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopU1X>0</nStopU1X>
+            <nStopU2X>0</nStopU2X>
           </BeforeCompile>
           <BeforeMake>
             <RunUserProg1>0</RunUserProg1>
@@ -135,7 +138,7 @@
             <RestoreToolbox>1</RestoreToolbox>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>7</TargetSelection>
+          <TargetSelection>13</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -149,7 +152,7 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>Segger\JL2CM3.dll</Driver>
+            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
@@ -159,9 +162,9 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4100</DriverSelection>
+            <DriverSelection>4104</DriverSelection>
           </Flash1>
-          <Flash2>Segger\JL2CM3.dll</Flash2>
+          <Flash2>STLink\ST-LINKIII-KEIL_SWO.dll</Flash2>
           <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
         </Utilities>
@@ -341,6 +344,7 @@
             <Rwpi>0</Rwpi>
             <wLevel>0</wLevel>
             <uThumb>0</uThumb>
+            <uSurpInc>0</uSurpInc>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER, STM32F10X_MD</Define>
@@ -356,6 +360,7 @@
             <SplitLS>0</SplitLS>
             <SwStkChk>0</SwStkChk>
             <NoWarn>0</NoWarn>
+            <uSurpInc>0</uSurpInc>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -476,9 +481,9 @@
               <FilePath>.\HardWareDriver\C\HMC5883L.c</FilePath>
             </File>
             <File>
-              <FileName>ms5611_I2C.c</FileName>
+              <FileName>MS5611.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\HardWareDriver\C\ms5611_I2C.c</FilePath>
+              <FilePath>.\HardWareDriver\C\MS5611.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -499,6 +504,66 @@
               <FileName>Sys_Fun.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\User_Src\Sys_Fun.c</FilePath>
+            </File>
+            <File>
+              <FileName>CommApp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User_Src\CommApp.c</FilePath>
+            </File>
+            <File>
+              <FileName>CommApp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\User_Src\CommApp.h</FilePath>
+            </File>
+            <File>
+              <FileName>CommPc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User_Src\CommPc.c</FilePath>
+            </File>
+            <File>
+              <FileName>CommPC.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\User_Src\CommPC.h</FilePath>
+            </File>
+            <File>
+              <FileName>IMU.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User_Src\IMU.c</FilePath>
+            </File>
+            <File>
+              <FileName>Altitude.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User_Src\Altitude.c</FilePath>
+            </File>
+            <File>
+              <FileName>filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User_Src\filter.c</FilePath>
+            </File>
+            <File>
+              <FileName>ConfigTable.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User_Src\ConfigTable.c</FilePath>
+            </File>
+            <File>
+              <FileName>IMUSO3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User_Src\IMUSO3.c</FilePath>
+            </File>
+            <File>
+              <FileName>imu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\User_Src\imu.h</FilePath>
+            </File>
+            <File>
+              <FileName>FailSafe.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\User_Src\FailSafe.c</FilePath>
+            </File>
+            <File>
+              <FileName>FailSafe.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\User_Src\FailSafe.h</FilePath>
             </File>
           </Files>
         </Group>

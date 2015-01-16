@@ -2,10 +2,8 @@
 #define __config_H
 
 
-
-///////////////////////////////////////
-
 #include "stm32f10x.h"
+#include "stm32f10x_it.h"
 #include "stm32f10x_pwr.h"
 #include "delay.h"
 #include "Led.h"
@@ -29,35 +27,7 @@
 #include "DMP.h"
 #include "Battery.h"
 #include "HMC5883L.h"
-
-
-#define SQR(x)  ((x) * (x))
-
-///////////////////////////////////////////////////////////////////////////////
-// Misc Type Definitions
-///////////////////////////////////////////////////////////////////////////////
-
-typedef union {
-    int16_t value;
-    uint8_t bytes[2];
-} int16andUint8_t;
-
-typedef union {
-    int32_t value;
-    uint8_t bytes[4];
-} int32andUint8_t;
-
-typedef union {
-    uint16_t value;
-     uint8_t bytes[2];
-} uint16andUint8_t;
-
-typedef union {
-	uint32_t value;
-	 uint8_t bytes[4];
-} uint32andUint8_t;
-
-#include "ms5611_I2C.h"
+#include "MS5611.h"
 
 
 #endif

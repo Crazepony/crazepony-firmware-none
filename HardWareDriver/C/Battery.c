@@ -23,6 +23,8 @@ Battery.c file
 #include "Battery.h"
 #include "UART1.h"
 #include "stdio.h"
+#include "CommApp.h"
+#include "ReceiveData.h"
 
 //实例化一个电压信息结构体
 Bat_Typedef Battery;
@@ -144,6 +146,30 @@ int Get_Temp(void)
 int GetBatteryAD()
 {
  return Get_Adc_Average(8,5);
+}
+
+//检测电池电压
+void BatteryCheck(void)
+{
+		Battery.BatteryAD  = GetBatteryAD();            //电池电压检测  
+		Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算	
+	  if(FLY_ENABLE)
+		{
+			if(Battery.BatteryAD <= Battery.BatteryADmin)
+			{
+					Battery.alarm=1;
+			}
+			else
+					Battery.alarm=0;
+		}
+		else
+		{
+			if(Battery.BatteryVal < BAT_ALARM_VAL)	//低于3.7v
+				Battery.alarm=1;
+			else
+				Battery.alarm=0;
+		}
+	  
 }
 
 

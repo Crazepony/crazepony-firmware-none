@@ -101,12 +101,12 @@ char SystemClock_HSE(u8 PLL)
 void PowerOn()
 {
   char i;            //循环变量
-  while(NRF24L01_RXDATA[30]!=0xA5)//保证收到一个完整的数据包32个字节,再继续下面的程序
-    {
-        Nrf_Irq();printf("等待遥控接入...\r\n");
-        LedA_on;LedB_on;LedC_on;LedD_on;Delay(900000);LedA_off;LedB_off;LedC_off;LedD_off;Delay(900000*3);
-    }
-    printf("已检测到遥控信号...\r\n");
+//  while(NRF24L01_RXDATA[30]!=0xA5)//保证收到一个完整的数据包32个字节,再继续下面的程序
+//    {
+//        Nrf_Irq();printf("等待遥控接入...\r\n");
+//        LedA_on;LedB_on;LedC_on;LedD_on;Delay(900000);LedA_off;LedB_off;LedC_off;LedD_off;Delay(900000*3);
+//    }
+//    printf("已检测到遥控信号...\r\n");
 
     for(i=0;i<4;i++)//循环闪烁4次
     {
@@ -119,11 +119,11 @@ void PowerOn()
     LedA_off;LedB_off;LedC_off;LedD_on;
     Delay(900000);
     }
-    while(NRF24L01_RXDATA[27]!=0xA5)//保证收到一个完整的数据包32个字节,再继续下面的程序,等待解锁
-    {
-        Nrf_Irq();printf("等待解锁...\r\n");
-        LedA_on;LedB_on;LedC_on;LedD_on;Delay(100);LedA_off;LedB_off;LedC_off;LedD_off;Delay(9000);
-    }
+//    while(NRF24L01_RXDATA[27]!=0xA5)//保证收到一个完整的数据包32个字节,再继续下面的程序,等待解锁
+//    {
+//        Nrf_Irq();printf("等待解锁...\r\n");
+//        LedA_on;LedB_on;LedC_on;LedD_on;Delay(100);LedA_off;LedB_off;LedC_off;LedD_off;Delay(9000);
+//    }
     for(i=0;i<3;i++)//解锁成功，快速闪烁3次提示
     {
     LedA_on;LedB_on;LedC_on;LedD_on;

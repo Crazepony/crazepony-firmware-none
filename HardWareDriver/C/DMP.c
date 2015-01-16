@@ -14,6 +14,8 @@ DMP.c file
 作者E-mail：375836945@qq.com
 编译环境：MDK-Lite  Version: 4.23
 初版时间: 2014-01-28
+问题：
+	DMP单位有问题。
 功能：
 1.DMP引擎初始化
 2.返回DMP稳定的俯仰横滚以及偏航角
@@ -29,11 +31,15 @@ DMP.c file
 #include "stdio.h"
 #include "extern_variable.h"
 #include "control.h"
+#include "SysConfig.h"
+
+#include "imu.h"
+
 #define M_PI  3.1415926f
 
 S_FLOAT_ANGLE  Q_ANGLE;	
 
-
+float q[4];
 
 void DMP_Covert_Data(void);
 
@@ -251,6 +257,7 @@ uint8_t min(uint8_t x ,uint8_t y){
 	else return y;
 }
 
+
 //初始化DMP引擎
 uint8_t MPU6050_DMP_Initialize(void)
 {
@@ -259,153 +266,160 @@ uint8_t MPU6050_DMP_Initialize(void)
 	uint8_t fifoCount;
 	uint8_t fifoBuffer[128];
 	int8_t xgOffset	, ygOffset , zgOffset;
+	
     // reset device
-    printf(("\r\n=======配置DMP引擎=========\r\n"));
-    printf(("复位MPU6050...\r\n"));
+    //printf(("\r\n=======配置DMP引擎=========\r\n"));
+    //printf(("复位MPU6050...\r\n"));
     MPU6050_reset();
     delay_ms(50); // wait after reset 50ms
-    printf(("禁止休眠模式...\r\n"));
+    //printf(("禁止休眠模式...\r\n"));
     MPU6050_setSleepEnabled(0);
-    printf(("\r\n读取MPU6050硬件版本...\r\n"));
-    printf(("正在选择用户内存块...\r\n"));
+    //printf(("\r\n读取MPU6050硬件版本...\r\n"));
+    //printf(("正在选择用户内存块...\r\n"));
     MPU6050_setMemoryBank(0x10, 1, 1);
-    printf(("正在选择用户内存字节...\r\n"));
+    //printf(("正在选择用户内存字节...\r\n"));
     MPU6050_setMemoryStartAddress(0x06);
-    printf(("正在检查硬件版本...\r\n"));
+    //printf(("正在检查硬件版本...\r\n"));
     MPU6050_readMemoryByte();
-    //printf(("Revision @ user[16][6] = \r\n"));
-    printf(("复位内存块...\r\n"));
+    ////printf(("Revision @ user[16][6] = \r\n"));
+    //printf(("复位内存块...\r\n"));
     MPU6050_setMemoryBank(0, 0, 0);
     // check OTP bank valid
-    printf(("读取OTP块有效标志...\r\n"));
+    //printf(("读取OTP块有效标志...\r\n"));
     MPU6050_getOTPBankValid();
-//     printf("OTP bank is ");
-//     printf(otpValid ? ("valid!") : ("invalid!"));
+//     //printf("OTP bank is ");
+//     //printf(otpValid ? ("valid!") : ("invalid!"));
     // get X/Y/Z gyro offsets
-    printf(("读取加速度偏移值...\r\n"));
+    //printf(("读取加速度偏移值...\r\n"));
     xgOffset = MPU6050_getXGyroOffsetTC();
     ygOffset = MPU6050_getYGyroOffsetTC();
     zgOffset = MPU6050_getZGyroOffsetTC(); 
+		
+  	
+
 	// setup weird slave stuff (?)
-    printf(("设置从器件地址为0x7F...\r\n"));
+    //printf(("设置从器件地址为0x7F...\r\n"));
     MPU6050_setSlaveAddress(0, 0x7F);
-    printf(("禁止IIC主器件模式...\r\n"));
+    //printf(("禁止IIC主器件模式...\r\n"));
     MPU6050_setI2CMasterModeEnabled(0);
     //主控制器的I2C与	MPU6050的AUXI2C	直通。控制器可以直接访问HMC5883L
     MPU6050_setI2CBypassEnabled(1);	     
-    printf(("设置从器件地址为0x68...\r\n"));
+    //printf(("设置从器件地址为0x68...\r\n"));
     MPU6050_setSlaveAddress(0, 0x68);
-    printf(("复位IIC主器件控制权...\r\n"));
+    //printf(("复位IIC主器件控制权...\r\n"));
     MPU6050_resetI2CMaster();
     delay_ms(20);
 
     // load DMP code into memory banks
-    printf(("正在写入DMP代码段到MPU6050 \r\n"));
+    //printf(("正在写入DMP代码段到MPU6050 \r\n"));
     if (MPU6050_writeProgMemoryBlock(dmpMemory, MPU6050_DMP_CODE_SIZE, 0, 0, 1)) {
-        printf(("DMP代码写入校验成功...\r\n"));
-        printf(("配置DMP和有关设置...\r\n"));
+        //printf(("DMP代码写入校验成功...\r\n"));
+        //printf(("配置DMP和有关设置...\r\n"));
         // write DMP configuration
-         printf(("正在写入DMP配置代码到MPU6050内存...\r\n"));
+         //printf(("正在写入DMP配置代码到MPU6050内存...\r\n"));
         if (MPU6050_writeProgDMPConfigurationSet(dmpConfig, MPU6050_DMP_CONFIG_SIZE)) {
-            printf(("DMP配置代码写入校验成功\r\n"));
-            printf(("设置Z轴角速度时钟源...\r\n"));
+            //printf(("DMP配置代码写入校验成功\r\n"));
+            //printf(("设置Z轴角速度时钟源...\r\n"));
             MPU6050_setClockSource(MPU6050_CLOCK_PLL_ZGYRO);
-            printf(("使能DMP引擎和FIFO中断...\r\n"));
+            //printf(("使能DMP引擎和FIFO中断...\r\n"));
             MPU6050_setIntEnabled(0x12);
-            printf(("设置DMP采样率为200Hz...\r\n"));
+            //printf(("设置DMP采样率为200Hz...\r\n"));
             MPU6050_setRate(4); // 1khz / (1 + 4) = 200 Hz
-            printf(("设置外部同步帧到TEMP_OUT_L[0]...\r\n"));
+            //printf(("设置外部同步帧到TEMP_OUT_L[0]...\r\n"));
             MPU6050_setExternalFrameSync(MPU6050_EXT_SYNC_TEMP_OUT_L);
-            printf(("设置DLPF带宽为42Hz...\r\n"));
+            //printf(("设置DLPF带宽为42Hz...\r\n"));
             MPU6050_setDLPFMode(MPU6050_DLPF_BW_42);
-            printf(("设置角速度精度为 +/- 2000 deg/sec...\r\n"));
+            //printf(("设置角速度精度为 +/- 2000 deg/sec...\r\n"));
             MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
-            printf(("设置DMP配置字节...\r\n"));
+            //printf(("设置DMP配置字节...\r\n"));
             MPU6050_setDMPConfig1(0x03);
             MPU6050_setDMPConfig2(0x00);
-            printf(("清楚OTP块标志...\r\n"));
+            //printf(("清楚OTP块标志...\r\n"));
             MPU6050_setOTPBankValid(0);
-            printf(("设置X/Y/Z轴角速度为先前值...\r\n"));
+            //printf(("设置X/Y/Z轴角速度为先前值...\r\n"));
             MPU6050_setXGyroOffsetTC(xgOffset);
             MPU6050_setYGyroOffsetTC(ygOffset);
             MPU6050_setZGyroOffsetTC(zgOffset);
-            printf(("写入最后内存跟新到 1/7 ...\r\n"));
+						
+				//		DMPCalibrate();		//tobe tested
+						
+            //printf(("写入最后内存跟新到 1/7 ...\r\n"));
             for (j = 0; j < 4 || j < dmpUpdate[2] + 3; j++, pos++) dmpUpdate[j] = dmpUpdates[pos];
             MPU6050_writeMemoryBlock(dmpUpdate + 3, dmpUpdate[2], dmpUpdate[0], dmpUpdate[1], 1, 0);
-            printf(("写入最后内存跟新到 2/7 ...\r\n"));
+            //printf(("写入最后内存跟新到 2/7 ...\r\n"));
             for (j = 0; j < 4 || j < dmpUpdate[2] + 3; j++, pos++) dmpUpdate[j] = dmpUpdates[pos];
             MPU6050_writeMemoryBlock(dmpUpdate + 3, dmpUpdate[2], dmpUpdate[0], dmpUpdate[1], 0, 0);
-            printf(("正在复位FIFO...\r\n"));
+            //printf(("正在复位FIFO...\r\n"));
             MPU6050_resetFIFO();
-            printf(("正在读取FIFO计数...\r\n"));
+            //printf(("正在读取FIFO计数...\r\n"));
             fifoCount = MPU6050_getFIFOCount();
             MPU6050_getFIFOBytes(fifoBuffer, fifoCount);
-            printf(("正在设置运动阈值为2...\r\n"));
+            //printf(("正在设置运动阈值为2...\r\n"));
             MPU6050_setMotionDetectionThreshold(2);
-            printf(("正在设置0运动检测阈值为156...\r\n"));
+            //printf(("正在设置0运动检测阈值为156...\r\n"));
             MPU6050_setZeroMotionDetectionThreshold(156);
-            printf(("正在设置运动检测持续时间为80...\r\n"));
+            //printf(("正在设置运动检测持续时间为80...\r\n"));
             MPU6050_setMotionDetectionDuration(80);
-            printf(("正在设置0运动检测持续时间为0...\r\n"));
+            //printf(("正在设置0运动检测持续时间为0...\r\n"));
             MPU6050_setZeroMotionDetectionDuration(0);
-            printf(("复位FIFO...\r\n"));
+            //printf(("复位FIFO...\r\n"));
             MPU6050_resetFIFO();
-            printf(("正在使能FIFO...\r\n"));
+            //printf(("正在使能FIFO...\r\n"));
             MPU6050_setFIFOEnabled(1);
-            printf(("正在使能DMP...\r\n"));
+            //printf(("正在使能DMP...\r\n"));
             MPU6050_setDMPEnabled(1);
-            printf(("复位DMPDMP...\r\n"));
+            //printf(("复位DMPDMP...\r\n"));
             MPU6050_resetDMP();
-			      printf(("写入最后内存跟新到 3/7 ......\r\n"));
+			      //printf(("写入最后内存跟新到 3/7 ......\r\n"));
             for (j = 0; j < 4 || j < dmpUpdate[2] + 3; j++, pos++) dmpUpdate[j] = dmpUpdates[pos];
             MPU6050_writeMemoryBlock(dmpUpdate + 3, dmpUpdate[2], dmpUpdate[0], dmpUpdate[1], 0, 0);
-            printf(("写入最后内存跟新到 4/7 ......\r\n"));
+            //printf(("写入最后内存跟新到 4/7 ......\r\n"));
             for (j = 0; j < 4 || j < dmpUpdate[2] + 3; j++, pos++) dmpUpdate[j] = dmpUpdates[pos];
             MPU6050_writeMemoryBlock(dmpUpdate + 3, dmpUpdate[2], dmpUpdate[0], dmpUpdate[1], 0, 0);
-            printf(("写入最后内存跟新到 5/7 ......\r\n"));
+            //printf(("写入最后内存跟新到 5/7 ......\r\n"));
             for (j = 0; j < 4 || j < dmpUpdate[2] + 3; j++, pos++) dmpUpdate[j] = dmpUpdates[pos];
             MPU6050_writeMemoryBlock(dmpUpdate + 3, dmpUpdate[2], dmpUpdate[0], dmpUpdate[1], 0, 0);
-            printf(("等待FIFO计数>=2...\r\n"));
+            //printf(("等待FIFO计数>=2...\r\n"));
             while ((fifoCount = MPU6050_getFIFOCount()) < 3);
-            printf(("复位 FIFO...\r\n"));
+            //printf(("复位 FIFO...\r\n"));
             MPU6050_getFIFOBytes(fifoBuffer, min(fifoCount, 128)); // safeguard only 128 bytes
-            printf(("读取中断状态...\r\n"));
+            //printf(("读取中断状态...\r\n"));
             MPU6050_getIntStatus();
-            printf(("写入最后内存跟新到 6/7 ......\r\n"));
+            //printf(("写入最后内存跟新到 6/7 ......\r\n"));
             for (j = 0; j < 4 || j < dmpUpdate[2] + 3; j++, pos++) dmpUpdate[j] = dmpUpdates[pos];
             MPU6050_readMemoryBlock(dmpUpdate + 3, dmpUpdate[2], dmpUpdate[0], dmpUpdate[1]);
-            printf(("等待FIFO计数>=2...\r\n"));
+            //printf(("等待FIFO计数>=2...\r\n"));
             while ((fifoCount = MPU6050_getFIFOCount()) < 3);
-            printf(("正在读取FIFO...\r\n"));
+            //printf(("正在读取FIFO...\r\n"));
             MPU6050_getFIFOBytes(fifoBuffer, min(fifoCount, 128)); // safeguard only 128 bytes
-            printf(("正在读取中断状态...\r\n"));
+            //printf(("正在读取中断状态...\r\n"));
             MPU6050_getIntStatus();
-            printf(("写入最后内存跟新到 7/7 ......\r\n"));
+            //printf(("写入最后内存跟新到 7/7 ......\r\n"));
             for (j = 0; j < 4 || j < dmpUpdate[2] + 3; j++, pos++) dmpUpdate[j] = dmpUpdates[pos];
             MPU6050_writeMemoryBlock(dmpUpdate + 3, dmpUpdate[2], dmpUpdate[0], dmpUpdate[1], 0, 0);
-            printf(("DMP设置一切正常...\r\n"));
+            //printf(("DMP设置一切正常...\r\n"));
 
-            printf(("关闭DMP引擎...\r\n"));
+            //printf(("关闭DMP引擎...\r\n"));
             MPU6050_setDMPEnabled(0);
-            printf(("设置内部42字节缓冲包...\r\n"));
+            //printf(("设置内部42字节缓冲包...\r\n"));
             dmpPacketSize = 42;	 
-            printf(("最后一次复位FIFO和中断状态...\r\n"));
+            //printf(("最后一次复位FIFO和中断状态...\r\n"));
             MPU6050_resetFIFO();
             MPU6050_getIntStatus();
-            printf(("打开DMP引擎...\r\n"));
+            //printf(("打开DMP引擎...\r\n"));
 			      MPU6050_setDMPEnabled(1);
-			      printf(("DMP引擎准备就绪,等待第一次数据中断...\r\n"));
+			      //printf(("DMP引擎准备就绪,等待第一次数据中断...\r\n"));
 			      MPU6050_getIntStatus();
 
         } else {
-            printf(("DMP引擎配置校验出错...\r\n"));
+            //printf(("DMP引擎配置校验出错...\r\n"));
             return 2; // configuration block loading failed
         }
     } else {
-         printf(("DMP代码校验出错.\r\n"));
+         //printf(("DMP代码校验出错.\r\n"));
         return 1; // main binary block loading failed
     }
-    printf(("======DMP引擎初始化完成========\r\n"));
+    //printf(("======DMP引擎初始化完成========\r\n"));
     return 0; // success
 }
 
@@ -438,7 +452,7 @@ void DMP_Routing(void)
 	        fifoCount -= dmpPacketSize;
 	
 			for(i=0 ; i < dmpPacketSize; i+=2) {
-				ptr[i] = fifoBuffer[i+1];  //数据大小端的处理。
+				ptr[i]   = fifoBuffer[i+1];  //数据大小端的处理。
 				ptr[i+1] = fifoBuffer[i];
 				}
 			DMP_Covert_Data(); //将FIFO的数据进行转换，并解出载体的三个姿态角
@@ -513,36 +527,39 @@ float gyroy_val=0;
 
 
 void DMP_Covert_Data(void){
-	volatile float q[4] , norm ; // 四元数
+	float  qtemp[4],norm ; // 四元数
   
-	//gyro sensitivity to +/-   2000°/s
-	DMP_DATA.dmp_gyrox = ((float)DMP_DATA.GYROx)/16.4f;	    //角速度 转成单位：rad/s
+	// 注意，这里的计算原来是错误的，但因为 PID参数原因，暂时不改
+	//DMP_DATA.GYROx 即为直接的角度deg; 而非AD。  
+	DMP_DATA.dmp_gyrox = ((float)DMP_DATA.GYROx)/16.4f;	    //TOBE FIXED GYROx*M_PI_F/180.0f convert to rad/s
 	DMP_DATA.dmp_gyroy = ((float)DMP_DATA.GYROy)/16.4f;
 	DMP_DATA.dmp_gyroz = ((float)DMP_DATA.GYROz)/16.4f;
 	//acc sensitivity to +/-    4 g
-	DMP_DATA.dmp_accx = (((float)DMP_DATA.ACCx)/8192.0f)*g;	//加速度 转成单位： m/S^2
-	DMP_DATA.dmp_accy = (((float)DMP_DATA.ACCy)/8192.0f)*g;
-	DMP_DATA.dmp_accz = (((float)DMP_DATA.ACCz)/8192.0f)*g;
+	DMP_DATA.dmp_accx = (((float)DMP_DATA.ACCx)/DMP_ACC_SCALE)*ONE_G;	//加速度 转成单位： m/S^2
+	DMP_DATA.dmp_accy = (((float)DMP_DATA.ACCy)/DMP_ACC_SCALE)*ONE_G;
+	DMP_DATA.dmp_accz = (((float)DMP_DATA.ACCz)/DMP_ACC_SCALE)*ONE_G;
   
-	  q[0] = (float)DMP_DATA.qw; 	//提取DMP的四元数
-  	q[1] = (float)DMP_DATA.qx;
-  	q[2] = (float)DMP_DATA.qy;
-  	q[3] = (float)DMP_DATA.qz;
+	qtemp[0] = (float)DMP_DATA.qw; 	//提取DMP的四元数
+	qtemp[1] = (float)DMP_DATA.qx;
+	qtemp[2] = (float)DMP_DATA.qy;
+	qtemp[3] = (float)DMP_DATA.qz;
 	// 四元数归一化
-	norm = dmpinvSqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
-	q[0] = q[0] * norm;
-	q[1] = q[1] * norm;
-	q[2] = q[2] * norm;
-	q[3] = q[3] * norm;
+	norm = dmpinvSqrt(qtemp[0]*qtemp[0] + qtemp[1]*qtemp[1] + qtemp[2]*qtemp[2] + qtemp[3]*qtemp[3]);
+	q[0] = qtemp[0] * norm;
+	q[1] = qtemp[1] * norm;
+	q[2] = qtemp[2] * norm;
+	q[3] = qtemp[3] * norm;
 	
 	DMP_DATA.dmp_roll = (atan2(2.0*(q[0]*q[1] + q[2]*q[3]),
 	                       1 - 2.0*(q[1]*q[1] + q[2]*q[2])))* 180/M_PI;
 	 // we let safe_asin() handle the singularities near 90/-90 in pitch
 	DMP_DATA.dmp_pitch = dmpsafe_asin(2.0*(q[0]*q[2] - q[3]*q[1]))* 180/M_PI;
-
+	//注意：此处计算反了，非右手系。
 	DMP_DATA.dmp_yaw = -atan2(2.0*(q[0]*q[3] + q[1]*q[2]),
 	                     1 - 2.0*(q[2]*q[2] + q[3]*q[3]))* 180/M_PI;
-                       
+  #ifdef YAW_CORRECT
+	DMP_DATA.dmp_yaw=-DMP_DATA.dmp_yaw;
+	#endif
   gyroxGloble=0.0f*gyrox_val+1.0f*(float)DMP_DATA.GYROx;
   gyrox_val=gyroxGloble;
   

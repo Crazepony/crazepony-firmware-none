@@ -365,6 +365,8 @@ extern uint8_t buffer[14];
 
 //供外部调用的API
 void MPU6050_initialize(void); //初始化
+void MPU6050GyroRead(int16_t *gyroData);
+void MPU6050AccRead(int16_t *accData);
 uint8_t MPU6050_testConnection(void); //检测MPU6050是否存在
 unsigned char MPU6050_is_DRY(void);
 void MPU6050_reset(void);
@@ -414,6 +416,8 @@ void MPU6050_resetDMP(void);
 void MPU6050_setI2CMasterModeEnabled(uint8_t enabled);
 void MPU6050_setI2CBypassEnabled(uint8_t enabled);
 void MPU6050_Check(void);
+void MPU6050_setGyroOffset(int16_t offset[3]);
+void MPU6050_setAccOffset(int16_t offset[3]);
 #endif
 
 

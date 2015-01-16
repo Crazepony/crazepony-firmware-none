@@ -12,10 +12,10 @@
 #define TX_PLOAD_WIDTH  32  	// 32 uints TX payload
 //***************************************NRF24L01寄存器指令*******************************************************
 #define NRF_READ_REG    0x00  	// 读寄存器指令
-#define NRF_WRITE_REG   0x20 	// 写寄存器指令
+#define NRF_WRITE_REG   0x20 	  // 写寄存器指令
 #define RD_RX_PLOAD     0x61  	// 读取接收数据指令
 #define WR_TX_PLOAD     0xA0  	// 写待发数据指令
-#define FLUSH_TX        0xE1 	// 冲洗发送 FIFO指令
+#define FLUSH_TX        0xE1 	  // 冲洗发送 FIFO指令
 #define FLUSH_RX        0xE2  	// 冲洗接收 FIFO指令
 #define REUSE_TX_PL     0xE3  	// 定义重复装载数据指令
 #define NOP             0xFF  	// 保留

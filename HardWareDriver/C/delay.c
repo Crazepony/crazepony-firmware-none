@@ -24,6 +24,7 @@
 #include "delay.h"
 #include "UART1.h"
 #include "config.h"
+#include "stm32f10x_it.h"
 
 static u8  fac_us=0;//us延时倍乘数
 static u16 fac_ms=0;//ms延时倍乘数
@@ -56,7 +57,7 @@ void delay_init(u8 SYSCLK)
 *函数原型:		void delay_ms(u16 nms)
 *功　　能:		毫秒级延时  延时nms  nms<=1864 
 *******************************************************************************/
-void delay_ms(u16 nms)
+/*void delay_ms(u16 nms)
 {	 		  	  
 	u32 temp;		   
 	SysTick->LOAD=(u32)nms*fac_ms;//时间加载(SysTick->LOAD为24bit)
@@ -69,7 +70,13 @@ void delay_ms(u16 nms)
 	while(temp&0x01&&!(temp&(1<<16)));//等待时间到达   
 	SysTick->CTRL=0x00;       //关闭计数器
 	SysTick->VAL =0X00;       //清空计数器	  
-}   
+}   */
+void delay_ms(uint16_t nms)
+{
+		uint32_t t0=micros();
+		while(micros() - t0 < nms * 1000);
+			
+}
 
 //延时nus
 //nus为要延时的us数.
@@ -77,6 +84,7 @@ void delay_ms(u16 nms)
 *函数原型:		void delay_us(u32 nus)
 *功　　能:		微秒级延时  延时nus  nms<=1864 
 *******************************************************************************/		    								   
+/*
 void delay_us(u32 nus)
 {		
 	u32 temp;	    	 
@@ -93,7 +101,15 @@ void delay_us(u32 nus)
 
   
   
+}*/
+
+void delay_us(u32 nus)
+{
+		uint32_t t0=micros();
+		while(micros() - t0 < nus);
+			
 }
+
 //粗略延时
 void Delay(unsigned long delay_time)
 {

@@ -24,8 +24,24 @@ mpu6050.c file
 #include "extern_variable.h"
 #include "config.h"
 
+
+/*
+
+#define MPU6000_ACCEL_DEFAULT_RANGE_G			8
+#define MPU6000_ACCEL_DEFAULT_RATE			1000
+#define MPU6000_ACCEL_DEFAULT_DRIVER_FILTER_FREQ	30
+
+#define MPU6000_GYRO_DEFAULT_RANGE_G			8
+#define MPU6000_GYRO_DEFAULT_RATE			1000
+#define MPU6000_GYRO_DEFAULT_DRIVER_FILTER_FREQ		30
+
+#define MPU6000_DEFAULT_ONCHIP_FILTER_FREQ		42
+
+#define MPU6000_ONE_G					9.80665f
+*/
+
 uint8_t buffer[14];
-int16_t MPU6050_FIFO[6][11];
+int16_t  MPU6050_FIFO[6][11];
 int16_t Gx_offset=0,Gy_offset=0,Gz_offset=0;
 
 // uint8_t pgm_read_byte(uint16_t add){
@@ -160,23 +176,80 @@ void MPU6050_Check(void)
 void MPU6050_initialize(void) {
 	//int16_t temp[6];
 //	unsigned char i;
-    MPU6050_setClockSource(MPU6050_CLOCK_PLL_XGYRO); //设置时钟
-    MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_1000);//陀螺仪最大量程 +-1000度每秒
-    MPU6050_setFullScaleAccelRange(MPU6050_ACCEL_FS_2);	//加速度度最大量程 +-2G
-    MPU6050_setSleepEnabled(0);          //进入工作状态
-	  MPU6050_setI2CMasterModeEnabled(0);	 //不让MPU6050 控制AUXI2C
-	  MPU6050_setI2CBypassEnabled(1);	     //主控制器的I2C与	MPU6050的AUXI2C	直通。控制器可以直接访问HMC5883L
-	
 
-	//配置MPU6050 的中断模式 和中断电平模式
-	IICwriteBit(devAddr, MPU6050_RA_INT_PIN_CFG, MPU6050_INTCFG_INT_LEVEL_BIT, 0);
-	IICwriteBit(devAddr, MPU6050_RA_INT_PIN_CFG, MPU6050_INTCFG_INT_OPEN_BIT, 0);
-	IICwriteBit(devAddr, MPU6050_RA_INT_PIN_CFG, MPU6050_INTCFG_LATCH_INT_EN_BIT, 1);
-	IICwriteBit(devAddr, MPU6050_RA_INT_PIN_CFG, MPU6050_INTCFG_INT_RD_CLEAR_BIT, 1);
-	//开数据转换完成中断
-  //IICwriteBit(devAddr, MPU6050_RA_INT_ENABLE, MPU6050_INTERRUPT_DATA_RDY_BIT, 1);
-  MPU6050_Check();//打印设备检测信息
+/* 
+		MPU6050_reset();
+    delay_ms(5); // wait after reset 50ms
+		MPU6050_setRate(0);  
+		MPU6050_setClockSource(MPU6050_CLOCK_PLL_ZGYRO);
+		//printf(("设置DLPF带宽为42Hz...\r\n"));
+		MPU6050_setDLPFMode(MPU6050_DLPF_BW_42);
+		//printf(("设置角速度精度为 +/- 2000 deg/sec...\r\n"));
+		MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+		MPU6050_setFullScaleAccelRange(MPU6050_ACCEL_FS_4);	//加速度度最大量程 
+	*/
+
+		IICwriteByte(devAddr, MPU6050_RA_PWR_MGMT_1, 0x80);      //PWR_MGMT_1    -- DEVICE_RESET 1
+    delay_ms(50);
+    IICwriteByte(devAddr, MPU6050_RA_SMPLRT_DIV, 0x00);      //SMPLRT_DIV    -- SMPLRT_DIV = 0  Sample Rate = Gyroscope Output Rate / (1 + SMPLRT_DIV)
+    IICwriteByte(devAddr, MPU6050_RA_PWR_MGMT_1, 0x03);      //PWR_MGMT_1    -- SLEEP 0; CYCLE 0; TEMP_DIS 0; CLKSEL 3 (PLL with Z Gyro reference)
+    IICwriteByte(devAddr, MPU6050_RA_INT_PIN_CFG, 0 << 7 | 0 << 6 | 0 << 5 | 0 << 4 | 0 << 3 | 0 << 2 | 1 << 1 | 0 << 0);  // INT_PIN_CFG   -- INT_LEVEL_HIGH, INT_OPEN_DIS, LATCH_INT_DIS, INT_RD_CLEAR_DIS, FSYNC_INT_LEVEL_HIGH, FSYNC_INT_DIS, I2C_BYPASS_EN, CLOCK_DIS
+    IICwriteByte(devAddr, MPU6050_RA_CONFIG, MPU6050_DLPF_BW_42);  //CONFIG        -- EXT_SYNC_SET 0 (disable input pin for data sync) ; default DLPF_CFG = 0 => ACC bandwidth = 260Hz  GYRO bandwidth = 256Hz)
+//    IICwriteByte(devAddr, MPU6050_RA_GYRO_CONFIG, 0x18);      //GYRO_CONFIG   -- FS_SEL = 3: Full scale set to 2000 deg/sec
+		MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+    // Accel scale 8g (4096 LSB/g)
+    IICwriteByte(devAddr, MPU6050_RA_ACCEL_CONFIG, 2 << 3);
+
+
 }
+//读acc
+void MPU6050AccRead(int16_t *accData)
+{
+    uint8_t buf[6];
+
+    IICreadBytes(devAddr, MPU6050_RA_ACCEL_XOUT_H, 6, buf);
+    accData[0] = (int16_t)((buf[0] << 8) | buf[1]);
+    accData[1] = (int16_t)((buf[2] << 8) | buf[3]);
+    accData[2] = (int16_t)((buf[4] << 8) | buf[5]);
+
+
+}
+//读gyro
+void MPU6050GyroRead(int16_t *gyroData)
+{
+    uint8_t buf[6];
+
+    IICreadBytes(devAddr, MPU6050_RA_GYRO_XOUT_H, 6, buf);
+    gyroData[0] = (int16_t)((buf[0] << 8) | buf[1]) ;
+    gyroData[1] = (int16_t)((buf[2] << 8) | buf[3]) ;
+    gyroData[2] = (int16_t)((buf[4] << 8) | buf[5]) ;
+}
+
+
+//用于校准 DMP的偏置值
+void MPU6050_setAccOffset(int16_t offset[3])
+{
+		uint8_t buf[2],i=0;
+		for(i=0;i<3;i++)
+		{
+			buf[0]=offset[i]>>8;
+			buf[1]=offset[i];
+			IICwriteBytes(devAddr, MPU6050_RA_XA_OFFS_H + i*2, 2,buf);
+		}	 
+}
+
+void MPU6050_setGyroOffset(int16_t offset[3])
+{
+		uint8_t buf[2],i=0;
+		for(i=0;i<3;i++)
+		{
+			buf[0]=offset[i]>>8;
+			buf[1]=offset[i];
+			IICwriteBytes(devAddr, MPU6050_RA_XG_OFFS_USRH + i*2, 2,buf);
+		}	 
+}
+
+
 
 // BANK_SEL register
 void MPU6050_setMemoryBank(uint8_t bank, uint8_t prefetchEnabled, uint8_t userBank) {
@@ -515,6 +588,7 @@ int8_t MPU6050_getXGyroOffsetTC(void) {
 void MPU6050_setXGyroOffsetTC(int8_t offset) {
     IICwriteBits(devAddr, MPU6050_RA_XG_OFFS_TC, MPU6050_TC_OFFSET_BIT, MPU6050_TC_OFFSET_LENGTH, offset);
 }
+
 
 // YG_OFFS_TC register
 int8_t MPU6050_getYGyroOffsetTC(void) {

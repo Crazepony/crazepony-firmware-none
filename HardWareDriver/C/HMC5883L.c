@@ -27,7 +27,7 @@ HMC5883.c file
 float HMC5883_lastx,HMC5883_lasty,HMC5883_lastz;
 
 int16_t  HMC5883_FIFO[3][11]; //磁力计滤波
-void HMC58X3_getRaw(int16_t *x,int16_t *y,int16_t *z);
+void 	HMC58X3_getRaw(int16_t *x,int16_t *y,int16_t *z);
 
 /**************************实现函数********************************************
 *函数原型:	   unsigned char HMC5883_IS_newdata(void)
