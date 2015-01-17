@@ -34,9 +34,12 @@ ReceiveData.c file
 #include "stm32f10x_it.h"
 #include "SysConfig.h"
 #include "CommApp.h"
+#include "NRF24L01.h"
+#include "delay.h"
+#include "ConfigTable.h"
 
 
-uint8_t 		FLY_ENABLE=0;//飞行使能端  7/-5    14/15
+uint8_t 		FLY_ENABLE=0;//aircraft enable
 
 RC_GETDATA  RC_DATA;//={0,0,0,0},RC_DATA_RAW={0,0,0,0};	// RC_DATA是处理后的期望四通
 
@@ -47,11 +50,8 @@ extern uint32_t lastGetRCTime;
 //输出: 无
 //描述：将收到的2.4G遥控数据赋值给对应的变量
 //作者：马骏
-//备注：没考上研，心情不好
 void ReceiveDataFormNRF(void)
 {
-	
-	
  if((NRF24L01_RXDATA[0] == '$')&&(NRF24L01_RXDATA[1] == 'M')&&(NRF24L01_RXDATA[2] == '<'))
 	 {
 		 switch(NRF24L01_RXDATA[4])
@@ -75,6 +75,48 @@ void ReceiveDataFormNRF(void)
 		 
 	 }	
 		lastGetRCTime=millis();		//ms
+}
+
+/*****NRF24L01 match *****/
+static uint8_t sta;
+extern u8  RX_ADDRESS[RX_ADR_WIDTH];		
+extern void SaveParamsToEEPROM(void);
+u8 NRFMatched = 0;
+
+void NRFmatching(void)
+{
+	static uint32_t nTs,nT;
+	static uint32_t writeOvertime = 2 * 1000000;// unit :us
+	sta = NRF_Read_Reg(NRF_READ_REG + NRFRegSTATUS);// data interrupt
+	
+	LedC_on;   //led3 always on when 2.4G matching
+	nTs = micros();
+	
+  do  
+	{
+		  NRFMatched = 0;
+		  nT = micros() - nTs;
+		  
+		  if(nT >= writeOvertime){RX_ADDRESS[4] = table.NRFaddr[4];break;}//exit when time out,and do not change original address
+		
+			RX_ADDRESS[4]++;
+			if(RX_ADDRESS[4] == 0xff )RX_ADDRESS[4] = 0x00;
+			
+			NRF_Write_Buf(NRF_WRITE_REG+RX_ADDR_P0,(uint8_t*)RX_ADDRESS,RX_ADR_WIDTH);//write RX panel address
+		  delay_ms(1);
+		  sta = NRF_Read_Reg(NRF_READ_REG + NRFRegSTATUS);
+		  
+		  
+		  if( (sta & 0x0E )!= 0x0E )NRFMatched = 1;
+  }
+	while((sta & 0x0E )== 0x0E); 
+	
+	SetRX_Mode();                 // reset RX mode
+	if((NRFMatched == 1)&&(RX_ADDRESS[4]!= table.NRFaddr[4])) SaveParamsToEEPROM();//write eeprom when current addr != original addr
+	
+	LedC_off;// matching end 
+	 
+		
 }
 
 

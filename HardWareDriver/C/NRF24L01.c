@@ -34,8 +34,8 @@ uint8_t NRF24L01_TXDATA[RX_PLOAD_WIDTH];//nrf24l01需要发送的数据
 
 
 //修改该接收和发送地址，可以供多个飞行器在同一区域飞行，数据不受干扰
-u8  TX_ADDRESS[TX_ADR_WIDTH]= {0x34,0xc3,0x10,0x10,0x11};	//本地地址
-u8  RX_ADDRESS[RX_ADR_WIDTH]= {0x34,0xc3,0x10,0x10,0x11};	//接收地址				
+// u8  TX_ADDRESS[TX_ADR_WIDTH]= {0x34,0xc3,0x10,0x10,0x11};	//本地地址
+u8  RX_ADDRESS[RX_ADR_WIDTH]= {0x34,0xc3,0x10,0x10,0x00};	//接收地址				
 
 
 //写寄存器
@@ -127,23 +127,23 @@ void SetRX_Mode(void)
     printf("NRF24L01设为接收模式...\r\n");
 } 
 
-//发送模式
-void SetTX_Mode(void)
-{
-    SPI_CE_L();
-    NRF_Write_Reg(FLUSH_TX,0xff);										//清除TX FIFO寄存器		  
-    NRF_Write_Buf(NRF_WRITE_REG+TX_ADDR,(u8*)TX_ADDRESS,TX_ADR_WIDTH);		//写TX节点地址 
-  	NRF_Write_Buf(NRF_WRITE_REG+RX_ADDR_P0,(u8*)RX_ADDRESS,RX_ADR_WIDTH); 	//设置TX节点地址,主要为了使能ACK	  
-  	NRF_Write_Reg(NRF_WRITE_REG+EN_AA,0x01);     //使能通道0的自动应答    
-  	NRF_Write_Reg(NRF_WRITE_REG+EN_RXADDR,0x01); //使能通道0的接收地址  
-  	NRF_Write_Reg(NRF_WRITE_REG+SETUP_RETR,0x1a);//设置自动重发间隔时间:500us + 86us;最大自动重发次数:10次
-  	NRF_Write_Reg(NRF_WRITE_REG+RF_CH,40);       //设置RF通道为40
-  	NRF_Write_Reg(NRF_WRITE_REG+RF_SETUP,0x0f);  //设置TX发射参数,0db增益,2Mbps,低噪声增益开启   
-  	NRF_Write_Reg(NRF_WRITE_REG+CONFIG,0x0e);    //配置基本工作模式的参数;PWR_UP,EN_CRC,16BIT_CRC,接收模式,开启所有中断
-    SPI_CE_H();
-  
-  
-} 
+// //发送模式
+// void SetTX_Mode(void)
+// {
+//     SPI_CE_L();
+//     NRF_Write_Reg(FLUSH_TX,0xff);										//清除TX FIFO寄存器		  
+//     NRF_Write_Buf(NRF_WRITE_REG+TX_ADDR,(u8*)TX_ADDRESS,TX_ADR_WIDTH);		//写TX节点地址 
+//   	NRF_Write_Buf(NRF_WRITE_REG+RX_ADDR_P0,(u8*)RX_ADDRESS,RX_ADR_WIDTH); 	//设置TX节点地址,主要为了使能ACK	  
+//   	NRF_Write_Reg(NRF_WRITE_REG+EN_AA,0x01);     //使能通道0的自动应答    
+//   	NRF_Write_Reg(NRF_WRITE_REG+EN_RXADDR,0x01); //使能通道0的接收地址  
+//   	NRF_Write_Reg(NRF_WRITE_REG+SETUP_RETR,0x1a);//设置自动重发间隔时间:500us + 86us;最大自动重发次数:10次
+//   	NRF_Write_Reg(NRF_WRITE_REG+RF_CH,40);       //设置RF通道为40
+//   	NRF_Write_Reg(NRF_WRITE_REG+RF_SETUP,0x0f);  //设置TX发射参数,0db增益,2Mbps,低噪声增益开启   
+//   	NRF_Write_Reg(NRF_WRITE_REG+CONFIG,0x0e);    //配置基本工作模式的参数;PWR_UP,EN_CRC,16BIT_CRC,接收模式,开启所有中断
+//     SPI_CE_H();
+//   
+//   
+// } 
 
 
 //查询中断
@@ -153,8 +153,9 @@ void Nrf_Irq(void)
     if(sta & (1<<RX_DR))//接收轮训标志位
     {
         NRF_Read_Buf(RD_RX_PLOAD,NRF24L01_RXDATA,RX_PLOAD_WIDTH);// read receive payload from RX_FIFO buffer
-        ReceiveDataFormNRF();      //自己做修改
+        ReceiveDataFormNRF();    //自己做修改
 				NRF_Write_Reg(0x27, sta);//清除nrf的中断标志位
+			  sta = 0;
     }
     
 }

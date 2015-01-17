@@ -76,9 +76,12 @@ int main(void)
 
   NRF24L01_INIT();              //NRF24L01初始化
   SetRX_Mode();                 //设无线模块为接收模式
-
+  
+	NRFmatching();								//NRF24L01对频
+	
+	
   PowerOn();                    //开机等待
-  BT_ATcmdWrite();          //蓝牙写配置
+  BT_ATcmdWrite();              //蓝牙写配置
  
 	BatteryCheck();
 
@@ -86,8 +89,8 @@ int main(void)
 
 	IMU_Init();			// sample rate and cutoff freq.  sample rate is too low now due to using dmp.
 
-	 TIM4_Init(SysClock,1000);	    //定时器4初始化，定时采样传感器数据，更新PID输出，定时器定时基石为1us，PID更新周期为4ms，所以姿态更新频率 为250Hz
-	 MotorPwmFlash(10,10,10,10);
+	TIM4_Init(SysClock,1000);	    //定时器4初始化，定时采样传感器数据，更新PID输出，定时器定时基石为1us，PID更新周期为4ms，所以姿态更新频率 为250Hz
+	MotorPwmFlash(10,10,10,10);
 		
 	altCtrlMode=MANUAL;
 	WaitBaroInitOffset();		//等待气压初始化高度完成
@@ -241,3 +244,4 @@ int main(void)
  
   }
 }
+

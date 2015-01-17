@@ -17,7 +17,10 @@ float pidAltVel[3];
 float accOffset[3];
 float gyroOffset[3];
 float magOffset[3];
+float NRFaddr[5]; 
 float BTstate;    //蓝牙是否需要重新写参数状态
+float NRFmatchFlag;	
+
 }config_table_t;
 
 extern config_table_t table;	

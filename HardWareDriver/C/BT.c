@@ -89,15 +89,15 @@ const char ATcmdAnswer[] =     {"OK"};
 
 const char ATcmdNameAsk[] = 	 {"AT+NAME?"};
 const char ATcmdNameAnswer[] =  {"OK+NAME:Crazepony"};	//{BT_BAUD_AT};//
-const char ATcmdNameSet[] = 	 {"AT+NAMECrazepony"};//设置蓝牙设备名为：Crazepony，当然可以在这里修改成 what ever you want...
+const char ATcmdNameSet[] = 	 {"AT+NAMECrazepony"};    //设置蓝牙设备名为：Crazepony，当然可以在这里修改成 what ever you want...
 
 const char ATcmdCodeAsk[] = 	 {"AT+PIN?"};
 const char ATcmdCodeAnswer[] = {"OK+PIN:1234"};	
-const char ATcmdCodeSet[] =		 {"AT+PIN1234"};    //蓝牙配对密码默认为1234
+const char ATcmdCodeSet[] =		 {"AT+PIN1234"};          //蓝牙配对密码默认为1234
 
 const char ATcmdBaudAsk[] =		 {"AT+BAUD?"};
 const char ATcmdBaudAnswer[] = {"OK+BAUD:115200"};
-const char ATcmdBaudSet[] =    {"AT+BAUD8"};      //修改此处，可以修改蓝牙波特率
+const char ATcmdBaudSet[] =    {"AT+BAUD8"};            //修改此处，可以修改蓝牙波特率
 																//baud1--->1200
 																//baud2--->2400
 																//baud3--->4800
@@ -119,11 +119,11 @@ u32 BT_CurBaud_Get(void)
 		/**确定当前蓝牙波特率**/
 			for(i=0;i<8;i++)
 			{
-				UART1_init(SysClock,bandsel[7-i]); 
+				UART1_init(SysClock,bandsel[i]); 
 				Uart1SendaBTCmd(ATcmdAsk);
 				if(CmdJudgement(ATcmdAnswer) == true)
 				{
-					//printf("\r\nHM-06 baud -->%d\r\n",bandsel[i]);
+				  //printf("\r\nHM-06 baud -->%d\r\n",bandsel[i]);
 					break;//得到当前波特率为Bandsel[i] 
 				}
 			}
@@ -131,6 +131,7 @@ u32 BT_CurBaud_Get(void)
 }
 
 extern void SaveParamsToEEPROM(void);
+
 /********************************************
               写蓝牙参数函数
 ********************************************/
@@ -161,7 +162,6 @@ void BT_ATcmdWrite(void)
 											else ;
 										Uart1SendaBTCmd(ATcmdBaudAsk);
 											if(CmdJudgement(ATcmdBaudAnswer) == false) {
-																																	
 																																	Uart1SendaBTCmd(ATcmdBaudSet);
 																																	LedA_off;LedB_on;LedC_off;LedD_on;												
 																																	BTstate = BThavewrote;

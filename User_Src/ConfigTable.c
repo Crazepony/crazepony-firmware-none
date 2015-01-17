@@ -8,6 +8,7 @@
 #include "imu.h"
 #include "SysConfig.h"
 #include "BT.h"
+#include "NRF24L01.h"
 //
 #define TABLE_ADDRESS (STM32_FLASH_BASE+STM32_FLASH_OFFEST+0)
 //用来存放EEPROM列表上的存放的参数变量的信息
@@ -36,7 +37,7 @@ void TableResetDefault(void)
 //load params for EEPROM
 void TableReadEEPROM(void)
 {
-		uint8_t i=0;
+//		uint8_t i=0;
 		uint8_t paramNums=sizeof(table)/sizeof(float);
 //		for(i=0;i<sizeof(table);i++)
 //		{
@@ -48,8 +49,8 @@ void TableReadEEPROM(void)
 //
 void TableWriteEEPROM(void)
 {
-		uint8_t i=0;
-		float *p;
+//		uint8_t i=0;
+//		float *p;
 		uint8_t paramNums=sizeof(table)/sizeof(float);
 //		for(i=0;i<sizeof(table);i++)
 //		{
@@ -58,6 +59,14 @@ void TableWriteEEPROM(void)
 //		}
 		STMFLASH_Write(TABLE_ADDRESS,(uint16_t *)(&table),paramNums * 2);
 }
+
+
+extern u8 RX_ADDRESS[RX_ADR_WIDTH];
+
+
+extern u8 NRFMatched;
+
+
 void TableToParam(void)
 {
 		uint8_t i=0;
@@ -78,16 +87,25 @@ void TableToParam(void)
 			imu.gyroOffset[i]=table.gyroOffset[i];
 			
 			
-			BTstate = table.BTstate;
-			
-			
+		
 			#ifdef NEW_ATTI_CTRL
-				AttiCtrlParamsFromPIDTable();	//load to new ctrl param
+			AttiCtrlParamsFromPIDTable();	//load to new ctrl param
 			#endif
 			
 		}
+		
+		for(i=0;i<5;i++)
+		((u8 *)(&RX_ADDRESS))[i] = ((float *)(&table.NRFaddr))[i];
+		
+	  BTstate = table.BTstate;
+		NRFMatched = table.NRFmatchFlag;
+		
+		
+		
 }
 //
+
+
 void ParamToTable(void)
 {
 		uint8_t i=0;
@@ -107,11 +125,19 @@ void ParamToTable(void)
 			((float *)(&table.pidAlt))[i]=((float *)(&alt_PID))[i];
 			((float *)(&table.pidAltVel))[i]=((float *)(&alt_vel_PID))[i];
 
-			table.BTstate = BTstate;
-			
+			 
 			table.accOffset[i]=imu.accOffset[i];
 			table.gyroOffset[i]=imu.gyroOffset[i];
 		}
+		
+		for(i=0;i<5;i++)
+		((float *)(&table.NRFaddr))[i] = ((u8 *)(&RX_ADDRESS))[i];
+		
+		
+		table.BTstate = BTstate;
+		table.NRFmatchFlag = NRFMatched;
+		
+		
 }
 //
 void LoadParamsFromEEPROM(void)
