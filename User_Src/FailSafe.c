@@ -69,7 +69,11 @@ void FailSafeLostRC(void)
 						lostRCFlag=1;
 					}
 					else 
+					{
+					  //altCtrlMode=CLIMB_RATE;// relink 
 						lostRCFlag=0;
+					}
+						
 		//		}
 }
 //闪烁状态由几个系统的标志决定,优先级依次按判断顺序上升
@@ -96,8 +100,6 @@ void FailSafeLEDAlarm(void)
 		if(autoLanded && !FLY_ENABLE)
 			LEDCtrl.event=E_AUTO_LANDED;
 		
-		
- 
 }
 
 //
