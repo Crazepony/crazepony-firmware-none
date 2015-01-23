@@ -5,17 +5,19 @@
 
 //
 #define LED_NUM 4
-#define LA	0x01
-#define LB  0x02
-#define LC  0x04
-#define LD  0x08
+#define LA	    0x01
+#define LB      0x02
+#define LC      0x04
+#define LD      0x08
 //
-#define E_READY 		0
-#define E_CALI			1
-#define E_BAT_LOW		2
-#define E_CALI_FAIL	3
-#define E_LOST_RC 	4
+#define E_READY 		   0
+#define E_CALI			   1
+#define E_BAT_LOW		   2
+#define E_CALI_FAIL	   3
+#define E_LOST_RC 	   4
 #define E_AUTO_LANDED  5
+#define E_BatChg       6
+
 
 typedef union{
 	uint8_t byte;

@@ -4,7 +4,9 @@
 
 
 #define BAT_CHK_PRD 5000	//ms
-#define BAT_ALARM_VAL  3.7	//on ground
+#define BAT_ALARM_VAL  3.7	  //on ground
+#define BAT_CHG_VAL    1.0	  // charge battery val.  unit :v
+
 
 
 //电压信息结构体
@@ -17,8 +19,9 @@ float  BatReal;               //电池的实际电压，用万用表测
 float  ADRef;                 //AD参考源电压，这里是单片机供电电压，一般在3.3V左右，要实测
 float  ADinput;               //AD采样输入电压--->R15和R17相连的焊盘电压
 float  Bat_K;                 //计算电压值系数，用于电压校准
-int    BatteryADmin;           //电压门限
-char alarm;			//报警位
+int    BatteryADmin;          //电压门限
+char   alarm;									//报警位
+char   chargeSta;							//充电状态
 }Bat_Typedef;
 
 

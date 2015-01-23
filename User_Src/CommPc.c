@@ -407,27 +407,9 @@ void DebubUploadHandle3()
 		UartSendBuffer( &(up2.sum),1);
 }
 
-//bat info
-void DebugUploadBat(void)
-{
-uint8_t i;
-		
-		checksum=0;
-//		UartBufClear(&UartTxbuf);
-		BufAdd8Chk(0xAA);
-		BufAdd8Chk(0xAA);
-		BufAdd8Chk(0x05);	//cmd
-		BufAdd8Chk(2);	//len
-		//acc
-		BufAddInt16(Battery.BatteryVal * 1000 );
-		BufAdd8Chk(checksum);
-		BufUpload();
-}
-
 void CommPCUploadHandle()
 {
 		static uint8_t pkgDivCnt=0;
-			static uint8_t batDivCnt=0;
 		
 		uint8_t i=0;
 			
@@ -454,10 +436,5 @@ void CommPCUploadHandle()
 		}
 		else if(pkgDivCnt==2)
 			DebubUploadHandle3();
-		
-		if(++batDivCnt>=100)
-		{
-			DebugUploadBat();
-			batDivCnt=0;
-		}
 }
+

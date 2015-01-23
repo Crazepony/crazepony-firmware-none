@@ -99,7 +99,9 @@ void FailSafeLEDAlarm(void)
 		
 		if(autoLanded && !FLY_ENABLE)
 			LEDCtrl.event=E_AUTO_LANDED;
-		
+		  
+		if((Battery.chargeSta))			//battery charge check
+			LEDCtrl.event = E_BatChg;
 }
 
 //

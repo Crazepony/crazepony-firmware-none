@@ -148,6 +148,8 @@ int GetBatteryAD()
  return Get_Adc_Average(8,5);
 }
 
+#include "BT.h"
+
 //检测电池电压
 void BatteryCheck(void)
 {
@@ -164,12 +166,20 @@ void BatteryCheck(void)
 		}
 		else
 		{
-			if(Battery.BatteryVal < BAT_ALARM_VAL)	//低于3.7v
+			if((Battery.BatteryVal < BAT_ALARM_VAL)&&(Battery.BatteryVal > BAT_CHG_VAL))	//低于3.7v 且大于充电检测电压 BAT_CHG_VAL
 				Battery.alarm=1;
 			else
 				Battery.alarm=0;
 		}
-	  
+		
+		if(Battery.BatteryVal < BAT_CHG_VAL) //on charge
+		{
+			Battery.chargeSta = 1; 
+			BT_off();
+		}
+		else 					
+			Battery.chargeSta = 0;
+
 }
 
 

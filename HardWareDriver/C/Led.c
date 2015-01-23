@@ -85,6 +85,11 @@ void LEDReflash(void)
 		else
 			LedD_off;
 		
+// 		
+// 		if(LEDBuf.bits.D)
+// 			LedD_on;
+// 		else
+// 			LedD_off;
 }
 
 //ÊÂ¼þÇý¶¯²ã
@@ -134,6 +139,11 @@ void LEDFSM(void)
 		case E_AUTO_LANDED:
 				 LEDBuf.byte=0x0f;
 			break;
+		
+		case E_BatChg:
+				 LEDBuf.byte=0x00;
+			break;
+		
 	}
 	
 	LEDReflash();
