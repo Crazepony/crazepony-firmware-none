@@ -9,11 +9,11 @@
 #define BT_BAUD_Set     115200
 #define BT_NAME 				"Crazepony"
 #define BT_PIN 				  "1234"
-//AT ×Ö·û´®
+//AT å­—ç¬¦ä¸²
 #define BT_BAUD_AT		 "OK+NAME:" BT_NAME
 
-#define BT_on()      {GPIO_SetBits(GPIOB, GPIO_Pin_2);printf("À¶ÑÀµçÔ´³õÊ¼¿ªÆôÍê³É...\r\n");}
-#define BT_off()     {GPIO_ResetBits(GPIOB, GPIO_Pin_2);printf("À¶ÑÀµçÔ´³õÊ¼»¯¹Ø±ÕÍê³É...\r\n");}//ºê¶¨ÒåÀ¶ÑÀ¿ª¹Ø
+#define BT_on()      {GPIO_SetBits(GPIOB, GPIO_Pin_2);printf("è“ç‰™ç”µæºåˆå§‹å¼€å¯å®Œæˆ...\r\n");}
+#define BT_off()     {GPIO_ResetBits(GPIOB, GPIO_Pin_2);printf("è“ç‰™ç”µæºåˆå§‹åŒ–å…³é—­å®Œæˆ...\r\n");}//å®å®šä¹‰è“ç‰™å¼€å…³
 
 #define CmdreturnLength 20
 
@@ -33,8 +33,8 @@ typedef struct
 
 
 
-void BT_PowerInit(void);   //À¶ÑÀÍ¸´«µçÔ´³õÊ¼»¯
-void BT_ATcmdWrite(void);//À¶ÑÀĞ´²ÎÊı
+void BT_PowerInit(void);   //è“ç‰™é€ä¼ ç”µæºåˆå§‹åŒ–
+void BT_ATcmdWrite(void);//è“ç‰™å†™å‚æ•°
 
 extern float BTstate;
 

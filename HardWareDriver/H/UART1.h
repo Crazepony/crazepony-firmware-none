@@ -19,8 +19,8 @@ typedef struct
   uint8_t *pbuf;
 }UartBuf;
 
-extern UartBuf UartTxbuf;//»·ĞÎ·¢ËÍ½á¹¹Ìå
-extern UartBuf UartRxbuf;//»·ĞÎ½ÓÊÕ½á¹¹Ìå
+extern UartBuf UartTxbuf;//ç¯å½¢å‘é€ç»“æ„ä½“
+extern UartBuf UartRxbuf;//ç¯å½¢æ¥æ”¶ç»“æ„ä½“
 
 extern uint8_t flyLogF;
 

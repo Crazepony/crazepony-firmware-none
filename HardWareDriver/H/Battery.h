@@ -9,19 +9,19 @@
 
 
 
-//µçÑ¹ĞÅÏ¢½á¹¹Ìå
+//ç”µå‹ä¿¡æ¯ç»“æ„ä½“
 typedef struct
 {
     
-int    BatteryAD;             //µçÑ¹ADÖµ
-float  BatteryVal;            //µçÑ¹Êµ¼ÊÖµ
-float  BatReal;               //µç³ØµÄÊµ¼ÊµçÑ¹£¬ÓÃÍòÓÃ±í²â
-float  ADRef;                 //AD²Î¿¼Ô´µçÑ¹£¬ÕâÀïÊÇµ¥Æ¬»ú¹©µçµçÑ¹£¬Ò»°ãÔÚ3.3V×óÓÒ£¬ÒªÊµ²â
-float  ADinput;               //AD²ÉÑùÊäÈëµçÑ¹--->R15ºÍR17ÏàÁ¬µÄº¸ÅÌµçÑ¹
-float  Bat_K;                 //¼ÆËãµçÑ¹ÖµÏµÊı£¬ÓÃÓÚµçÑ¹Ğ£×¼
-int    BatteryADmin;          //µçÑ¹ÃÅÏŞ
-char   alarm;									//±¨¾¯Î»
-char   chargeSta;							//³äµç×´Ì¬
+int    BatteryAD;             //ç”µå‹ADå€¼
+float  BatteryVal;            //ç”µå‹å®é™…å€¼
+float  BatReal;               //ç”µæ± çš„å®é™…ç”µå‹ï¼Œç”¨ä¸‡ç”¨è¡¨æµ‹
+float  ADRef;                 //ADå‚è€ƒæºç”µå‹ï¼Œè¿™é‡Œæ˜¯å•ç‰‡æœºä¾›ç”µç”µå‹ï¼Œä¸€èˆ¬åœ¨3.3Vå·¦å³ï¼Œè¦å®æµ‹
+float  ADinput;               //ADé‡‡æ ·è¾“å…¥ç”µå‹--->R15å’ŒR17ç›¸è¿çš„ç„Šç›˜ç”µå‹
+float  Bat_K;                 //è®¡ç®—ç”µå‹å€¼ç³»æ•°ï¼Œç”¨äºç”µå‹æ ¡å‡†
+int    BatteryADmin;          //ç”µå‹é—¨é™
+char   alarm;									//æŠ¥è­¦ä½
+char   chargeSta;							//å……ç”µçŠ¶æ€
 }Bat_Typedef;
 
 
@@ -30,7 +30,7 @@ void BatteryCheckInit(void);
 u16 Get_Adc_Average(u8 ch,u8 times);             
 int GetBatteryAD(void);     
 void BatteryCheck(void);
-//ÊµÀı»¯Ò»¸öµçÑ¹ĞÅÏ¢½á¹¹Ìå
+//å®ä¾‹åŒ–ä¸€ä¸ªç”µå‹ä¿¡æ¯ç»“æ„ä½“
 extern Bat_Typedef Battery;
 
 

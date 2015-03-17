@@ -61,7 +61,7 @@ void AltitudeCombineThread(void)
   dt = (tPre>0)?((t-tPre)/1000000.0f):0;
 	tPre=t;
 	//store err when sensor update 
-	if(Baro_ALT_Updated)	//ºóÃæÓ¦¸ÃÔÚsensorÊıÖµºó¼ÓÒ»¸ötimeStamp£¬ÅĞ¶ÏÊÇ·ñ¸üĞÂ
+	if(Baro_ALT_Updated)	//åé¢åº”è¯¥åœ¨sensoræ•°å€¼ååŠ ä¸€ä¸ªtimeStampï¼Œåˆ¤æ–­æ˜¯å¦æ›´æ–°
 	{
 			corr_baro = baro_offset - MS5611_Altitude - z_est[0];		// MS5611_Altitude baro alt, is postive above offset level. not in NED. z_est is in NED frame. 
 			Baro_ALT_Updated=0;

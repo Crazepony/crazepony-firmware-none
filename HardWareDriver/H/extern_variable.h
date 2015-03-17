@@ -13,19 +13,19 @@ enum{BT=0,NFRC,PC,APP};
 extern  uint8_t accUpdated;
  
  
-//ÏµÍ³
-extern uint8_t SystemReady_OK;					//ÏµÍ³³õÊ¼»¯Íê³É±êÖ¾
+//ç³»ç»Ÿ
+extern uint8_t SystemReady_OK;					//ç³»ç»Ÿåˆå§‹åŒ–å®Œæˆæ ‡å¿—
 extern uint8_t FLY_ENABLE;					
 
-//·ÉĞĞ¿ª¹Ø
-extern uint8_t IIC_ERROR_CNT;					//iic´íÎó¼ÆÊıÆ÷,Ã¿´Îtim3ÖĞ¶Ï¼Ó1,Èç¹û¶ÁÈ¡³É¹¦ÖÃ0
+//é£è¡Œå¼€å…³
+extern uint8_t IIC_ERROR_CNT;					//iicé”™è¯¯è®¡æ•°å™¨,æ¯æ¬¡tim3ä¸­æ–­åŠ 1,å¦‚æœè¯»å–æˆåŠŸç½®0
 extern uint8_t	I2C2_BUSY;
-volatile extern uint32_t	TIM3_IRQCNT;			//TIM3ÖĞ¶Ï¼ÆÊıÆ÷
-volatile extern uint32_t	TIM2_IRQCNT;			//TIM3ÖĞ¶Ï¼ÆÊıÆ÷
-volatile extern uint8_t 	MPU6050_I2CData_Ready;		//mpu6050¶ÁÈ¡Íê³É±êÖ¾,=1±íÊ¾¶ÁÈ¡Íê³É
+volatile extern uint32_t	TIM3_IRQCNT;			//TIM3ä¸­æ–­è®¡æ•°å™¨
+volatile extern uint32_t	TIM2_IRQCNT;			//TIM3ä¸­æ–­è®¡æ•°å™¨
+volatile extern uint8_t 	MPU6050_I2CData_Ready;		//mpu6050è¯»å–å®Œæˆæ ‡å¿—,=1è¡¨ç¤ºè¯»å–å®Œæˆ
 
          
-//´«¸ĞÆ÷
+//ä¼ æ„Ÿå™¨
 typedef struct int16_xyz
 {
     int16_t X;
@@ -70,14 +70,14 @@ typedef struct float_angle
 }S_FLOAT_ANGLE;
     
              
-extern S_FLOAT_XYZ ACC_F,GYRO_F;	//µ±´Î×ª»»½á¹ûACCµ¥Î»ÎªG,GYROµ¥Î»Îª¶È/Ãë
-extern S_FLOAT_XYZ GYRO_I[3];		//ÍÓÂİÒÇ»ı·Ö
+extern S_FLOAT_XYZ ACC_F,GYRO_F;	//å½“æ¬¡è½¬æ¢ç»“æœACCå•ä½ä¸ºG,GYROå•ä½ä¸ºåº¦/ç§’
+extern S_FLOAT_XYZ GYRO_I[3];		//é™€èºä»ªç§¯åˆ†
 
-extern S_FLOAT_XYZ DIF_ACC;		//²î·Ö¼ÓËÙ¶È
-extern S_FLOAT_XYZ EXP_ANGLE;		//ÆÚÍû½Ç¶È
-extern S_FLOAT_XYZ DIF_ANGLE;		//ÆÚÍû½Ç¶ÈÓëÊµ¼Ê½Ç¶È²î
-extern S_FLOAT_ANGLE Q_ANGLE;		//ËÄÔªÊı¼ÆËã³öµÄ½Ç¶È
-extern S_INT16_XYZ ACC_AVG,GYRO_AVG;		//»¬¶¯´°¿ÚÂË²¨ºóµÄACCÆ½¾ùÖµºÍ´¦ÀíºóµÄgyroÖµ
+extern S_FLOAT_XYZ DIF_ACC;		//å·®åˆ†åŠ é€Ÿåº¦
+extern S_FLOAT_XYZ EXP_ANGLE;		//æœŸæœ›è§’åº¦
+extern S_FLOAT_XYZ DIF_ANGLE;		//æœŸæœ›è§’åº¦ä¸å®é™…è§’åº¦å·®
+extern S_FLOAT_ANGLE Q_ANGLE;		//å››å…ƒæ•°è®¡ç®—å‡ºçš„è§’åº¦
+extern S_INT16_XYZ ACC_AVG,GYRO_AVG;		//æ»‘åŠ¨çª—å£æ»¤æ³¢åçš„ACCå¹³å‡å€¼å’Œå¤„ç†åçš„gyroå€¼
 extern S_FLOAT_ANGLE  Q_ANGLE;	          
                 
 #endif

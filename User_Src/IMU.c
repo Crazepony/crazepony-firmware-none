@@ -10,7 +10,7 @@
                                             ____/ /
                                            /_____/
 Filename:	imu.c
-Author:		Ïé ¡¢Ğ¡Âí
+Author:		ç¥¥ ã€å°é©¬
 ------------------------------------
 */
 #include "config.h"
@@ -25,7 +25,7 @@ uint8_t imuCaliFlag=0;
 // ---
 void IMU_Init(void)
 {
-#ifdef IMU_SW		//Èí½âĞèÒªÏÈĞ£ÍÓÂİ
+#ifdef IMU_SW		//è½¯è§£éœ€è¦å…ˆæ ¡é™€èº
 		imu.ready=0;
 #else
 			imu.ready=1;
@@ -240,8 +240,8 @@ void ReadIMUSensorHandle(void)
 		
 } 
 
-//¼ì²âIMUÊÇ·ñready£¬Ğ£×¼ºÃ
-//ĞèÒª½«ËÄÖá·ÅË®Æ½
+//æ£€æµ‹IMUæ˜¯å¦readyï¼Œæ ¡å‡†å¥½
+//éœ€è¦å°†å››è½´æ”¾æ°´å¹³
 #define ACCZ_ERR_MAX  0.05		//m/s^2
 #define CHECK_TIME 5
 uint8_t IMUCheck(void)
@@ -285,15 +285,15 @@ float accZoffsetTemp=0.6f ;	//m/s2
 //static float q[4];
 
 //imu
-volatile float qa0=1, qa1=0, qa2=0, qa3=0;	//³õÊ¼»¯Öµ
+volatile float qa0=1, qa1=0, qa2=0, qa3=0;	//åˆå§‹åŒ–å€¼
 float IMU_Roll=0,IMU_Pitch=0,IMU_Yaw=0;
 volatile double halftime ;
-volatile uint32_t lastUpdate, now; // ²ÉÑùÖÜÆÚ¼ÆÊı µ¥Î» us
+volatile uint32_t lastUpdate, now; // é‡‡æ ·å‘¨æœŸè®¡æ•° å•ä½ us
 volatile float integralFBx=0,integralFBy=0,integralFBz=0;
 
 
 //-----Get raw acc gyro data from mpu6050 -----//(in600hz)
-//read acc gyro£¬filt and process, 600Hz
+//read acc gyroï¼Œfilt and process, 600Hz
 
 #define ACC_XY_LPF_FACTOR  4.0f	//tobe fixed to digital filter
 #define GYRO_XY_LPF_FACTOR 20.0f	//bigger ,filter more
@@ -301,10 +301,10 @@ volatile float integralFBx=0,integralFBy=0,integralFBz=0;
  
 
 //---------------------imu calculating------------------------//
-/**************************ÊµÏÖº¯Êı********************************************
-¹¦¡¡¡¡ÄÜ:  ¿ìËÙ¼ÆËã 1/Sqrt(x) 	
-ÊäÈë²ÎÊı£º Òª¼ÆËãµÄÖµ
-Êä³ö²ÎÊı£º ½á¹û
+/**************************å®ç°å‡½æ•°********************************************
+åŠŸã€€ã€€èƒ½:  å¿«é€Ÿè®¡ç®— 1/Sqrt(x) 	
+è¾“å…¥å‚æ•°ï¼š è¦è®¡ç®—çš„å€¼
+è¾“å‡ºå‚æ•°ï¼š ç»“æœ
 *******************************************************************************/
 static float invSqrt(float x) 
 {
@@ -329,7 +329,7 @@ void FreeIMU_AHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 	float ex, ey, ez;
 	float temp0,temp1,temp2,temp3;
 
-	// ÏÈ°ÑÕâĞ©ÓÃµÃµ½µÄÖµËãºÃ
+	// å…ˆæŠŠè¿™äº›ç”¨å¾—åˆ°çš„å€¼ç®—å¥½
 	float q0q0 = qa0*qa0;
 	float q0q1 = qa0*qa1;
 	float q0q2 = qa0*qa2;
@@ -341,9 +341,9 @@ void FreeIMU_AHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 	float q2q3 = qa2*qa3;
 	float q3q3 = qa3*qa3;          
 
-	//------------ ¶ÁÈ¡½âËãÊ±¼ä ---------------
-	now = micros();  	  //¶ÁÈ¡Ê±¼ä
-	if(now < lastUpdate)  //¶¨Ê±Æ÷Òç³ö¹ıÁË¡£
+	//------------ è¯»å–è§£ç®—æ—¶é—´ ---------------
+	now = micros();  	  //è¯»å–æ—¶é—´
+	if(now < lastUpdate)  //å®šæ—¶å™¨æº¢å‡ºè¿‡äº†ã€‚
 	{ 
 		halftime =  ((float)(now + (0xffffffff- lastUpdate)) / 2000000.0f);	
 	}
@@ -351,7 +351,7 @@ void FreeIMU_AHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 	{
 		halftime =  ((float)(now - lastUpdate) / 2000000.0f);
 	}
-	lastUpdate = now;	 //¸üĞÂÊ±¼ä
+	lastUpdate = now;	 //æ›´æ–°æ—¶é—´
 	
 	
 	norm = invSqrt(ax*ax + ay*ay + az*az);       
@@ -405,7 +405,7 @@ void IMU_getQ(float * q)
 	
 }
 //******************************************************************************
-// À©Õ¹µÄ·´ÕıÏÒº¯Êı£º¼ì²éÊäÈëÖµµÄ·¶Î§£¨-1~1£©¡¢ÈôÊäÈë·ÇÊı×Ö£¨isnanº¯ÊıÅĞ¶Ï£©Ôò·µ»Ø0
+// æ‰©å±•çš„åæ­£å¼¦å‡½æ•°ï¼šæ£€æŸ¥è¾“å…¥å€¼çš„èŒƒå›´ï¼ˆ-1~1ï¼‰ã€è‹¥è¾“å…¥éæ•°å­—ï¼ˆisnanå‡½æ•°åˆ¤æ–­ï¼‰åˆ™è¿”å›0
 //******************************************************************************
 float safe_asin(float v)
 {
@@ -420,16 +420,16 @@ float safe_asin(float v)
 
 void IMU_getYawPitchRoll(void) 
 {
-  float qn[4]; //ËÄÔªÊı
+  float qn[4]; //å››å…ƒæ•°
 	
-	IMU_getQ(qn); //¸üĞÂÈ«¾ÖËÄÔªÊı
+	IMU_getQ(qn); //æ›´æ–°å…¨å±€å››å…ƒæ•°
 
-	//×¢Òâ£ºÔÚÍÓÂİÒÇ¹æ¶¨µÄ×ø±êÏµÖĞ£¨xÏòÇ°£¬yÏò×ó£¬zÏòÉÏ£©£¬IMU_Roll¡¢IMU_Pitch¡¢IMU_YawµÄ·´Èı½Çº¯ÊıÇ°¾ùÎŞ¸ººÅ
-	//¸Ã×ø±êÏµÓëº½¿Õ×ø±êÏµ£¨xÏòÇ°£¬yÏòÓÒ£¬zÏòÏÂ£©ÊÇ²»Í¬µÄ£¡
+	//æ³¨æ„ï¼šåœ¨é™€èºä»ªè§„å®šçš„åæ ‡ç³»ä¸­ï¼ˆxå‘å‰ï¼Œyå‘å·¦ï¼Œzå‘ä¸Šï¼‰ï¼ŒIMU_Rollã€IMU_Pitchã€IMU_Yawçš„åä¸‰è§’å‡½æ•°å‰å‡æ— è´Ÿå·
+	//è¯¥åæ ‡ç³»ä¸èˆªç©ºåæ ‡ç³»ï¼ˆxå‘å‰ï¼Œyå‘å³ï¼Œzå‘ä¸‹ï¼‰æ˜¯ä¸åŒçš„ï¼
 	IMU_Roll= atan2(2.0f*(qn[0]*qn[1] + qn[2]*qn[3]),1 - 2.0f*(qn[1]*qn[1] + qn[2]*qn[2]))* 180/M_PI_F;
 //	eularRad[0]=Q_ANGLE.Roll * M_PI_F /180.0f;
 	
-	// Ê¹ÓÃÀ©Õ¹µÄ·´ÕıÏÒº¯Êı±ÜÃâ90/-90¶È¸½½üµÄÆæÒìÖµ
+	// ä½¿ç”¨æ‰©å±•çš„åæ­£å¼¦å‡½æ•°é¿å…90/-90åº¦é™„è¿‘çš„å¥‡å¼‚å€¼
 	IMU_Pitch= safe_asin(2.0f*(qn[0]*qn[2] - qn[3]*qn[1]))* 180/M_PI_F;
 //	eularRad[1]=Q_ANGLE.Pitch * M_PI_F /180.0;
 
@@ -552,8 +552,8 @@ mat3 mt3mt3(float m1[3][3],float m2[3][3])
 	mat3 ret;
 	uint8_t i,j,k;
 	
-	for(i=0;i<3;i++)		//ĞĞ
-		for(j=0;j<3;j++)	//ÁĞ
+	for(i=0;i<3;i++)		//è¡Œ
+		for(j=0;j<3;j++)	//åˆ—
 		{
 				ret.m[i][j]=0;
 				for( k=0;k<3;k++)

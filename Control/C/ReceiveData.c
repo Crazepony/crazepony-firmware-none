@@ -10,13 +10,13 @@
                                             ____/ /
                                            /_____/
 ReceiveData.c file
-±àÐ´Õß£ºÐ¡Âí  (Camel)
-×÷ÕßE-mail£º375836945@qq.com
-±àÒë»·¾³£ºMDK-Lite  Version: 4.23
-³õ°æÊ±¼ä: 2014-01-28
-¹¦ÄÜ£º
-1.½ÓÊÕº¯ÊýÎÄ¼þ£¬°üÀ¨½ÓÊÕ2.4GÊý¾Ý£¬UART1µÄÊý¾ÝÁ÷
-2.½âÎöÊý¾Ý°ü£¬·ÖÅä¸ø¶ÔÓ¦µÄ¿ØÖÆÁ¿
+ç¼–å†™è€…ï¼šå°é©¬  (Camel)
+ä½œè€…E-mailï¼š375836945@qq.com
+ç¼–è¯‘çŽ¯å¢ƒï¼šMDK-Lite  Version: 4.23
+åˆç‰ˆæ—¶é—´: 2014-01-28
+åŠŸèƒ½ï¼š
+1.æŽ¥æ”¶å‡½æ•°æ–‡ä»¶ï¼ŒåŒ…æ‹¬æŽ¥æ”¶2.4Gæ•°æ®ï¼ŒUART1çš„æ•°æ®æµ
+2.è§£æžæ•°æ®åŒ…ï¼Œåˆ†é…ç»™å¯¹åº”çš„æŽ§åˆ¶é‡
 ------------------------------------
 */
 
@@ -41,15 +41,15 @@ ReceiveData.c file
 
 uint8_t 		FLY_ENABLE=0;//aircraft enable
 
-RC_GETDATA  RC_DATA;//={0,0,0,0},RC_DATA_RAW={0,0,0,0};	// RC_DATAÊÇ´¦ÀíºóµÄÆÚÍûËÄÍ¨
+RC_GETDATA  RC_DATA;//={0,0,0,0},RC_DATA_RAW={0,0,0,0};	// RC_DATAæ˜¯å¤„ç†åŽçš„æœŸæœ›å››é€š
 
 extern uint32_t lastGetRCTime;
 
-//º¯ÊýÃû£ºReceiveDataFormNRF()
-//ÊäÈë£ºÎÞ
-//Êä³ö: ÎÞ
-//ÃèÊö£º½«ÊÕµ½µÄ2.4GÒ£¿ØÊý¾Ý¸³Öµ¸ø¶ÔÓ¦µÄ±äÁ¿
-//×÷Õß£ºÂí¿¥
+//å‡½æ•°åï¼šReceiveDataFormNRF()
+//è¾“å…¥ï¼šæ— 
+//è¾“å‡º: æ— 
+//æè¿°ï¼šå°†æ”¶åˆ°çš„2.4Gé¥æŽ§æ•°æ®èµ‹å€¼ç»™å¯¹åº”çš„å˜é‡
+//ä½œè€…ï¼šé©¬éª
 void ReceiveDataFormNRF(void)
 {
  if((NRF24L01_RXDATA[0] == '$')&&(NRF24L01_RXDATA[1] == 'M')&&(NRF24L01_RXDATA[2] == '<'))

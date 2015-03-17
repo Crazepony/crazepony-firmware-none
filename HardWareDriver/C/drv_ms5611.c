@@ -1,4 +1,4 @@
-//¸ß¾«¶È ÆøÑ¹¼Æ
+//é«˜ç²¾åº¦ æ°”å‹è®¡
 #include "config.h"
 #include "drv_ms5611.h"
 #include "delay.h"
@@ -44,7 +44,7 @@ uint32_t baroPressureSum = 0;
 int32_t BaroAlt = 0;
 
 
-//¼æÈİĞ¡Âí
+//å…¼å®¹å°é©¬
 #define i2cRead(_xaddr, _xreg, _xcnt, _xbuf) 	IICreadBytes(_xaddr, _xreg, _xcnt, _xbuf)
 bool i2cWrite(uint8_t addr_, uint8_t reg_, uint8_t data)
 {

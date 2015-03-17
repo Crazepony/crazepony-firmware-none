@@ -26,7 +26,7 @@ uint8_t sum;
 }DataPackage_t;
 
 
-//×¢ÒâµØÖ·¶ÔÆëÎÊÌâ£¡£¡
+//æ³¨æ„åœ°å€å¯¹é½é—®é¢˜ï¼ï¼
 HawkerPacket_t up={{0xAA,0xAA},0x01,18};	//upload packet
 DataPackage_t up2={{0xAA,0xAA},0x02,30,{0}};
 
@@ -34,7 +34,7 @@ static void EndianConvert(uint8_t arr[], uint8_t len);
 
 
 
-//·Ö°ü·¢ËÍ£¬·ÖÉ¢cpuÕ¼ÓÃÊ±¼ä
+//åˆ†åŒ…å‘é€ï¼Œåˆ†æ•£cpuå ç”¨æ—¶é—´
 static uint8_t sendPCBuf[64]={0xAA,0xAA,0x01,0x14,0,100,0,200,0,130,0,0,0,100,0,0,0,200,0,0,0,30,0,10,0x6B};
 
 
@@ -81,7 +81,7 @@ static void BufUpload(void)
 		checksum=0;
 }
 
-//¸ù¾İ²»Í¬ÃüÁî×ÖÉÏ´«
+//æ ¹æ®ä¸åŒå‘½ä»¤å­—ä¸Šä¼ 
 void CommPCUpload(uint8_t cmd)
 {
 	//	UartSendBuffer(testData,6);
@@ -142,7 +142,7 @@ void CommPCUpload(uint8_t cmd)
 	 
 }
 
-//½ÓÊÕ
+//æ¥æ”¶
 
 
 static uint8_t cmd=0,len=0,chkSum=0;
@@ -211,10 +211,10 @@ void CommPC(uint8_t c)
 	
 }
 
-//´¦ÀíPC·¢¹ıÀ´µÄÃüÁî
+//å¤„ç†PCå‘è¿‡æ¥çš„å‘½ä»¤
 void CommPCProcessCmd(void)
 {
- 		//UartBufClear(&UartTxbuf);	//ÒÔ±¸·¢ËÍ
+ 		//UartBufClear(&UartTxbuf);	//ä»¥å¤‡å‘é€
 		switch(cmd)
 		{
  			case PC_REQ_PID:

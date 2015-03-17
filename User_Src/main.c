@@ -9,19 +9,19 @@
                                                  / /
                                             ____/ /
                                            /_____/
-±àĞ´Õß£ºĞ¡Âí  (Camel) ¡¢ Ïé(Samit)
-×÷ÕßE-mail£º375836945@qq.com
-±àÒë»·¾³£ºMDK-Lite  Version: 4.23
-³õ°æÊ±¼ä: 2014-01-28
-¹¦ÄÜ£º 
-1. Ó²¼şÇı¶¯
-2. ·ÉĞĞ¿ØÖÆ£º×ÔÎÈ¡¢¶¨¸ß¡¢ÖÇÄÜÍ·Ïò¡¢×Ô¶¯½µÂä¡¢¹ÊÕÏ±£»¤
-3. Ö§³ÖAppÓë2401 RCÍ¬Ê±¿ØÖÆ
-4. App Óë PC¶ËÔÚÏß¼à¿Ø¡¢ÎŞÏßµ÷²Î
+ç¼–å†™è€…ï¼šå°é©¬  (Camel) ã€ ç¥¥(Samit)
+ä½œè€…E-mailï¼š375836945@qq.com
+ç¼–è¯‘ç¯å¢ƒï¼šMDK-Lite  Version: 4.23
+åˆç‰ˆæ—¶é—´: 2014-01-28
+åŠŸèƒ½ï¼š 
+1. ç¡¬ä»¶é©±åŠ¨
+2. é£è¡Œæ§åˆ¶ï¼šè‡ªç¨³ã€å®šé«˜ã€æ™ºèƒ½å¤´å‘ã€è‡ªåŠ¨é™è½ã€æ•…éšœä¿æŠ¤
+3. æ”¯æŒAppä¸2401 RCåŒæ—¶æ§åˆ¶
+4. App ä¸ PCç«¯åœ¨çº¿ç›‘æ§ã€æ— çº¿è°ƒå‚
 ------------------------------------
 */
 #include "SysConfig.h"
-#include "config.h"        //°üº¬ËùÓĞµÄÇı¶¯Í·ÎÄ¼ş
+#include "config.h"        //åŒ…å«æ‰€æœ‰çš„é©±åŠ¨å¤´æ–‡ä»¶
 #include "imu.h"
 #include "Altitude.h"
 #include "CommApp.h"
@@ -40,48 +40,48 @@ uint32_t startTime[5],execTime[5];
 uint32_t realExecPrd[5];	//us , real called period in different loop
  
 /********************************************
-              ·É¿ØÖ÷º¯ÊıÈë¿Ú
-¹¦ÄÜ£º
-1.³õÊ¼»¯¸÷¸öÓ²¼ş
-2.³õÊ¼»¯ÏµÍ³²ÎÊı
+              é£æ§ä¸»å‡½æ•°å…¥å£
+åŠŸèƒ½ï¼š
+1.åˆå§‹åŒ–å„ä¸ªç¡¬ä»¶
+2.åˆå§‹åŒ–ç³»ç»Ÿå‚æ•°
 ********************************************/
 int main(void)
 {
 
-	SystemClock_HSE(9);           //ÏµÍ³Ê±ÖÓ³õÊ¼»¯£¬Ê±ÖÓÔ´Íâ²¿¾§ÕñHSEs  8*9=72MHz;
+	SystemClock_HSE(9);           //ç³»ç»Ÿæ—¶é’Ÿåˆå§‹åŒ–ï¼Œæ—¶é’Ÿæºå¤–éƒ¨æ™¶æŒ¯HSEs  8*9=72MHz;
 	cycleCounterInit();				// Init cycle counter
-	SysTick_Config(SystemCoreClock / 1000);	//SysTick¿ªÆôÏµÍ³tick¶¨Ê±Æ÷²¢³õÊ¼»¯ÆäÖĞ¶Ï£¬1ms
+	SysTick_Config(SystemCoreClock / 1000);	//SysTickå¼€å¯ç³»ç»Ÿtickå®šæ—¶å™¨å¹¶åˆå§‹åŒ–å…¶ä¸­æ–­ï¼Œ1ms
 
 
-	UART1_init(SysClock,BT_BAUD_Set); //´®¿Ú1³õÊ¼»¯
+	UART1_init(SysClock,BT_BAUD_Set); //ä¸²å£1åˆå§‹åŒ–
 	
-  NVIC_INIT();	                //ÖĞ¶Ï³õÊ¼»¯
+  NVIC_INIT();	                //ä¸­æ–­åˆå§‹åŒ–
 
-  STMFLASH_Unlock();            //ÄÚ²¿flash½âËø
+  STMFLASH_Unlock();            //å†…éƒ¨flashè§£é”
 
   LoadParamsFromEEPROM();
 
-  LedInit();	                //IO³õÊ¼»¯
-  //delay_init(SysClock);       //µÎ´ğÑÓÊ±³õÊ¼»¯ ,  ²»ÓÃ´Ë·½Ê½¡£
-  BT_PowerInit();               //À¶ÑÀµçÔ´³õÊ¼»¯Íê³É£¬Ä¬ÈÏ¹Ø±Õ
-  MotorInit();	                //Âí´ï³õÊ¼»¯
-  BatteryCheckInit();           //µç³ØµçÑ¹¼à²â³õÊ¼»¯
-  IIC_Init();                   //IIC³õÊ¼»¯
-#ifdef IMU_SW										//Ê¹ÓÃÈí¼ş½âËã
+  LedInit();	                //IOåˆå§‹åŒ–
+  //delay_init(SysClock);       //æ»´ç­”å»¶æ—¶åˆå§‹åŒ– ,  ä¸ç”¨æ­¤æ–¹å¼ã€‚
+  BT_PowerInit();               //è“ç‰™ç”µæºåˆå§‹åŒ–å®Œæˆï¼Œé»˜è®¤å…³é—­
+  MotorInit();	                //é©¬è¾¾åˆå§‹åŒ–
+  BatteryCheckInit();           //ç”µæ± ç”µå‹ç›‘æµ‹åˆå§‹åŒ–
+  IIC_Init();                   //IICåˆå§‹åŒ–
+#ifdef IMU_SW										//ä½¿ç”¨è½¯ä»¶è§£ç®—
 	MPU6050_initialize();
 #else
-  MPU6050_DMP_Initialize();     //³õÊ¼»¯DMPÒıÇæ
+  MPU6050_DMP_Initialize();     //åˆå§‹åŒ–DMPå¼•æ“
 #endif        
-  //HMC5883L_SetUp();           //³õÊ¼»¯´ÅÁ¦¼ÆHMC5883L
+  //HMC5883L_SetUp();           //åˆå§‹åŒ–ç£åŠ›è®¡HMC5883L
 
-  NRF24L01_INIT();              //NRF24L01³õÊ¼»¯
-  SetRX_Mode();                 //ÉèÎŞÏßÄ£¿éÎª½ÓÊÕÄ£Ê½
+  NRF24L01_INIT();              //NRF24L01åˆå§‹åŒ–
+  SetRX_Mode();                 //è®¾æ— çº¿æ¨¡å—ä¸ºæ¥æ”¶æ¨¡å¼
   
-	NRFmatching();								//NRF24L01¶ÔÆµ
+	NRFmatching();								//NRF24L01å¯¹é¢‘
 	
 	
-  PowerOn();                    //¿ª»úµÈ´ı
-  BT_ATcmdWrite();              //À¶ÑÀĞ´ÅäÖÃ
+  PowerOn();                    //å¼€æœºç­‰å¾…
+  BT_ATcmdWrite();              //è“ç‰™å†™é…ç½®
  
 	BatteryCheck();
 
@@ -89,13 +89,13 @@ int main(void)
 
 	IMU_Init();			// sample rate and cutoff freq.  sample rate is too low now due to using dmp.
 
-	TIM4_Init(SysClock,1000);	    //¶¨Ê±Æ÷4³õÊ¼»¯£¬¶¨Ê±²ÉÑù´«¸ĞÆ÷Êı¾İ£¬¸üĞÂPIDÊä³ö£¬¶¨Ê±Æ÷¶¨Ê±»ùÊ¯Îª1us£¬PID¸üĞÂÖÜÆÚÎª4ms£¬ËùÒÔ×ËÌ¬¸üĞÂÆµÂÊ Îª250Hz
+	TIM4_Init(SysClock,1000);	    //å®šæ—¶å™¨4åˆå§‹åŒ–ï¼Œå®šæ—¶é‡‡æ ·ä¼ æ„Ÿå™¨æ•°æ®ï¼Œæ›´æ–°PIDè¾“å‡ºï¼Œå®šæ—¶å™¨å®šæ—¶åŸºçŸ³ä¸º1usï¼ŒPIDæ›´æ–°å‘¨æœŸä¸º4msï¼Œæ‰€ä»¥å§¿æ€æ›´æ–°é¢‘ç‡ ä¸º250Hz
 	MotorPwmFlash(10,10,10,10);
 		
 	altCtrlMode=MANUAL;
-	WaitBaroInitOffset();		//µÈ´ıÆøÑ¹³õÊ¼»¯¸ß¶ÈÍê³É
+	WaitBaroInitOffset();		//ç­‰å¾…æ°”å‹åˆå§‹åŒ–é«˜åº¦å®Œæˆ
 		
-  while (1)                    //µÈ´ıÊı¾İ¸üĞÂÖĞ¶Ïµ½À´
+  while (1)                    //ç­‰å¾…æ•°æ®æ›´æ–°ä¸­æ–­åˆ°æ¥
   {  
 		/*Use DMP in MPU6050 for imu , it's accurate but slow and time costing and time unstable */
  		//special freq for dmp. 1000/7. use 3-5ms if normal
@@ -111,10 +111,10 @@ int main(void)
 				realExecPrd[0]=micros()-startTime[0];
 				startTime[0]=micros();
  
-				DMP_Routing();	        //DMP Ïß³Ì  ËùÓĞµÄÊı¾İ¶¼ÔÚÕâÀï¸üĞÂ
-				DMP_getYawPitchRoll();  //¶ÁÈ¡ ×ËÌ¬½Ç
+				DMP_Routing();	        //DMP çº¿ç¨‹  æ‰€æœ‰çš„æ•°æ®éƒ½åœ¨è¿™é‡Œæ›´æ–°
+				DMP_getYawPitchRoll();  //è¯»å– å§¿æ€è§’
  
-				execTime[0]=micros()-startTime[0];	//²âÁ¿ÈÎÎñÖ´ĞĞÊ±¼ä£¬CPUÕ¼ÓÃÂÊ
+				execTime[0]=micros()-startTime[0];	//æµ‹é‡ä»»åŠ¡æ‰§è¡Œæ—¶é—´ï¼ŒCPUå ç”¨ç‡
 
 		}
 #endif
@@ -139,18 +139,18 @@ int main(void)
 			#endif
 				accUpdated=1;
 			
-				//ÆøÑ¹¶ÁÈ¡
+				//æ°”å‹è¯»å–
 				MS5611_ThreadNew();		//FSM, take aboue 0.5ms some time
 
-				//imuĞ£×¼
+				//imuæ ¡å‡†
 				if(imuCaliFlag)
 				{
 						if(IMU_Calibrate())
 						{
 							imuCaliFlag=0;
-						//	if( IMUCheck()==1 )	//Ğ£×¼³É¹¦
+						//	if( IMUCheck()==1 )	//æ ¡å‡†æˆåŠŸ
 						//	{
-								gParamsSaveEEPROMRequset=1;	//ÇëÇó¼ÇÂ¼µ½EEPROM
+								gParamsSaveEEPROMRequset=1;	//è¯·æ±‚è®°å½•åˆ°EEPROM
 								imu.caliPass=1;
 						//	}
 						//	else
@@ -230,7 +230,7 @@ int main(void)
 				
 				FailSafeLEDAlarm();	 
 				
-				LEDFSM();			//ÉÁË¸
+				LEDFSM();			//é—ªçƒ
 				
 				execTime[2]=micros()-startTime[2];
 		}

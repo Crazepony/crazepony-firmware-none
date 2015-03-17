@@ -10,14 +10,14 @@
 #endif
 #define IMU_FILTER_CUTOFF_FREQ	30.0f
 #undef  USE_SW_IMU
-//Ğ£×¼Ê±¼ä
+//æ ¡å‡†æ—¶é—´
 #define ACC_CALC_TIME  3000//ms
 #define GYRO_CALC_TIME   3000000l	//us
 
 //typedef float  *vec3;
 typedef float  quad[4];
 //typedef float (*mat3)[3];
-typedef float  vector3f[3];	//²»¿É×÷Îª·µ»ØÖµ£¬Ö¸Õë
+typedef float  vector3f[3];	//ä¸å¯ä½œä¸ºè¿”å›å€¼ï¼ŒæŒ‡é’ˆ
 typedef float  matrix3f[3][3];
 
  
@@ -65,7 +65,7 @@ float 	yawRad;
 #define CONSTANTS_ONE_G					9.80665f		/* m/s^2		*/
 #define CONSTANTS_AIR_DENSITY_SEA_LEVEL_15C		1.225f			/* kg/m^3		*/
 #define CONSTANTS_AIR_GAS_CONST				287.1f 			/* J/(kg * K)		*/
-#define CONSTANTS_ABSOLUTE_NULL_CELSIUS			-273.15f		/* °C			*/
+#define CONSTANTS_ABSOLUTE_NULL_CELSIUS			-273.15f		/* ç™ˆ			*/
 #define CONSTANTS_RADIUS_OF_EARTH			6371000			/* meters (m)		*/
 
 //

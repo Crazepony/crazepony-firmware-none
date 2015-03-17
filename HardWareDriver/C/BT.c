@@ -10,13 +10,13 @@
                                             ____/ /
                                            /_____/
 BT.c file
-±àĞ´Õß£ºĞ¡Âí  (Camel)
-×÷ÕßE-mail£º375836945@qq.com
-±àÒë»·¾³£ºMDK-Lite  Version: 4.23
-³õ°æÊ±¼ä: 2014-01-28
-¹¦ÄÜ£º
-1.À¶ÑÀÍ¸´«Ä£¿éµÄµçÔ´Ê¹ÄÜ¶ËBT_EN--->PB2
-2.´ò¿ªÀ¶ÑÀµçÔ´-->BT_EN=1;
+ç¼–å†™è€…ï¼šå°é©¬  (Camel)
+ä½œè€…E-mailï¼š375836945@qq.com
+ç¼–è¯‘ç¯å¢ƒï¼šMDK-Lite  Version: 4.23
+åˆç‰ˆæ—¶é—´: 2014-01-28
+åŠŸèƒ½ï¼š
+1.è“ç‰™é€ä¼ æ¨¡å—çš„ç”µæºä½¿èƒ½ç«¯BT_EN--->PB2
+2.æ‰“å¼€è“ç‰™ç”µæº-->BT_EN=1;
 ------------------------------------
 */
 
@@ -30,51 +30,51 @@ BT.c file
 #include "control.h"
 #include "Led.h"
 	
-BTtype CrazepoyBT;//ÊµÀı»¯Ò»¸öÀ¶ÑÀ½á¹¹Ìå
-float BTstate;//À¶ÑÀÊÇ·ñĞèÒªĞ´²ÎÊı±êÖ¾
+BTtype CrazepoyBT;//å®ä¾‹åŒ–ä¸€ä¸ªè“ç‰™ç»“æ„ä½“
+float BTstate;//è“ç‰™æ˜¯å¦éœ€è¦å†™å‚æ•°æ ‡å¿—
 	
 	
 /********************************************
-              À¶ÑÀµçÔ´³õÊ¼»¯º¯Êı
+              è“ç‰™ç”µæºåˆå§‹åŒ–å‡½æ•°
 ********************************************/
 void BT_PowerInit(void)
 {
-    RCC->APB2ENR|=1<<3;      //Ê¹ÄÜPORTBÊ±ÖÓ	
-    GPIOB->CRL&=0XFFFFF0FF;  //PB2ÍÆÍìÊä³ö
+    RCC->APB2ENR|=1<<3;      //ä½¿èƒ½PORTBæ—¶é’Ÿ	
+    GPIOB->CRL&=0XFFFFF0FF;  //PB2æ¨æŒ½è¾“å‡º
     GPIOB->CRL|=0X00000300;
-    GPIOB->ODR|=1<<2;        //PB2ÉÏÀ­
+    GPIOB->ODR|=1<<2;        //PB2ä¸Šæ‹‰
     BT_on();   
 
 }
 
 
-char Cmdreturn[CmdreturnLength];//Ö¸ÁîµÄ·µ»Ø½á¹û»º´æ
+char Cmdreturn[CmdreturnLength];//æŒ‡ä»¤çš„è¿”å›ç»“æœç¼“å­˜
 
 /********************************************
-              ÍùÀ¶ÑÀĞ´ÈëÒ»¸öÖ¸Áî°ü
+              å¾€è“ç‰™å†™å…¥ä¸€ä¸ªæŒ‡ä»¤åŒ…
 ********************************************/
 void Uart1SendaBTCmd(const char *p)
 {
   char i;
 	
-  for(i=0;i<CmdreturnLength;i++) Cmdreturn[i] = 0;//ÊÍ·ÅÖ¸Áî½ÓÊÕ»º´æ
+  for(i=0;i<CmdreturnLength;i++) Cmdreturn[i] = 0;//é‡Šæ”¾æŒ‡ä»¤æ¥æ”¶ç¼“å­˜
 	LedA_on;
-	delay_ms(100);//Ğ´ÍêÒ»ÌõÖ¸Áî£¬ÑÓÊ±500msÔÙ¶È½ÓÊÕ»º´æ
+	delay_ms(100);//å†™å®Œä¸€æ¡æŒ‡ä»¤ï¼Œå»¶æ—¶500mså†åº¦æ¥æ”¶ç¼“å­˜
 	LedA_off;
   for(i=0;i<strlen(p);i++)
   UART1_Put_Char(*(p+i));  
-  delay_ms(100);//Ğ´ÍêÒ»ÌõÖ¸Áî£¬ÑÓÊ±500msÔÙ¶È½ÓÊÕ»º´æ
+  delay_ms(100);//å†™å®Œä¸€æ¡æŒ‡ä»¤ï¼Œå»¶æ—¶500mså†åº¦æ¥æ”¶ç¼“å­˜
 	
 	
   i=0;
-  while(UartBuf_Cnt(&UartRxbuf) != 0)     //µ±´®¿Ú»º³å²»Îª¿ÕÊ±£¬½«´®¿Ú»º³å¸³Öµ¸øÖ¸Áî½á¹û»º³å
+  while(UartBuf_Cnt(&UartRxbuf) != 0)     //å½“ä¸²å£ç¼“å†²ä¸ä¸ºç©ºæ—¶ï¼Œå°†ä¸²å£ç¼“å†²èµ‹å€¼ç»™æŒ‡ä»¤ç»“æœç¼“å†²
   Cmdreturn[i++] = UartBuf_RD(&UartRxbuf);
 }
 
 /********************************************
-         ÅĞ¶ÏÒ»¸öÖ¸Áî·µ»ØÊÇ²»ÊÇµÈÓÚÉè¶¨Öµ
-         ·µ»ØÖµ£º0-->Ö¸ÁîÓëÉè¶¨Öµ²»Æ¥Åä
-                 1-->Ö¸ÁîÓëÉè¶¨ÖµÆ¥Åä
+         åˆ¤æ–­ä¸€ä¸ªæŒ‡ä»¤è¿”å›æ˜¯ä¸æ˜¯ç­‰äºè®¾å®šå€¼
+         è¿”å›å€¼ï¼š0-->æŒ‡ä»¤ä¸è®¾å®šå€¼ä¸åŒ¹é…
+                 1-->æŒ‡ä»¤ä¸è®¾å®šå€¼åŒ¹é…
 ********************************************/
 char CmdJudgement(const char *p)
 {
@@ -89,15 +89,15 @@ const char ATcmdAnswer[] =     {"OK"};
 
 const char ATcmdNameAsk[] = 	 {"AT+NAME?"};
 const char ATcmdNameAnswer[] =  {"OK+NAME:Crazepony"};	//{BT_BAUD_AT};//
-const char ATcmdNameSet[] = 	 {"AT+NAMECrazepony"};    //ÉèÖÃÀ¶ÑÀÉè±¸ÃûÎª£ºCrazepony£¬µ±È»¿ÉÒÔÔÚÕâÀïĞŞ¸Ä³É what ever you want...
+const char ATcmdNameSet[] = 	 {"AT+NAMECrazepony"};    //è®¾ç½®è“ç‰™è®¾å¤‡åä¸ºï¼šCrazeponyï¼Œå½“ç„¶å¯ä»¥åœ¨è¿™é‡Œä¿®æ”¹æˆ what ever you want...
 
 const char ATcmdCodeAsk[] = 	 {"AT+PIN?"};
 const char ATcmdCodeAnswer[] = {"OK+PIN:1234"};	
-const char ATcmdCodeSet[] =		 {"AT+PIN1234"};          //À¶ÑÀÅä¶ÔÃÜÂëÄ¬ÈÏÎª1234
+const char ATcmdCodeSet[] =		 {"AT+PIN1234"};          //è“ç‰™é…å¯¹å¯†ç é»˜è®¤ä¸º1234
 
 const char ATcmdBaudAsk[] =		 {"AT+BAUD?"};
 const char ATcmdBaudAnswer[] = {"OK+BAUD:115200"};
-const char ATcmdBaudSet[] =    {"AT+BAUD8"};            //ĞŞ¸Ä´Ë´¦£¬¿ÉÒÔĞŞ¸ÄÀ¶ÑÀ²¨ÌØÂÊ
+const char ATcmdBaudSet[] =    {"AT+BAUD8"};            //ä¿®æ”¹æ­¤å¤„ï¼Œå¯ä»¥ä¿®æ”¹è“ç‰™æ³¢ç‰¹ç‡
 																//baud1--->1200
 																//baud2--->2400
 																//baud3--->4800
@@ -108,15 +108,15 @@ const char ATcmdBaudSet[] =    {"AT+BAUD8"};            //ĞŞ¸Ä´Ë´¦£¬¿ÉÒÔĞŞ¸ÄÀ¶ÑÀ
 																//baud8--->115200                                        
 
 
-/*µÃµ½À¶ÑÀÍ¸´«µ±Ç°Í¨ĞÅ²¨ÌØÂÊ,·µ»Øµ±Ç°²¨ÌØÂÊÖµ*/
+/*å¾—åˆ°è“ç‰™é€ä¼ å½“å‰é€šä¿¡æ³¢ç‰¹ç‡,è¿”å›å½“å‰æ³¢ç‰¹ç‡å€¼*/
 u32 BT_CurBaud_Get(void)
 {
-	static u32 bandsel[8] = {1200,2400,4800,9600,19200,38400,57600,115200};//À¶ÑÀ²¨ÌØÂÊÂÊ±í
+	static u32 bandsel[8] = {1200,2400,4800,9600,19200,38400,57600,115200};//è“ç‰™æ³¢ç‰¹ç‡ç‡è¡¨
   u8 i;
 
-		BT_on();        //¿ªÀ¶ÑÀ
-    delay_ms(500); //µÈ´ıÀ¶ÑÀÎÈ¶¨
-		/**È·¶¨µ±Ç°À¶ÑÀ²¨ÌØÂÊ**/
+		BT_on();        //å¼€è“ç‰™
+    delay_ms(500); //ç­‰å¾…è“ç‰™ç¨³å®š
+		/**ç¡®å®šå½“å‰è“ç‰™æ³¢ç‰¹ç‡**/
 			for(i=0;i<8;i++)
 			{
 				UART1_init(SysClock,bandsel[i]); 
@@ -124,7 +124,7 @@ u32 BT_CurBaud_Get(void)
 				if(CmdJudgement(ATcmdAnswer) == true)
 				{
 				  //printf("\r\nHM-06 baud -->%d\r\n",bandsel[i]);
-					break;//µÃµ½µ±Ç°²¨ÌØÂÊÎªBandsel[i] 
+					break;//å¾—åˆ°å½“å‰æ³¢ç‰¹ç‡ä¸ºBandsel[i] 
 				}
 			}
 	return bandsel[i];
@@ -133,24 +133,24 @@ u32 BT_CurBaud_Get(void)
 extern void SaveParamsToEEPROM(void);
 
 /********************************************
-              Ğ´À¶ÑÀ²ÎÊıº¯Êı
+              å†™è“ç‰™å‚æ•°å‡½æ•°
 ********************************************/
 void BT_ATcmdWrite(void)
 {
 	static	u32 BT_CurBaud;
 
 	BT_CurBaud = BT_CurBaud_Get();
-	if((BT_CurBaud == BT_BAUD_Set))  BTstate = BThavewrote;//¼ì²âµ½À¶ÑÀµ±Ç°µÄ²¨ÌØÂÊºÍÉè¶¨Öµ²»Í¬£¬¾ÍĞ´ÈëÉè¶¨Öµ
+	if((BT_CurBaud == BT_BAUD_Set))  BTstate = BThavewrote;//æ£€æµ‹åˆ°è“ç‰™å½“å‰çš„æ³¢ç‰¹ç‡å’Œè®¾å®šå€¼ä¸åŒï¼Œå°±å†™å…¥è®¾å®šå€¼
 	else 				BTstate = BTneedwrite;
 
 				if(BTstate == BTneedwrite)
 					{
 						LedA_off;LedB_off;LedC_off;LedD_off;
-						UART1_init(SysClock,BT_CurBaud);//ÒÔµ±Ç°²¨ÌØÂÊÖØĞÂ³õÊ¼»¯´®¿Ú 
-						/*¿ªÊ¼ÅäÖÃÀ¶ÑÀÉè±¸Ãû,pinÂë£¬²¨ÌØÂÊ*/
+						UART1_init(SysClock,BT_CurBaud);//ä»¥å½“å‰æ³¢ç‰¹ç‡é‡æ–°åˆå§‹åŒ–ä¸²å£ 
+						/*å¼€å§‹é…ç½®è“ç‰™è®¾å¤‡å,pinç ï¼Œæ³¢ç‰¹ç‡*/
 						Uart1SendaBTCmd(ATcmdAsk);
-						//printf("\r\nÓëÀ¶ÑÀÍ¨ĞÅÖĞ...\r\n");
-								if(CmdJudgement(ATcmdAnswer) == true)//ÓĞÀ¶ÑÀ·µ»Ø£¬²ÅÍùÏÂĞ´Ö¸Áî
+						//printf("\r\nä¸è“ç‰™é€šä¿¡ä¸­...\r\n");
+								if(CmdJudgement(ATcmdAnswer) == true)//æœ‰è“ç‰™è¿”å›ï¼Œæ‰å¾€ä¸‹å†™æŒ‡ä»¤
 									{
 										Uart1SendaBTCmd(ATcmdNameAsk);
 											if(CmdJudgement(ATcmdNameAnswer) == false)  {Uart1SendaBTCmd(ATcmdNameSet);LedA_off;LedB_on;LedC_off;LedD_on; }   
@@ -169,12 +169,12 @@ void BT_ATcmdWrite(void)
 																																	LedA_on;LedB_on;LedC_on;LedD_on;
 																																	delay_ms(1000);
 																																	LedA_off;LedB_off;LedC_off;LedD_off;
-																																	}//×îºóĞŞ¸Ä²¨ÌØÂÊ,²¢Ğ´ÈëEEPROM
+																																	}//æœ€åä¿®æ”¹æ³¢ç‰¹ç‡,å¹¶å†™å…¥EEPROM
 														
 											else BTstate = BTneedwrite;
 									
 									}
-								else  {BTstate = BTneedwrite; printf("\r\nÓëÀ¶ÑÀÍ¨ĞÅÊ§°Ü\r\n");}  
+								else  {BTstate = BTneedwrite; printf("\r\nä¸è“ç‰™é€šä¿¡å¤±è´¥\r\n");}  
 					}
 					else ;
 			UART1_init(SysClock,BT_BAUD_Set);

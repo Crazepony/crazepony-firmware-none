@@ -11,13 +11,13 @@
                                            /_____/
 */
 /* Control.c file
-±àĞ´Õß£ºĞ¡Âí  (Camel) ¡¢Ïé
-×÷ÕßE-mail£º375836945@qq.com
-±àÒë»·¾³£ºMDK-Lite  Version: 4.23
-³õ°æÊ±¼ä: 2014-01-28
-¹¦ÄÜ£º
-1.PID²ÎÊı³õÊ¼»¯
-2.¿ØÖÆº¯Êı
+ç¼–å†™è€…ï¼šå°é©¬  (Camel) ã€ç¥¥
+ä½œè€…E-mailï¼š375836945@qq.com
+ç¼–è¯‘ç¯å¢ƒï¼šMDK-Lite  Version: 4.23
+åˆç‰ˆæ—¶é—´: 2014-01-28
+åŠŸèƒ½ï¼š
+1.PIDå‚æ•°åˆå§‹åŒ–
+2.æ§åˆ¶å‡½æ•°
 
 ------------------------------------
 */
@@ -46,14 +46,14 @@ uint8_t offLandFlag=0;
 
 volatile unsigned char motorLock=1;
 
-int16_t Motor[4]={0};   //¶¨Òåµç»úPWMÊı×é£¬·Ö±ğ¶ÔÓ¦M1-M4
-float rollSp =0,pitchSp =0;		//¸ù¾İ¶¯Á¦·ÖÅäÖØĞÂ¼ÆËãµÃµ½µÄÆÚÍûroll pitch
+int16_t Motor[4]={0};   //å®šä¹‰ç”µæœºPWMæ•°ç»„ï¼Œåˆ†åˆ«å¯¹åº”M1-M4
+float rollSp =0,pitchSp =0;		//æ ¹æ®åŠ¨åŠ›åˆ†é…é‡æ–°è®¡ç®—å¾—åˆ°çš„æœŸæœ›roll pitch
 float Thro=0,Roll=0,Pitch=0,Yaw=0;
 
 
-//----PID½á¹¹ÌåÊµÀı»¯----
-PID_Typedef pitch_angle_PID;	//½Ç¶È»·µÄPID
-PID_Typedef pitch_rate_PID;		//½ÇËÙÂÊ»·µÄPID
+//----PIDç»“æ„ä½“å®ä¾‹åŒ–----
+PID_Typedef pitch_angle_PID;	//è§’åº¦ç¯çš„PID
+PID_Typedef pitch_rate_PID;		//è§’é€Ÿç‡ç¯çš„PID
 
 PID_Typedef roll_angle_PID;
 PID_Typedef roll_rate_PID;
@@ -68,19 +68,19 @@ float gyroxGloble = 0;
 float gyroyGloble = 0;
 
 
-S_FLOAT_XYZ DIF_ACC;		//Êµ¼ÊÈ¥ÆÚÍûÏà²îµÄ¼ÓËÙ¶È
-S_FLOAT_XYZ EXP_ANGLE;	//ÆÚÍû½Ç¶È	
-S_FLOAT_XYZ DIF_ANGLE;	//Êµ¼ÊÓëÆÚÍûÏà²îµÄ½Ç¶È	
+S_FLOAT_XYZ DIF_ACC;		//å®é™…å»æœŸæœ›ç›¸å·®çš„åŠ é€Ÿåº¦
+S_FLOAT_XYZ EXP_ANGLE;	//æœŸæœ›è§’åº¦	
+S_FLOAT_XYZ DIF_ANGLE;	//å®é™…ä¸æœŸæœ›ç›¸å·®çš„è§’åº¦	
 
 uint32_t ctrlPrd=0;
 uint8_t headFreeMode=0;
 float headHold=0;
 
-//º¯ÊıÃû£ºControler()
-//ÊäÈë£ºÎŞ
-//Êä³ö: ÎŞ
-//ÃèÊö£º·É»ú¿ØÖÆº¯ÊıÖ÷Ìå£¬±»¶¨Ê±Æ÷µ÷ÓÃ
-//×÷Õß£ºÂí¿¥
+//å‡½æ•°åï¼šControler()
+//è¾“å…¥ï¼šæ— 
+//è¾“å‡º: æ— 
+//æè¿°ï¼šé£æœºæ§åˆ¶å‡½æ•°ä¸»ä½“ï¼Œè¢«å®šæ—¶å™¨è°ƒç”¨
+//ä½œè€…ï¼šé©¬éª
 
 void Controler(void)
 {     
@@ -90,7 +90,7 @@ void Controler(void)
 	
     Counter_Cnt++;
 		
-    /*******************ÏòÉÏÎ»»ú·¢ËÍ×ËÌ¬ĞÅÏ¢£¬Èç¹ûÒªÔÚPCÉÏÎ»»ú¿´ÊµÊ±×ËÌ¬,ºê¿ª¹Ø¿ØÖÆ***************/
+    /*******************å‘ä¸Šä½æœºå‘é€å§¿æ€ä¿¡æ¯ï¼Œå¦‚æœè¦åœ¨PCä¸Šä½æœºçœ‹å®æ—¶å§¿æ€,å®å¼€å…³æ§åˆ¶***************/
     #ifndef Debug
   //  Send_AtitudeToPC();     
     #else
@@ -102,11 +102,11 @@ void Controler(void)
 					
 				Counter_Cnt=0;
 				#if(RC_SRC==NFRC)
-					Nrf_Irq();           //´Ó2.4G½ÓÊÕ¿ØÖÆÄ¿±ê²ÎÊı
+					Nrf_Irq();           //ä»2.4Gæ¥æ”¶æ§åˆ¶ç›®æ ‡å‚æ•°
 				//#else
-				//ReceiveDataFormUART();//´ÓÀ¶ÑÀÍ¸´«Ä£¿é½ÓÊÕ¿ØÖÆÄ¿±ê²ÎÊı£¬ºÍ2.4G½ÓÊÕ¿ØÖÆÖ»ÄÜÑ¡ÆäÒ»
+				//ReceiveDataFormUART();//ä»è“ç‰™é€ä¼ æ¨¡å—æ¥æ”¶æ§åˆ¶ç›®æ ‡å‚æ•°ï¼Œå’Œ2.4Gæ¥æ”¶æ§åˆ¶åªèƒ½é€‰å…¶ä¸€
 				#endif
-				PID_Calculate();     //=2Ê±¿ØÖÆÒ»´Î,ÆµÂÊ200HZ	
+				PID_Calculate();     //=2æ—¶æ§åˆ¶ä¸€æ¬¡,é¢‘ç‡200HZ	
     }
 		
 		
@@ -118,13 +118,13 @@ void Controler(void)
 
 //#define CONSTRAIN(x,min,max)  {if(x<min) x=min; if(x>max) x=max;}
 
-//-----------Î»ÖÃÊ½PID-----------
+//-----------ä½ç½®å¼PID-----------
 void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t dertT)
 {
  float termI=0;
  float dt= dertT/1000000.0;
-	//-----------Î»ÖÃÊ½PID-----------
-	//Îó²î=ÆÚÍûÖµ-²âÁ¿Öµ
+	//-----------ä½ç½®å¼PID-----------
+	//è¯¯å·®=æœŸæœ›å€¼-æµ‹é‡å€¼
 	PID->Error=target-measure;
 	
 	PID->Deriv= (PID->Error-PID->PreError)/dt;
@@ -132,10 +132,10 @@ void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t dertT)
 	PID->Output=PID->P*PID->Error+PID->I*PID->Integ+PID->D * PID->Deriv;
 	
 	PID->PreError=PID->Error;
-	//½öÓÃÓÚ½Ç¶È»·ºÍ½ÇËÙ¶È»·µÄ
+	//ä»…ç”¨äºè§’åº¦ç¯å’Œè§’é€Ÿåº¦ç¯çš„
 	if(FLY_ENABLE && offLandFlag)
 	{
-			if(fabs(PID->Output) < Thro )		//±ÈÓÍÃÅ»¹´óÊ±²»»ı·Ö
+			if(fabs(PID->Output) < Thro )		//æ¯”æ²¹é—¨è¿˜å¤§æ—¶ä¸ç§¯åˆ†
 			{
 				termI=(PID->Integ) + (PID->Error) * dt;
 				if(termI > - PID->iLimit && termI < PID->iLimit && PID->Output > - PID->iLimit && PID->Output < PID->iLimit)
@@ -151,14 +151,14 @@ void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t dertT)
 
 
 
-//º¯ÊıÃû£ºPID_Calculate()
+//å‡½æ•°åï¼šPID_Calculate()
 
 void PID_Calculate(void)
 {  
 
 	
   /*********************************************************
-     ¼ÆËãÆÚÍû×ËÌ¬ÓëÊµ¼Ê×ËÌ¬µÄ²îÖµ
+     è®¡ç®—æœŸæœ›å§¿æ€ä¸å®é™…å§¿æ€çš„å·®å€¼
     *********************************************************/
     EXP_ANGLE.X = (float)(RC_DATA.ROOL);
     EXP_ANGLE.Y = (float)(RC_DATA.PITCH);
@@ -170,48 +170,48 @@ void PID_Calculate(void)
     DIF_ANGLE.Y = EXP_ANGLE.Y - Q_ANGLE.Pitch;
     DIF_ANGLE.Y = DIF_ANGLE.Y;
 
-    DIF_ACC.Z =  DMP_DATA.dmp_accz - ONE_G;     //Z Öá¼ÓËÙ¶ÈÊµ¼ÊÓë¾²Ö¹Ê±µÄ²îÖµ£¬gÎªµ±µØÖØÁ¦¼ÓËÙ¶È,³õÊ¼»¯Ê±²ÉÑù
+    DIF_ACC.Z =  DMP_DATA.dmp_accz - ONE_G;     //Z è½´åŠ é€Ÿåº¦å®é™…ä¸é™æ­¢æ—¶çš„å·®å€¼ï¼Œgä¸ºå½“åœ°é‡åŠ›åŠ é€Ÿåº¦,åˆå§‹åŒ–æ—¶é‡‡æ ·
   
     /*********************************************************
-     PIDºËĞÄËã·¨²¿·Ö
+     PIDæ ¸å¿ƒç®—æ³•éƒ¨åˆ†
     *********************************************************/
-  //------------¸©Ñö¿ØÖÆ------------
-    //²ÎÊıÕû¶¨Ô­ÔòÎªÏÈÄÚºóÍâ£¬¹ÊÔÚÕû¶¨ÄÚ»·Ê±½«Íâ»·µÄPID¾ùÉèÎª0
-    //Íâ»·¿Ø ÖÆ¡£ÊäÈëÎª½Ç¶È,Êä³öÎª½ÇËÙ¶È¡£PID->Output×÷ÎªÄÚ»·µÄÊäÈë¡£
+  //------------ä¿¯ä»°æ§åˆ¶------------
+    //å‚æ•°æ•´å®šåŸåˆ™ä¸ºå…ˆå†…åå¤–ï¼Œæ•…åœ¨æ•´å®šå†…ç¯æ—¶å°†å¤–ç¯çš„PIDå‡è®¾ä¸º0
+    //å¤–ç¯æ§ åˆ¶ã€‚è¾“å…¥ä¸ºè§’åº¦,è¾“å‡ºä¸ºè§’é€Ÿåº¦ã€‚PID->Outputä½œä¸ºå†…ç¯çš„è¾“å…¥ã€‚
     PID_Postion_Cal(&pitch_angle_PID,EXP_ANGLE.Y,Q_ANGLE.Pitch,0);
     
-    //ÄÚ»·¿ØÖÆ£¬ÊäÈëÎª½ÇËÙ¶È£¬Êä³öÎªPWMÔöÁ¿
+    //å†…ç¯æ§åˆ¶ï¼Œè¾“å…¥ä¸ºè§’é€Ÿåº¦ï¼Œè¾“å‡ºä¸ºPWMå¢é‡
     PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,gyroyGloble,0);
-    //²ÎÊıÕû¶¨Ô­ÔòÎªÏÈÄÚºóÍâ£¬¹ÊÔÚÕû¶¨ÄÚ»·Ê±½«Íâ»·µÄPID¾ùÉèÎª0
+    //å‚æ•°æ•´å®šåŸåˆ™ä¸ºå…ˆå†…åå¤–ï¼Œæ•…åœ¨æ•´å®šå†…ç¯æ—¶å°†å¤–ç¯çš„PIDå‡è®¾ä¸º0
     
     
-    //Íâ»·¿Ø ÖÆ¡£ÊäÈëÎª½Ç¶È,Êä³öÎª½ÇËÙ¶È¡£PID->Output×÷ÎªÄÚ»·µÄÊäÈë¡£
+    //å¤–ç¯æ§ åˆ¶ã€‚è¾“å…¥ä¸ºè§’åº¦,è¾“å‡ºä¸ºè§’é€Ÿåº¦ã€‚PID->Outputä½œä¸ºå†…ç¯çš„è¾“å…¥ã€‚
     PID_Postion_Cal(&roll_angle_PID,EXP_ANGLE.X,Q_ANGLE.Roll,0);
     
-    //ÄÚ»·¿ØÖÆ£¬ÊäÈëÎª½ÇËÙ¶È£¬Êä³öÎªPWMÔöÁ¿
+    //å†…ç¯æ§åˆ¶ï¼Œè¾“å…¥ä¸ºè§’é€Ÿåº¦ï¼Œè¾“å‡ºä¸ºPWMå¢é‡
     PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,gyroxGloble,0);
-    //²ÎÊıÕû¶¨Ô­ÔòÎªÏÈÄÚºóÍâ£¬¹ÊÔÚÕû¶¨ÄÚ»·Ê±½«Íâ»·µÄPID¾ùÉèÎª0
+    //å‚æ•°æ•´å®šåŸåˆ™ä¸ºå…ˆå†…åå¤–ï¼Œæ•…åœ¨æ•´å®šå†…ç¯æ—¶å°†å¤–ç¯çš„PIDå‡è®¾ä¸º0
     
 
-    //Íâ»·¿Ø ÖÆ¡£ÊäÈëÎª½Ç¶È,Êä³öÎª½ÇËÙ¶È¡£PID->Output×÷ÎªÄÚ»·µÄÊäÈë¡£
+    //å¤–ç¯æ§ åˆ¶ã€‚è¾“å…¥ä¸ºè§’åº¦,è¾“å‡ºä¸ºè§’é€Ÿåº¦ã€‚PID->Outputä½œä¸ºå†…ç¯çš„è¾“å…¥ã€‚
     PID_Postion_Cal(&yaw_angle_PID,EXP_ANGLE.Z,Q_ANGLE.Yaw,0);		//-----Problem
     
-    //ÄÚ»·¿ØÖÆ£¬ÊäÈëÎª½ÇËÙ¶È£¬Êä³öÎªPWMÔöÁ¿
+    //å†…ç¯æ§åˆ¶ï¼Œè¾“å…¥ä¸ºè§’é€Ÿåº¦ï¼Œè¾“å‡ºä¸ºPWMå¢é‡
     PID_Postion_Cal(&yaw_rate_PID,-2*EXP_ANGLE.Z,DMP_DATA.GYROz,0);		//--------Problem tobe tested
-    //²ÎÊıÕû¶¨Ô­ÔòÎªÏÈÄÚºóÍâ£¬¹ÊÔÚÕû¶¨ÄÚ»·Ê±½«Íâ»·µÄPID¾ùÉèÎª0
+    //å‚æ•°æ•´å®šåŸåˆ™ä¸ºå…ˆå†…åå¤–ï¼Œæ•…åœ¨æ•´å®šå†…ç¯æ—¶å°†å¤–ç¯çš„PIDå‡è®¾ä¸º0
     
     
-    //»ù´¡ÓÍÃÅ¶¯Á¦
-    //Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;   //RC_DATA.THROTTLEÎª0µ½1000,½«Ò¡¸ËÓÍÃÅÇúÏß×ª»»ÎªÏÂ°¼µÄÅ×ÎïÏß
+    //åŸºç¡€æ²¹é—¨åŠ¨åŠ›
+    //Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;   //RC_DATA.THROTTLEä¸º0åˆ°1000,å°†æ‘‡æ†æ²¹é—¨æ›²çº¿è½¬æ¢ä¸ºä¸‹å‡¹çš„æŠ›ç‰©çº¿
     Thro = RC_DATA.THROTTLE;
-    Thro -=  80*DIF_ACC.Z;                             //¶ÔZÖáÓÃÒ»´Î¸º·´À¡¿ØÖÆ
-	//	Thr = Thr / (cosf(Q_ANGLE.Pitch*M_PI_F/180.0f)*cosf(Q_ANGLE.Roll*M_PI_F/180.0f));	//¶ÔÇãĞ±×ö²¹³¥
+    Thro -=  80*DIF_ACC.Z;                             //å¯¹Zè½´ç”¨ä¸€æ¬¡è´Ÿåé¦ˆæ§åˆ¶
+	//	Thr = Thr / (cosf(Q_ANGLE.Pitch*M_PI_F/180.0f)*cosf(Q_ANGLE.Roll*M_PI_F/180.0f));	//å¯¹å€¾æ–œåšè¡¥å¿
     
     Pitch = pitch_rate_PID.Output;
     Roll  = roll_rate_PID.Output;
     Yaw   = yaw_rate_PID.Output; 
     
-   //½«Êä³öÖµÈÚºÏµ½ËÄ¸öµç»ú 
+   //å°†è¾“å‡ºå€¼èåˆåˆ°å››ä¸ªç”µæœº 
     Motor[2] = (int16_t)(Thro - Pitch -Roll- Yaw );    //M3  
     Motor[0] = (int16_t)(Thro + Pitch +Roll- Yaw );    //M1
     Motor[3] = (int16_t)(Thro - Pitch +Roll+ Yaw );    //M4 
@@ -221,9 +221,9 @@ void PID_Calculate(void)
 //		if(!motorLock)
 			MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);   
    else                  
-			MotorPwmFlash(0,0,0,0);//±ÜÃâ·É»úÂäµØÖØÆôÊ±Í»È»´ò×ª 
+			MotorPwmFlash(0,0,0,0);//é¿å…é£æœºè½åœ°é‡å¯æ—¶çªç„¶æ‰“è½¬ 
    // if(NRF24L01_RXDATA[10]==0xA5) 
-	//		MotorPwmFlash(5,5,Motor[2],Motor[3]); //Ò»¼ü²Ù×÷£¬·­¹ö·µº½µÈ£¬²âÊÔ¹¦ÄÜ£¬²»ÒªÓÃ
+	//		MotorPwmFlash(5,5,Motor[2],Motor[3]); //ä¸€é”®æ“ä½œï¼Œç¿»æ»šè¿”èˆªç­‰ï¼Œæµ‹è¯•åŠŸèƒ½ï¼Œä¸è¦ç”¨
  
 }
 
@@ -265,7 +265,7 @@ void CtrlAttiAng(void)
 			angTarget[ROLL]=rollSp;
 			angTarget[PITCH]=pitchSp;
 		}
-	//	angTarget[YAW]=(float)(RC_DATA.YAW);		//ÒòÎªÓÒÊÖÏµ
+	//	angTarget[YAW]=(float)(RC_DATA.YAW);		//å› ä¸ºå³æ‰‹ç³»
 //		yawRateTarget=
 //		angTarget[YAW]= (angTarget[YAW] + yawRateTarget * dt);
 
@@ -304,13 +304,13 @@ void CtrlAttiRate(void)
 	tPrev=t;
 		
 		yawRateTarget=-(float)RC_DATA.YAW;
-		//×¢Òâ£¬Ô­À´µÄpid²ÎÊı£¬¶ÔÓ¦µÄÊÇ adÖµ,¹Ê×ªÖ®
+		//æ³¨æ„ï¼ŒåŸæ¥çš„pidå‚æ•°ï¼Œå¯¹åº”çš„æ˜¯ adå€¼,æ•…è½¬ä¹‹
 		#ifdef IMU_SW
 		PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,imu.gyro[PITCH]*180.0f/M_PI_F,dt);	
 		PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,imu.gyro[ROLL]*180.0f/M_PI_F,dt);//gyroxGloble
 		PID_Postion_Cal(&yaw_rate_PID,yawRateTarget,imu.gyro[YAW]*180.0f/M_PI_F,dt);//DMP_DATA.GYROz
 	  #else
-		//Ô­²ÎÊı¶ÔÓ¦ÓÚ DMPµÄÖ±½ÓÊä³ögyro , ÊÇdeg.  ÇÒÔ­DMPÖ®ºóµÄ´¦ÀíÔËËãÊÇ´íÎóµÄ
+		//åŸå‚æ•°å¯¹åº”äº DMPçš„ç›´æ¥è¾“å‡ºgyro , æ˜¯deg.  ä¸”åŸDMPä¹‹åçš„å¤„ç†è¿ç®—æ˜¯é”™è¯¯çš„
 		PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,imu.gyro[PITCH]*DMP_GYRO_SCALE,0);	
 		PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,imu.gyro[ROLL]*DMP_GYRO_SCALE,0);//gyroxGloble
 		PID_Postion_Cal(&yaw_rate_PID,yawRateTarget,imu.gyro[YAW]*DMP_GYRO_SCALE,0);          //DMP_DATA.GYROz
@@ -355,10 +355,10 @@ float thrustZInt=0, thrustZSp=0;
 float thrustXYSp[2]={0,0};	//roll pitch
 uint8_t recAltFlag=0;
 float holdAlt=0;
-uint8_t satZ=0,satXY=0;	//ÊÇ·ñ¹ı±¥ºÍ
+uint8_t satZ=0,satXY=0;	//æ˜¯å¦è¿‡é¥±å’Œ
 
 
-#define ALT_LIMIT							2.0f		//ÏŞ¸ß 3.5
+#define ALT_LIMIT							2.0f		//é™é«˜ 3.5
 uint8_t isAltLimit=0;
 float altLand;
 //#define DEBUG_HOLD_REAL_ALT
@@ -378,7 +378,7 @@ void CtrlAlti(void)
 	
 	
 
-	//get dt		//±£Ö¤dtÔËËã²»ÄÜ±»´ò¶Ï£¬±£³Ö¸üĞÂ£¬·ñÔòdt¹ı´ó£¬»ı·Ö±¬Âú¡£
+	//get dt		//ä¿è¯dtè¿ç®—ä¸èƒ½è¢«æ‰“æ–­ï¼Œä¿æŒæ›´æ–°ï¼Œå¦åˆ™dtè¿‡å¤§ï¼Œç§¯åˆ†çˆ†æ»¡ã€‚
 	if(tPrev==0)
 	{
 			tPrev=micros();
@@ -429,7 +429,7 @@ void CtrlAlti(void)
 #ifdef DEBUG_HOLD_REAL_ALT
 	}
 #endif
-	//ÏŞ¸ß
+	//é™é«˜
 	if(isAltLimit)
 	{
 		if(altSp - altLand > ALT_LIMIT)
@@ -472,11 +472,11 @@ void CtrlAlti(void)
 					} 
 					
 	}
-	//Óë¶¯Á¦·ÖÅäÏà¹Ø	testing
+	//ä¸åŠ¨åŠ›åˆ†é…ç›¸å…³	testing
 		satXY=0;
 		satZ=0;
-		thrustXYSp[0]= sinf(RC_DATA.ROOL * M_PI_F /180.0f) ;//Ä¿±ê½Ç¶È×ª¼ÓËÙ¶È £¬Á¦ 
-		thrustXYSp[1]= sinf(RC_DATA.PITCH * M_PI_F /180.0f) ; 	//¹éÒ»»¯
+		thrustXYSp[0]= sinf(RC_DATA.ROOL * M_PI_F /180.0f) ;//ç›®æ ‡è§’åº¦è½¬åŠ é€Ÿåº¦ ï¼ŒåŠ› 
+		thrustXYSp[1]= sinf(RC_DATA.PITCH * M_PI_F /180.0f) ; 	//å½’ä¸€åŒ–
 		thrustXYSpLen= sqrtf(thrustXYSp[0] * thrustXYSp[0] + thrustXYSp[1] * thrustXYSp[1]);
 		//limit tilt max
 		if(thrustXYSpLen >0.01f )
@@ -550,11 +550,11 @@ void CtrlAlti(void)
  
 
 #define ANG_COR_COEF 50.0f
-#define THR_HOLD_LEVEL 1600		//ĞüÍ£ÓÍÃÅ £¬ can measure after baro
+#define THR_HOLD_LEVEL 1600		//æ‚¬åœæ²¹é—¨ ï¼Œ can measure after baro
 
 void CtrlDynamic(void)
 {
-		static float thrAngCorrect;	//¶ÔÇãĞ±×öĞŞÕı
+		static float thrAngCorrect;	//å¯¹å€¾æ–œåšä¿®æ­£
 		float  cosTilt = imu.accb[2] / ONE_G;
 	
 		
@@ -562,10 +562,10 @@ void CtrlDynamic(void)
 		{
 			DIF_ACC.Z =  imu.accb[2] - ONE_G;
 			Thro = RC_DATA.THROTTLE;
-			   // Thr = Thr/(cos) ;                             //¶ÔZÖáÓÃÒ»´Î¸º·´À¡¿ØÖÆ
+			   // Thr = Thr/(cos) ;                             //å¯¹Zè½´ç”¨ä¸€æ¬¡è´Ÿåé¦ˆæ§åˆ¶
 				//way1	
 				//  thrAngCorrect = ANG_COR_COEF * (1-cosTilt) ;
-				 //	Thr += thrAngCorrect;				//²ÉÓÃÆøÑ¹¶¨¸ßÊ±£¬²»ÓÃ´ËĞŞÕı¡£
+				 //	Thr += thrAngCorrect;				//é‡‡ç”¨æ°”å‹å®šé«˜æ—¶ï¼Œä¸ç”¨æ­¤ä¿®æ­£ã€‚
 				//way2	
 				cosTilt=imu.DCMgb[2][2];
 				Thro=Thro/cosTilt;
@@ -576,13 +576,13 @@ void CtrlDynamic(void)
 		}
 		else 
 		{
-				Thro=(-thrustZSp) * 1000;// /imu.DCMgb[2][2];  //Çã½Ç²¹³¥ºóĞ§¹û²»´í£¬ÓĞÊ±¹ıÃÍ
+				Thro=(-thrustZSp) * 1000;// /imu.DCMgb[2][2];  //å€¾è§’è¡¥å¿åæ•ˆæœä¸é”™ï¼Œæœ‰æ—¶è¿‡çŒ›
 				if(Thro>1000)
 					Thro=1000;
 			
 			
 		}
-			 //½«Êä³öÖµÈÚºÏµ½ËÄ¸öµç»ú 
+			 //å°†è¾“å‡ºå€¼èåˆåˆ°å››ä¸ªç”µæœº 
 			Motor[2] = (int16_t)(Thro - Pitch -Roll- Yaw );    //M3  
 			Motor[0] = (int16_t)(Thro + Pitch +Roll- Yaw );    //M1
 			Motor[3] = (int16_t)(Thro - Pitch +Roll+ Yaw );    //M4 
@@ -602,18 +602,18 @@ void CtrlMotor(void)
 
 
 
-#define PIDParameterAdd   0    //PID²ÎÊıĞ´ÈëÊ×µØÖ·Îª
-#define BTParameterAdd    32   //À¶ÑÀ²ÎÊıĞ´ÈëFlashµØÖ·Îª
+#define PIDParameterAdd   0    //PIDå‚æ•°å†™å…¥é¦–åœ°å€ä¸º
+#define BTParameterAdd    32   //è“ç‰™å‚æ•°å†™å…¥Flashåœ°å€ä¸º
 
-Parameter_Typedef PIDParameter;//ÊµÀı»¯Ò»¸öPIDµÄFlash²ÎÊı
-Parameter_Typedef BTParameter; //ÊµÀı»¯Ò»¸öÀ¶ÑÀFlash²ÎÊı
+Parameter_Typedef PIDParameter;//å®ä¾‹åŒ–ä¸€ä¸ªPIDçš„Flashå‚æ•°
+Parameter_Typedef BTParameter; //å®ä¾‹åŒ–ä¸€ä¸ªè“ç‰™Flashå‚æ•°
 
-//º¯ÊıÃû£ºParameterWrite()
-//ÊäÈë£ºÎŞ
-//Êä³ö£ºµ±ÊÕµ½µØÖ·29µÄ×Ö½ÚÎª0xA5Ê±£¬·µ»Ø1£¬·ñÔò·µ»Ø0
-//ÃèÊö£º·É»ú¿ª»úºó£¬µ±¼ì²âµ½Ğ´Èë²ÎÊıÄ£Ê½Ê±£¬Ğ´²ÎÊıÓÃ
-//×÷Õß£ºÂí¿¥
-//±¸×¢£ºÃ»¿¼ÉÏÑĞ£¬ĞÄÇé²»ºÃ
+//å‡½æ•°åï¼šParameterWrite()
+//è¾“å…¥ï¼šæ— 
+//è¾“å‡ºï¼šå½“æ”¶åˆ°åœ°å€29çš„å­—èŠ‚ä¸º0xA5æ—¶ï¼Œè¿”å›1ï¼Œå¦åˆ™è¿”å›0
+//æè¿°ï¼šé£æœºå¼€æœºåï¼Œå½“æ£€æµ‹åˆ°å†™å…¥å‚æ•°æ¨¡å¼æ—¶ï¼Œå†™å‚æ•°ç”¨
+//ä½œè€…ï¼šé©¬éª
+//å¤‡æ³¨ï¼šæ²¡è€ƒä¸Šç ”ï¼Œå¿ƒæƒ…ä¸å¥½
 char  ParameterWrite()
 {
 //         PIDParameter.WriteBuf[0] = 23;
@@ -623,24 +623,24 @@ char  ParameterWrite()
 //         BTParameter.WriteBuf[1]  = 0;
 //         BTParameter.WriteBuf[2]  = 0;
   
-        //STMFLASH_Write(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PIDParameterAdd,PIDParameter.WriteBuf,3); //PID ²ÎÊıĞ´ÈëFlash
-        STMFLASH_Write(STM32_FLASH_BASE+STM32_FLASH_OFFEST+BTParameterAdd,BTParameter.WriteBuf,3);  //À¶ÑÀÅäÖÃ²ÎÊıĞ´ÈëFlash
+        //STMFLASH_Write(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PIDParameterAdd,PIDParameter.WriteBuf,3); //PID å‚æ•°å†™å…¥Flash
+        STMFLASH_Write(STM32_FLASH_BASE+STM32_FLASH_OFFEST+BTParameterAdd,BTParameter.WriteBuf,3);  //è“ç‰™é…ç½®å‚æ•°å†™å…¥Flash
        
 return 0;
 }
 
-//º¯ÊıÃû£ºParameterRead()
-//ÊäÈë£ºÎŞ
-//Êä³ö£ºÎŞ
-//ÃèÊö£º³õÊ¼»¯Ê±£¬¶ÁÈ¡ÉÏÎ»»ú×îºóÒ»´ÎÉè¶¨µÄ²ÎÊı
-//×÷Õß£ºÂí¿¥
-//±¸×¢£ºÃ»¿¼ÉÏÑĞ£¬ĞÄÇé²»ºÃ
+//å‡½æ•°åï¼šParameterRead()
+//è¾“å…¥ï¼šæ— 
+//è¾“å‡ºï¼šæ— 
+//æè¿°ï¼šåˆå§‹åŒ–æ—¶ï¼Œè¯»å–ä¸Šä½æœºæœ€åä¸€æ¬¡è®¾å®šçš„å‚æ•°
+//ä½œè€…ï¼šé©¬éª
+//å¤‡æ³¨ï¼šæ²¡è€ƒä¸Šç ”ï¼Œå¿ƒæƒ…ä¸å¥½
 void  ParameterRead()
 {      
   //STMFLASH_Read(STM32_FLASH_BASE+STM32_FLASH_OFFEST+PIDParameterAdd,PIDParameter.ReadBuf,3);
   STMFLASH_Read(STM32_FLASH_BASE+STM32_FLASH_OFFEST+BTParameterAdd,BTParameter.ReadBuf,3);
   
-  printf("´ÓFLASHÖĞ¶ÁÈ¡²ÎÊı...\r\n");
+  printf("ä»FLASHä¸­è¯»å–å‚æ•°...\r\n");
 
 }
  

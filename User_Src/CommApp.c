@@ -63,7 +63,7 @@ void RCDataProcess(void)
 		break;
 		case REQ_DISARM:
 			FLY_ENABLE=0;
-			altCtrlMode=MANUAL;		//ÉÏËøºó¼ÓµÄ´¦Àí
+			altCtrlMode=MANUAL;		//ä¸Šé”åŽåŠ çš„å¤„ç†
 			 zIntReset=1;		//
 			 thrustZSp=0;	
 			 thrustZInt=HOVER_THRU;
@@ -114,7 +114,7 @@ void CommAppCmdProcess(void)
 					 case MSP_STOP_HEAD_FREE:
 						 SetHeadFree(0);
 						 break;
-					 case MSP_LAND_DOWN:		//×Ô¶¯½µÂä
+					 case MSP_LAND_DOWN:		//è‡ªåŠ¨é™è½
 						 altCtrlMode=LANDING;
 						 break;
 			 }
@@ -228,8 +228,8 @@ void AppUpload(uint8_t cmd, uint8_t dataLen, uint8_t *dat)
  //   uart8chk(err ? '!' : '>');
 		uart8chk('>');
   	checksum = 0;               // start calculating a new checksum
-    uart8chk(dataLen);	  	//Ó¦´ðÖ¡µÄ°üº¬Êý¾Ý×Ö½ÚÊý£¨²»°üº¬Ö¡Í·£©£¬¿ÉÄÜÊÇÒª·µ»ØµÄACC GYRO MAGµÄÊý¾Ý×Ö½ÚÊý£¬¿ÉÄÜÊÇGPS¡£¡£¡£¡£
-    uart8chk(cmd);	 //	µ±Ç°Ö´ÐÐµÄÃüÁî
+    uart8chk(dataLen);	  	//åº”ç­”å¸§çš„åŒ…å«æ•°æ®å­—èŠ‚æ•°ï¼ˆä¸åŒ…å«å¸§å¤´ï¼‰ï¼Œå¯èƒ½æ˜¯è¦è¿”å›žçš„ACC GYRO MAGçš„æ•°æ®å­—èŠ‚æ•°ï¼Œå¯èƒ½æ˜¯GPSã€‚ã€‚ã€‚ã€‚
+    uart8chk(cmd);	 //	å½“å‰æ‰§è¡Œçš„å‘½ä»¤
 /*	
 	for (i = 0; i < 2; i++)
       serialize16(angle[i]);

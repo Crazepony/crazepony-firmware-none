@@ -4,12 +4,12 @@
 
 
 
-//IO¿Ú²Ù×÷ºê¶¨Òå
+//IOå£æ“ä½œå®å®šä¹‰
 #define BITBAND(addr, bitnum) ((addr & 0xF0000000)+0x2000000+((addr &0xFFFFF)<<5)+(bitnum<<2)) 
 #define MEM_ADDR(addr)  *((volatile unsigned long  *)(addr)) 
 #define BIT_ADDR(addr, bitnum)   MEM_ADDR(BITBAND(addr, bitnum))  
 
-//IO¿ÚµØÖ·Ó³Éä
+//IOå£åœ°å€æ˜ å°„
 #define GPIOA_ODR_Addr    (GPIOA_BASE+12) //0x4001080C 
 #define GPIOB_ODR_Addr    (GPIOB_BASE+12) //0x40010C0C 
 #define GPIOC_ODR_Addr    (GPIOC_BASE+12) //0x4001100C 
@@ -27,30 +27,30 @@
 #define GPIOG_IDR_Addr    (GPIOG_BASE+8) //0x40011E08 
 
 
-#define PBout(n)   BIT_ADDR(GPIOB_ODR_Addr,n)  //Êä³ö 
-#define PBin(n)    BIT_ADDR(GPIOB_IDR_Addr,n)  //ÊäÈë 
+#define PBout(n)   BIT_ADDR(GPIOB_ODR_Addr,n)  //è¾“å‡º 
+#define PBin(n)    BIT_ADDR(GPIOB_IDR_Addr,n)  //è¾“å…¥ 
    	   		   
-////Çı¶¯½Ó¿Ú£¬GPIOÄ£ÄâIIC
+////é©±åŠ¨æ¥å£ï¼ŒGPIOæ¨¡æ‹ŸIIC
 //SCL-->PB6
 //SDA-->PB7
 #define SDA_IN()  {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=0x80000000;}
 #define SDA_OUT() {GPIOB->CRL&=0X0FFFFFFF;GPIOB->CRL|=0x30000000;}
 
 
-//IO²Ù×÷º¯Êı	 
+//IOæ“ä½œå‡½æ•°	 
 #define IIC_SCL    PBout(6) //SCL
 #define IIC_SDA    PBout(7) //SDA	 
-#define READ_SDA   PBin(7)  //ÊäÈëSDA 
+#define READ_SDA   PBin(7)  //è¾“å…¥SDA 
 
-//IICËùÓĞ²Ù×÷º¯Êı
-void IIC_Init(void);          //³õÊ¼»¯IICµÄIO¿Ú				 
-void IIC_Start(void);			   	//·¢ËÍIIC¿ªÊ¼ĞÅºÅ
-void IIC_Stop(void);	  			//·¢ËÍIICÍ£Ö¹ĞÅºÅ
-void IIC_Send_Byte(u8 txd);			//IIC·¢ËÍÒ»¸ö×Ö½Ú
-u8 IIC_Read_Byte(unsigned char ack);//IIC¶ÁÈ¡Ò»¸ö×Ö½Ú
-u8 IIC_Wait_Ack(void); 				//IICµÈ´ıACKĞÅºÅ
-void IIC_Ack(void);					//IIC·¢ËÍACKĞÅºÅ
-void IIC_NAck(void);				//IIC²»·¢ËÍACKĞÅºÅ
+//IICæ‰€æœ‰æ“ä½œå‡½æ•°
+void IIC_Init(void);          //åˆå§‹åŒ–IICçš„IOå£				 
+void IIC_Start(void);			   	//å‘é€IICå¼€å§‹ä¿¡å·
+void IIC_Stop(void);	  			//å‘é€IICåœæ­¢ä¿¡å·
+void IIC_Send_Byte(u8 txd);			//IICå‘é€ä¸€ä¸ªå­—èŠ‚
+u8 IIC_Read_Byte(unsigned char ack);//IICè¯»å–ä¸€ä¸ªå­—èŠ‚
+u8 IIC_Wait_Ack(void); 				//IICç­‰å¾…ACKä¿¡å·
+void IIC_Ack(void);					//IICå‘é€ACKä¿¡å·
+void IIC_NAck(void);				//IICä¸å‘é€ACKä¿¡å·
 
 void IIC_Write_One_Byte(u8 daddr,u8 addr,u8 data);
 u8 IIC_Read_One_Byte(u8 daddr,u8 addr);	 

@@ -10,13 +10,13 @@
                                             ____/ /
                                            /_____/
 Filename:	FailSafe.c
-Author:		Ïé ¡¢Ð¡Âí
+Author:		ç¥¥ ã€å°é©¬
 ------------------------------------
 */
 
 #include "FailSafe.h"
 #include "SysConfig.h"
-#include "config.h"        //°üº¬ËùÓÐµÄÇý¶¯Í·ÎÄ¼þ
+#include "config.h"        //åŒ…å«æ‰€æœ‰çš„é©±åŠ¨å¤´æ–‡ä»¶
 #include "imu.h"
 #include "Altitude.h"
 #include "CommApp.h"
@@ -48,8 +48,8 @@ void FailSafeLostRC(void)
 {
 	uint16_t lostRCTime=0;
 	
-	//·ÉÐÐ¹ý³Ì¶ªÊ§RC¼ì²â 
-			//	if(offLandFlag)	// RC_DATA.THROTTLE range :0-1000 ; ÏÂ½µÓÍÃÅ
+	//é£žè¡Œè¿‡ç¨‹ä¸¢å¤±RCæ£€æµ‹ 
+			//	if(offLandFlag)	// RC_DATA.THROTTLE range :0-1000 ; ä¸‹é™æ²¹é—¨
 			//	{
 					newTime=millis();	//ms
 					lostRCTime=(newTime>lastGetRCTime)?(newTime-lastGetRCTime):(65536-lastGetRCTime+newTime);
@@ -76,14 +76,14 @@ void FailSafeLostRC(void)
 						
 		//		}
 }
-//ÉÁË¸×´Ì¬ÓÉ¼¸¸öÏµÍ³µÄ±êÖ¾¾ö¶¨,ÓÅÏÈ¼¶ÒÀ´Î°´ÅÐ¶ÏË³ÐòÉÏÉý
+//é—ªçƒçŠ¶æ€ç”±å‡ ä¸ªç³»ç»Ÿçš„æ ‡å¿—å†³å®š,ä¼˜å…ˆçº§ä¾æ¬¡æŒ‰åˆ¤æ–­é¡ºåºä¸Šå‡
 void FailSafeLEDAlarm(void)
 {
 		
 		LEDCtrl.event=E_READY;
 	
 
-		if(!imu.ready)		//¿ª»úimu×¼±¸
+		if(!imu.ready)		//å¼€æœºimuå‡†å¤‡
 			LEDCtrl.event=E_CALI;
 		if(lostRCFlag)
 			LEDCtrl.event=E_LOST_RC;	
@@ -116,7 +116,7 @@ void AutoLand(void)
 				landStartTime=millis();
 			landTime=millis() - landStartTime;
 //			if(landed==1)
-			if( landTime>4000 /*&& ( -nav.vz <0.35)  &&( -thrustZSp < 0.6)*/  )	//½µµ½µØ¼ì²â //||(fabs(nav.vz)<0.1 && fabs(nav.az)<0.1)
+			if( landTime>4000 /*&& ( -nav.vz <0.35)  &&( -thrustZSp < 0.6)*/  )	//é™åˆ°åœ°æ£€æµ‹ //||(fabs(nav.vz)<0.1 && fabs(nav.az)<0.1)
 			{
 					altCtrlMode=MANUAL;
 					FLY_ENABLE=0;
@@ -152,7 +152,7 @@ void FlightModeFSMSimple(void)
 									thrustZSp=0;
 									altCtrlMode=CLIMB_RATE;
 									offLandFlag=1;
-									altLand=-nav.z;		//¼ÇÂ¼Æð·ÉÊ±µÄ¸ß¶È
+									altLand=-nav.z;		//è®°å½•èµ·é£žæ—¶çš„é«˜åº¦
 									#ifdef AUTO_MW
 									SetHeadFree(1);
 									#endif

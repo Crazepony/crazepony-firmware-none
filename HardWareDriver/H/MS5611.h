@@ -40,7 +40,7 @@
 //  Altitude    in meter
 //  VerticalSpeed in m/s
 extern volatile float MS5611_Temperature,MS5611_Pressure,MS5611_Altitude,MS5611_VerticalSpeed;
-extern uint8_t Baro_ALT_Updated ; //ÆøÑ¹¼Æ¸ß¶È¸üĞÂÍê³É±êÖ¾¡£
+extern uint8_t Baro_ALT_Updated ; //æ°”å‹è®¡é«˜åº¦æ›´æ–°å®Œæˆæ ‡å¿—ã€‚
 extern uint8_t paOffsetInited;
 void MS5611_Init(void);
 void MS5611_Thread(void);

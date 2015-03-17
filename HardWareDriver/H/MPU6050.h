@@ -363,11 +363,11 @@
 extern float Acc1G_Values;
 extern uint8_t buffer[14];
 
-//¹©Íâ²¿µ÷ÓÃµÄAPI
-void MPU6050_initialize(void); //³õÊ¼»¯
+//ä¾›å¤–éƒ¨è°ƒç”¨çš„API
+void MPU6050_initialize(void); //åˆå§‹åŒ–
 void MPU6050GyroRead(int16_t *gyroData);
 void MPU6050AccRead(int16_t *accData);
-uint8_t MPU6050_testConnection(void); //¼ì²âMPU6050ÊÇ·ñ´æÔÚ
+uint8_t MPU6050_testConnection(void); //æ£€æµ‹MPU6050æ˜¯å¦å­˜åœ¨
 unsigned char MPU6050_is_DRY(void);
 void MPU6050_reset(void);
 void MPU6050_setSleepEnabled(uint8_t enabled);

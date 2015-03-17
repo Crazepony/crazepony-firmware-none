@@ -10,7 +10,7 @@
                                             ____/ /
                                            /_____/
 Filename:	Altitude.c
-Author:		Ïé ¡¢Ğ¡Âí
+Author:		ç¥¥ ã€å°é©¬
 ------------------------------------
 */
 #include "config.h"
@@ -90,7 +90,7 @@ void AltitudeCombineThread(void)
 			return;
 	
 	//store err when sensor update 
-	if(Baro_ALT_Updated)	//ºóÃæÓ¦¸ÃÔÚsensorÊıÖµºó¼ÓÒ»¸ötimeStamp£¬ÅĞ¶ÏÊÇ·ñ¸üĞÂ
+	if(Baro_ALT_Updated)	//åé¢åº”è¯¥åœ¨sensoræ•°å€¼ååŠ ä¸€ä¸ªtimeStampï¼Œåˆ¤æ–­æ˜¯å¦æ›´æ–°
 	{
 			corr_baro = 0 - MS5611_Altitude - z_est[0];		// MS5611_Altitude baro alt, is postive above offset level. not in NED. z_est is in NED frame. 
 			Baro_ALT_Updated=0;
@@ -210,7 +210,7 @@ uint8_t DetectLand(void)
 		} 
 		else 
 		{
-			if (alt_disp2 < land_disp2   && (-thrustZSp < LAND_THRUST) ) 	//land  Ìõ¼ş
+			if (alt_disp2 < land_disp2   && (-thrustZSp < LAND_THRUST) ) 	//land  æ¡ä»¶
 			{
 				if (landed_time == 0) {
 					landed_time = t;    // land detected first time

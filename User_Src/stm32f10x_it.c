@@ -163,7 +163,7 @@ void DelayMs(uint16_t nms)
 			
 }
 // Return system uptime in microseconds (rollover in 70minutes)
-//·µ»Ø us
+//è¿”å›ž us
 uint32_t micros(void)
 {
     register uint32_t ms, cycle_cnt;

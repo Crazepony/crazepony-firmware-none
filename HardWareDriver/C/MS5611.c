@@ -5,21 +5,21 @@
 
 #undef ALTI_SPEED
 
-#define MS5611Press_OSR  MS561101BA_OSR_4096  //ÆøÑ¹²ÉÑù¾«¶È
-#define MS5611Temp_OSR   MS561101BA_OSR_4096  //ÎÂ¶È²ÉÑù¾«¶È
+#define MS5611Press_OSR  MS561101BA_OSR_4096  //æ°”å‹é‡‡æ ·ç²¾åº¦
+#define MS5611Temp_OSR   MS561101BA_OSR_4096  //æ¸©åº¦é‡‡æ ·ç²¾åº¦
 
-// ÆøÑ¹¼Æ×´Ì¬»ú
-#define SCTemperature  0x01	  //¿ªÊ¼ ÎÂ¶È×ª»»
-#define CTemperatureing  0x02  //ÕıÔÚ×ª»»ÎÂ¶È
-#define SCPressure  0x03	  //¿ªÊ¼×ª»» ÆøÑ¹
-#define SCPressureing  0x04	  //ÕıÔÚ×ª»»ÆøÑ¹Öµ
+// æ°”å‹è®¡çŠ¶æ€æœº
+#define SCTemperature  0x01	  //å¼€å§‹ æ¸©åº¦è½¬æ¢
+#define CTemperatureing  0x02  //æ­£åœ¨è½¬æ¢æ¸©åº¦
+#define SCPressure  0x03	  //å¼€å§‹è½¬æ¢ æ°”å‹
+#define SCPressureing  0x04	  //æ­£åœ¨è½¬æ¢æ°”å‹å€¼
 
-#define MOVAVG_SIZE  10	   //±£´æ×î½ü10×éÊı¾İ  5
+#define MOVAVG_SIZE  10	   //ä¿å­˜æœ€è¿‘10ç»„æ•°æ®  5
 
-static uint8_t  Now_doing = SCTemperature;	//µ±Ç°×ª»»×´Ì¬
-static uint16_t PROM_C[MS561101BA_PROM_REG_COUNT]; //±ê¶¨Öµ´æ·Å
-static uint32_t Current_delay=0;	    //×ª»»ÑÓÊ±Ê±¼ä us 
-static uint32_t Start_Convert_Time; //Æô¶¯×ª»»Ê±µÄ Ê±¼ä us 
+static uint8_t  Now_doing = SCTemperature;	//å½“å‰è½¬æ¢çŠ¶æ€
+static uint16_t PROM_C[MS561101BA_PROM_REG_COUNT]; //æ ‡å®šå€¼å­˜æ”¾
+static uint32_t Current_delay=0;	    //è½¬æ¢å»¶æ—¶æ—¶é—´ us 
+static uint32_t Start_Convert_Time; //å¯åŠ¨è½¬æ¢æ—¶çš„ æ—¶é—´ us 
 static int32_t  tempCache;
 
 static float Alt_Offset_m = 0;
@@ -27,18 +27,18 @@ static float Alt_Offset_m = 0;
 //
 #define PA_OFFSET_INIT_NUM 50	
 
-static float Alt_offset_Pa=0; //´æ·Å×Å0Ã×(ÀëÆğ·ÉËùÔÚÆ½Ãæ)Ê± ¶ÔÓ¦µÄÆøÑ¹Öµ  Õâ¸öÖµ´æ·ÅÉÏµçÊ±µÄÆøÑ¹Öµ 
+static float Alt_offset_Pa=0; //å­˜æ”¾ç€0ç±³(ç¦»èµ·é£æ‰€åœ¨å¹³é¢)æ—¶ å¯¹åº”çš„æ°”å‹å€¼  è¿™ä¸ªå€¼å­˜æ”¾ä¸Šç”µæ—¶çš„æ°”å‹å€¼ 
 double paOffsetNum = 0; 
 uint16_t  paInitCnt=0;
 uint8_t paOffsetInited=0;
 
 //interface for outside 
-uint8_t Baro_ALT_Updated = 0; //ÆøÑ¹¼Æ¸ß¶È¸üĞÂÍê³É±êÖ¾¡£
+uint8_t Baro_ALT_Updated = 0; //æ°”å‹è®¡é«˜åº¦æ›´æ–°å®Œæˆæ ‡å¿—ã€‚
 //units (Celsius degrees*100, mbar*100  ).
-//µ¥Î» [ÎÂ¶È ¶È] [ÆøÑ¹ ÅÁ]  [¸ß¶È Ã×] 
+//å•ä½ [æ¸©åº¦ åº¦] [æ°”å‹ å¸•]  [é«˜åº¦ ç±³] 
 volatile float MS5611_Temperature,MS5611_Pressure,MS5611_Altitude,MS5611_VerticalSpeed;
 
-// ÑÓÊ±±íµ¥Î» us 	  ²»Í¬µÄ²ÉÑù¾«¶È¶ÔÓ¦²»Í¬µÄÑÓÊ±Öµ
+// å»¶æ—¶è¡¨å•ä½ us 	  ä¸åŒçš„é‡‡æ ·ç²¾åº¦å¯¹åº”ä¸åŒçš„å»¶æ—¶å€¼
 uint32_t MS5611_Delay_us[9] = {
 	1500,//MS561101BA_OSR_256 0.9ms  0x00
 	1500,//MS561101BA_OSR_256 0.9ms  
@@ -51,25 +51,25 @@ uint32_t MS5611_Delay_us[9] = {
 	11000,//MS561101BA_OSR_4096 9.1ms 0x08
 };
 
-// FIFO ¶ÓÁĞ					
+// FIFO é˜Ÿåˆ—					
 static float Temp_buffer[MOVAVG_SIZE],Press_buffer[MOVAVG_SIZE],Alt_buffer[MOVAVG_SIZE];
-static uint8_t temp_index=0,press_index=0; //¶ÓÁĞÖ¸Õë
+static uint8_t temp_index=0,press_index=0; //é˜Ÿåˆ—æŒ‡é’ˆ
 
-//Ìí¼ÓÒ»¸öĞÂµÄÖµµ½ ÎÂ¶È¶ÓÁĞ ½øĞĞÂË²¨
+//æ·»åŠ ä¸€ä¸ªæ–°çš„å€¼åˆ° æ¸©åº¦é˜Ÿåˆ— è¿›è¡Œæ»¤æ³¢
 void MS561101BA_NewTemp(float val) 
 {
 	Temp_buffer[temp_index] = val;
 	temp_index = (temp_index + 1) % MOVAVG_SIZE;
 }
 
-//Ìí¼ÓÒ»¸öĞÂµÄÖµµ½ ÆøÑ¹¶ÓÁĞ ½øĞĞÂË²¨
+//æ·»åŠ ä¸€ä¸ªæ–°çš„å€¼åˆ° æ°”å‹é˜Ÿåˆ— è¿›è¡Œæ»¤æ³¢
 void MS561101BA_NewPress(float val)
 {
 	Press_buffer[press_index] = val;
 	press_index = (press_index + 1) % MOVAVG_SIZE;
 }
 
-//Ìí¼ÓÒ»¸öĞÂµÄÖµµ½ ¸ß¶È¶ÓÁĞ ½øĞĞÂË²¨
+//æ·»åŠ ä¸€ä¸ªæ–°çš„å€¼åˆ° é«˜åº¦é˜Ÿåˆ— è¿›è¡Œæ»¤æ³¢
 void MS561101BA_NewAlt(float val) 
 {
 	int16_t i;
@@ -78,7 +78,7 @@ void MS561101BA_NewAlt(float val)
 	Alt_buffer[MOVAVG_SIZE-1] = val;
 }
 
-//¶ÁÈ¡¶ÓÁĞµÄÆ½¾ùÖµ
+//è¯»å–é˜Ÿåˆ—çš„å¹³å‡å€¼
 float MS561101BA_getAvg(float * buff, int size) 
 {
 	float sum = 0.0;
@@ -90,10 +90,10 @@ float MS561101BA_getAvg(float * buff, int size)
 	return sum / size;
 }
 
-/**************************ÊµÏÖº¯Êı********************************************
-*º¯ÊıÔ­ĞÍ:		void MS561101BA_readPROM(void)
-*¹¦¡¡¡¡ÄÜ:	    ¶ÁÈ¡ MS561101B µÄ¹¤³§±ê¶¨Öµ
-¶ÁÈ¡ ÆøÑ¹¼ÆµÄ±ê¶¨Öµ  ÓÃÓÚĞŞÕıÎÂ¶ÈºÍÆøÑ¹µÄ¶ÁÊı
+/**************************å®ç°å‡½æ•°********************************************
+*å‡½æ•°åŸå‹:		void MS561101BA_readPROM(void)
+*åŠŸã€€ã€€èƒ½:	    è¯»å– MS561101B çš„å·¥å‚æ ‡å®šå€¼
+è¯»å– æ°”å‹è®¡çš„æ ‡å®šå€¼  ç”¨äºä¿®æ­£æ¸©åº¦å’Œæ°”å‹çš„è¯»æ•°
 *******************************************************************************/
 void MS561101BA_readPROM(void) 
 {
@@ -114,12 +114,12 @@ void MS561101BA_readPROM(void)
 			IIC_Stop();
 			delay_us(5);
 			IIC_Start();
-			IIC_Send_Byte(MS5611_ADDR+1);  //½øÈë½ÓÊÕÄ£Ê½	
+			IIC_Send_Byte(MS5611_ADDR+1);  //è¿›å…¥æ¥æ”¶æ¨¡å¼	
 			delay_us(1);
 			IIC_Wait_Ack();
-			inth = IIC_Read_Byte(1);  //´øACKµÄ¶ÁÊı¾İ
+			inth = IIC_Read_Byte(1);  //å¸¦ACKçš„è¯»æ•°æ®
 			delay_us(1);
-			intl = IIC_Read_Byte(0);	 //×îºóÒ»¸ö×Ö½ÚNACK
+			intl = IIC_Read_Byte(0);	 //æœ€åä¸€ä¸ªå­—èŠ‚NACK
 			IIC_Stop();
 			
 			PROM_C[i] = (((uint16_t)inth << 8) | intl);
@@ -127,9 +127,9 @@ void MS561101BA_readPROM(void)
 	}
 }
 
-/**************************ÊµÏÖº¯Êı********************************************
-*º¯ÊıÔ­ĞÍ:		void MS561101BA_reset(void)
-*¹¦¡¡¡¡ÄÜ:	    ·¢ËÍ¸´Î»ÃüÁîµ½ MS561101B 
+/**************************å®ç°å‡½æ•°********************************************
+*å‡½æ•°åŸå‹:		void MS561101BA_reset(void)
+*åŠŸã€€ã€€èƒ½:	    å‘é€å¤ä½å‘½ä»¤åˆ° MS561101B 
 *******************************************************************************/
 void MS561101BA_reset(void) 
 {
@@ -137,19 +137,19 @@ void MS561101BA_reset(void)
 		i2cWrite(MS5611_ADDR, MS561101BA_RESET, 1); 
 	#else
 	IIC_Start();
-    IIC_Send_Byte(MS5611_ADDR); //Ğ´µØÖ·
+    IIC_Send_Byte(MS5611_ADDR); //å†™åœ°å€
 	IIC_Wait_Ack();
-    IIC_Send_Byte(MS561101BA_RESET);//·¢ËÍ¸´Î»ÃüÁî
+    IIC_Send_Byte(MS561101BA_RESET);//å‘é€å¤ä½å‘½ä»¤
 	IIC_Wait_Ack();	
     IIC_Stop();
 	#endif
 }
 
-/**************************ÊµÏÖº¯Êı********************************************
-*º¯ÊıÔ­ĞÍ:		void MS561101BA_startConversion(uint8_t command)
-*¹¦¡¡¡¡ÄÜ:	    ·¢ËÍÆô¶¯×ª»»ÃüÁîµ½ MS561101B
-¿ÉÑ¡µÄ ×ª»»ÃüÁîÎª MS561101BA_D1  ×ª»»ÆøÑ¹
-				  MS561101BA_D2  ×ª»»ÎÂ¶È	 
+/**************************å®ç°å‡½æ•°********************************************
+*å‡½æ•°åŸå‹:		void MS561101BA_startConversion(uint8_t command)
+*åŠŸã€€ã€€èƒ½:	    å‘é€å¯åŠ¨è½¬æ¢å‘½ä»¤åˆ° MS561101B
+å¯é€‰çš„ è½¬æ¢å‘½ä»¤ä¸º MS561101BA_D1  è½¬æ¢æ°”å‹
+				  MS561101BA_D2  è½¬æ¢æ¸©åº¦	 
 *******************************************************************************/
 void MS561101BA_startConversion(uint8_t command) 
 {
@@ -158,17 +158,17 @@ void MS561101BA_startConversion(uint8_t command)
 #else
 	// initialize pressure conversion
 	IIC_Start();
-	IIC_Send_Byte(MS5611_ADDR); //Ğ´µØÖ·
+	IIC_Send_Byte(MS5611_ADDR); //å†™åœ°å€
 	IIC_Wait_Ack();
-	IIC_Send_Byte(command); //Ğ´×ª»»ÃüÁî
+	IIC_Send_Byte(command); //å†™è½¬æ¢å‘½ä»¤
 	IIC_Wait_Ack();	
 	IIC_Stop();
 #endif
 }
 #define CMD_ADC_READ            0x00 // ADC read command
-/**************************ÊµÏÖº¯Êı********************************************
-*º¯ÊıÔ­ĞÍ:		unsigned long MS561101BA_getConversion(void)
-*¹¦¡¡¡¡ÄÜ:	    ¶ÁÈ¡ MS561101B µÄ×ª»»½á¹û	 
+/**************************å®ç°å‡½æ•°********************************************
+*å‡½æ•°åŸå‹:		unsigned long MS561101BA_getConversion(void)
+*åŠŸã€€ã€€èƒ½:	    è¯»å– MS561101B çš„è½¬æ¢ç»“æœ	 
 *******************************************************************************/
 uint32_t MS561101BA_getConversion(void) 
 {
@@ -179,38 +179,38 @@ uint32_t MS561101BA_getConversion(void)
 		conversion=temp[0] << 16 | temp[0] <<8 | temp[2];
 	#else
 	IIC_Start();
-	IIC_Send_Byte(MS5611_ADDR); //Ğ´µØÖ·
+	IIC_Send_Byte(MS5611_ADDR); //å†™åœ°å€
 	IIC_Wait_Ack();
 	IIC_Send_Byte(0);// start read sequence
 	IIC_Wait_Ack();	
 	IIC_Stop();
 	
 	IIC_Start();
-	IIC_Send_Byte(MS5611_ADDR+1);  //½øÈë½ÓÊÕÄ£Ê½	
+	IIC_Send_Byte(MS5611_ADDR+1);  //è¿›å…¥æ¥æ”¶æ¨¡å¼	
 	IIC_Wait_Ack();
-	temp[0] = IIC_Read_Byte(1);  //´øACKµÄ¶ÁÊı¾İ  bit 23-16
-	temp[1] = IIC_Read_Byte(1);  //´øACKµÄ¶ÁÊı¾İ  bit 8-15
-	temp[2] = IIC_Read_Byte(0);  //´øNACKµÄ¶ÁÊı¾İ bit 0-7
+	temp[0] = IIC_Read_Byte(1);  //å¸¦ACKçš„è¯»æ•°æ®  bit 23-16
+	temp[1] = IIC_Read_Byte(1);  //å¸¦ACKçš„è¯»æ•°æ®  bit 8-15
+	temp[2] = IIC_Read_Byte(0);  //å¸¦NACKçš„è¯»æ•°æ® bit 0-7
 	IIC_Stop();
 	conversion = (unsigned long)temp[0] * 65536 + (unsigned long)temp[1] * 256 + (unsigned long)temp[2];
 	#endif
 	return conversion;
 }
 
-/**************************ÊµÏÖº¯Êı********************************************
-*º¯ÊıÔ­ĞÍ:		void MS561101BA_init(void)
-*¹¦¡¡¡¡ÄÜ:	    ³õÊ¼»¯ MS561101B 
+/**************************å®ç°å‡½æ•°********************************************
+*å‡½æ•°åŸå‹:		void MS561101BA_init(void)
+*åŠŸã€€ã€€èƒ½:	    åˆå§‹åŒ– MS561101B 
 *******************************************************************************/
 void MS5611_Init(void) 
 {  
-	MS561101BA_reset(); // ¸´Î» MS561101B 
-	delay_ms(100); // ÑÓÊ± 
-	MS561101BA_readPROM(); // ¶ÁÈ¡EEPROM ÖĞµÄ±ê¶¨Öµ ´ıÓÃ	
+	MS561101BA_reset(); // å¤ä½ MS561101B 
+	delay_ms(100); // å»¶æ—¶ 
+	MS561101BA_readPROM(); // è¯»å–EEPROM ä¸­çš„æ ‡å®šå€¼ å¾…ç”¨	
 }
 
-/**************************ÊµÏÖº¯Êı********************************************
-*º¯ÊıÔ­ĞÍ:		void MS561101BA_GetTemperature(void)
-*¹¦¡¡¡¡ÄÜ:	    ¶ÁÈ¡ ÎÂ¶È×ª»»½á¹û	 
+/**************************å®ç°å‡½æ•°********************************************
+*å‡½æ•°åŸå‹:		void MS561101BA_GetTemperature(void)
+*åŠŸã€€ã€€èƒ½:	    è¯»å– æ¸©åº¦è½¬æ¢ç»“æœ	 
 *******************************************************************************/
 void MS561101BA_GetTemperature(void)
 {	
@@ -218,9 +218,9 @@ void MS561101BA_GetTemperature(void)
 }
 
 
-/**************************ÊµÏÖº¯Êı********************************************
-*º¯ÊıÔ­ĞÍ:		float MS561101BA_get_altitude(void)
-*¹¦¡¡¡¡ÄÜ:	    ½«µ±Ç°µÄÆøÑ¹Öµ×ª³É ¸ß¶È¡£	 
+/**************************å®ç°å‡½æ•°********************************************
+*å‡½æ•°åŸå‹:		float MS561101BA_get_altitude(void)
+*åŠŸã€€ã€€èƒ½:	    å°†å½“å‰çš„æ°”å‹å€¼è½¬æˆ é«˜åº¦ã€‚	 
 *******************************************************************************/
 float MS561101BA_get_altitude(void)
 {
@@ -229,7 +229,7 @@ float MS561101BA_get_altitude(void)
 	uint32_t current=0;
 	static uint32_t tp=0;
 
-	// ÊÇ·ñ³õÊ¼»¯¹ı0Ã×ÆøÑ¹Öµ£¿
+	// æ˜¯å¦åˆå§‹åŒ–è¿‡0ç±³æ°”å‹å€¼ï¼Ÿ
 	if(Alt_offset_Pa == 0)
 	{ 
 		if(paInitCnt > PA_OFFSET_INIT_NUM)
@@ -242,13 +242,13 @@ float MS561101BA_get_altitude(void)
 		
 		paInitCnt++;
 		
-		Altitude = 0; //¸ß¶È Îª 0
+		Altitude = 0; //é«˜åº¦ ä¸º 0
 		
 		return Altitude;
 	}
-	//¼ÆËãÏà¶ÔÓÚÉÏµçÊ±µÄÎ»ÖÃµÄ¸ß¶ÈÖµ ¡£µ¥Î»Îªm
+	//è®¡ç®—ç›¸å¯¹äºä¸Šç”µæ—¶çš„ä½ç½®çš„é«˜åº¦å€¼ ã€‚å•ä½ä¸ºm
 	Altitude = 4433000.0 * (1 - pow((MS5611_Pressure / Alt_offset_Pa), 0.1903))*0.01f;
-	Altitude = Altitude + Alt_Offset_m ;  //¼ÓÆ«ÖÃ
+	Altitude = Altitude + Alt_Offset_m ;  //åŠ åç½®
 
 	#ifdef ALTI_SPEED
 	current=micros();
@@ -263,9 +263,9 @@ float MS561101BA_get_altitude(void)
 	return Altitude; 
 }
 
-/**************************ÊµÏÖº¯Êı********************************************
-*º¯ÊıÔ­ĞÍ:		void MS561101BA_getPressure(void)
-*¹¦¡¡¡¡ÄÜ:	    ¶ÁÈ¡ ÆøÑ¹×ª»»½á¹û ²¢×ö²¹³¥ĞŞÕı	 
+/**************************å®ç°å‡½æ•°********************************************
+*å‡½æ•°åŸå‹:		void MS561101BA_getPressure(void)
+*åŠŸã€€ã€€èƒ½:	    è¯»å– æ°”å‹è½¬æ¢ç»“æœ å¹¶åšè¡¥å¿ä¿®æ­£	 
 *******************************************************************************/
 //static float lastPress=0,newPress=0;
 //static float press_limit_coe = 1;
@@ -292,12 +292,12 @@ void MS561101BA_getPressure(void)
 		sens = sens - SENS2;
 	}
 
-	//------------- ÆøÑ¹ĞŞÕı ----------------
+	//------------- æ°”å‹ä¿®æ­£ ----------------
 //	newPress=(((((int64_t)rawPress) * sens) >> 21) - off) / 32768;
 //	
 //	press_limit_coe = 1.0f; 
 //	
-//	//»ú¶¯Ê±ÏŞÖÆÆøÑ¹Öµ½µµÍ£¨ÆøÑ¹¸ß¶ÈÔö¸ß£©
+//	//æœºåŠ¨æ—¶é™åˆ¶æ°”å‹å€¼é™ä½ï¼ˆæ°”å‹é«˜åº¦å¢é«˜ï¼‰
 //	if(ALT_LOCK_FLAG == 0xff && (Math_abs(IMU_Pitch)>15 || Math_abs(IMU_Roll)>15))
 //	{		
 //		press_limit_coe = 0.01f;   //0.005
@@ -309,52 +309,52 @@ void MS561101BA_getPressure(void)
 //	
 //	MS5611_Pressure = newPress;
 	
-	//Ô­Ê¼µÄ·½·¨
+	//åŸå§‹çš„æ–¹æ³•
 	MS5611_Pressure = (((((int64_t)rawPress) * sens) >> 21) - off) / 32768;
 
-	//ÎÂ¶È¶ÓÁĞ´¦Àí
+	//æ¸©åº¦é˜Ÿåˆ—å¤„ç†
 	MS561101BA_NewTemp(TEMP*0.01f);
 	
 	MS5611_Temperature = MS561101BA_getAvg(Temp_buffer,MOVAVG_SIZE); //0.01c
 	
-	MS5611_Altitude = MS561101BA_get_altitude(); // µ¥Î»£ºm 
+	MS5611_Altitude = MS561101BA_get_altitude(); // å•ä½ï¼šm 
 	
 }
 
 
-/**************************ÊµÏÖº¯Êı********************************************
-*º¯ÊıÔ­ĞÍ:		void MS5611BA_Routing(void)
-*¹¦¡¡¡¡ÄÜ:	    MS5611BA µÄÔËĞĞ³ÌĞò £¬ĞèÒª¶¨ÆÚµ÷ÓÃ ÒÔ¸üĞÂÆøÑ¹ÖµºÍÎÂ¶ÈÖµ¡£ 
+/**************************å®ç°å‡½æ•°********************************************
+*å‡½æ•°åŸå‹:		void MS5611BA_Routing(void)
+*åŠŸã€€ã€€èƒ½:	    MS5611BA çš„è¿è¡Œç¨‹åº ï¼Œéœ€è¦å®šæœŸè°ƒç”¨ ä»¥æ›´æ–°æ°”å‹å€¼å’Œæ¸©åº¦å€¼ã€‚ 
 *******************************************************************************/
 void MS5611_Thread(void) 
 {
 	switch(Now_doing)
-	{ //²éÑ¯×´Ì¬ ¿´¿´ÎÒÃÇÏÖÔÚ ¸Ã×öĞ©Ê²Ã´£¿
-		case SCTemperature:  //Æô¶¯ÎÂ¶È×ª»»
+	{ //æŸ¥è¯¢çŠ¶æ€ çœ‹çœ‹æˆ‘ä»¬ç°åœ¨ è¯¥åšäº›ä»€ä¹ˆï¼Ÿ
+		case SCTemperature:  //å¯åŠ¨æ¸©åº¦è½¬æ¢
 			MS561101BA_startConversion(MS561101BA_D2 + MS5611Temp_OSR);
-			Current_delay = MS5611_Delay_us[MS5611Temp_OSR] ;//×ª»»Ê±¼ä
-			Start_Convert_Time = micros(); //¼ÆÊ±¿ªÊ¼
-			Now_doing = CTemperatureing;//ÏÂÒ»¸ö×´Ì¬
+			Current_delay = MS5611_Delay_us[MS5611Temp_OSR] ;//è½¬æ¢æ—¶é—´
+			Start_Convert_Time = micros(); //è®¡æ—¶å¼€å§‹
+			Now_doing = CTemperatureing;//ä¸‹ä¸€ä¸ªçŠ¶æ€
 			break;
-		case CTemperatureing:  //ÕıÔÚ×ª»»ÖĞ 
+		case CTemperatureing:  //æ­£åœ¨è½¬æ¢ä¸­ 
 			if((micros()-Start_Convert_Time) > Current_delay)
-			{ //ÑÓÊ±Ê±¼äµ½ÁËÂğ£¿
-				MS561101BA_GetTemperature(); //È¡ÎÂ¶È	
+			{ //å»¶æ—¶æ—¶é—´åˆ°äº†å—ï¼Ÿ
+				MS561101BA_GetTemperature(); //å–æ¸©åº¦	
 				Now_doing = SCPressure;	
 			}
 			break;
-		case SCPressure: //Æô¶¯ÆøÑ¹×ª»»
+		case SCPressure: //å¯åŠ¨æ°”å‹è½¬æ¢
 			MS561101BA_startConversion(MS561101BA_D1 + MS5611Press_OSR);
-			Current_delay = MS5611_Delay_us[MS5611Press_OSR];//×ª»»Ê±¼ä
-			Start_Convert_Time = micros();//¼ÆÊ±¿ªÊ¼
-			Now_doing = SCPressureing;//ÏÂÒ»¸ö×´Ì¬
+			Current_delay = MS5611_Delay_us[MS5611Press_OSR];//è½¬æ¢æ—¶é—´
+			Start_Convert_Time = micros();//è®¡æ—¶å¼€å§‹
+			Now_doing = SCPressureing;//ä¸‹ä¸€ä¸ªçŠ¶æ€
 			break;
-		case SCPressureing:	 //ÕıÔÚ×ª»»ÆøÑ¹Öµ
+		case SCPressureing:	 //æ­£åœ¨è½¬æ¢æ°”å‹å€¼
 			if((micros()-Start_Convert_Time) > Current_delay)
-			{ //ÑÓÊ±Ê±¼äµ½ÁËÂğ£¿
-				MS561101BA_getPressure();   //¸üĞÂ ¼ÆËã	
-				Baro_ALT_Updated = 0xff; 	//¸ß¶È¸üĞÂ Íê³É¡£
-				Now_doing = SCTemperature;  //´ÓÍ·ÔÙÀ´
+			{ //å»¶æ—¶æ—¶é—´åˆ°äº†å—ï¼Ÿ
+				MS561101BA_getPressure();   //æ›´æ–° è®¡ç®—	
+				Baro_ALT_Updated = 0xff; 	//é«˜åº¦æ›´æ–° å®Œæˆã€‚
+				Now_doing = SCTemperature;  //ä»å¤´å†æ¥
 			}
 			break;
 		default: 
@@ -367,38 +367,38 @@ void MS5611_Thread(void)
 void MS5611_ThreadNew(void) 
 {
 	switch(Now_doing)
-	{ //²éÑ¯×´Ì¬ ¿´¿´ÎÒÃÇÏÖÔÚ ¸Ã×öĞ©Ê²Ã´£¿
- 		case SCTemperature:  //Æô¶¯ÎÂ¶È×ª»»
-			//¿ªÆôÎÂ¶È×ª»»
+	{ //æŸ¥è¯¢çŠ¶æ€ çœ‹çœ‹æˆ‘ä»¬ç°åœ¨ è¯¥åšäº›ä»€ä¹ˆï¼Ÿ
+ 		case SCTemperature:  //å¯åŠ¨æ¸©åº¦è½¬æ¢
+			//å¼€å¯æ¸©åº¦è½¬æ¢
 				MS561101BA_startConversion(MS561101BA_D2 + MS5611Temp_OSR);
-				Current_delay = MS5611_Delay_us[MS5611Temp_OSR] ;//×ª»»Ê±¼ä
-				Start_Convert_Time = micros(); //¼ÆÊ±¿ªÊ¼
-				Now_doing = CTemperatureing;//ÏÂÒ»¸ö×´Ì¬
+				Current_delay = MS5611_Delay_us[MS5611Temp_OSR] ;//è½¬æ¢æ—¶é—´
+				Start_Convert_Time = micros(); //è®¡æ—¶å¼€å§‹
+				Now_doing = CTemperatureing;//ä¸‹ä¸€ä¸ªçŠ¶æ€
  		break;
 		
-		case CTemperatureing:  //ÕıÔÚ×ª»»ÖĞ 
+		case CTemperatureing:  //æ­£åœ¨è½¬æ¢ä¸­ 
 			if((micros()-Start_Convert_Time) > Current_delay)
-			{ //ÑÓÊ±Ê±¼äµ½ÁËÂğ£¿
-				MS561101BA_GetTemperature(); //È¡ÎÂ¶È	
-				//Æô¶¯ÆøÑ¹×ª»»
+			{ //å»¶æ—¶æ—¶é—´åˆ°äº†å—ï¼Ÿ
+				MS561101BA_GetTemperature(); //å–æ¸©åº¦	
+				//å¯åŠ¨æ°”å‹è½¬æ¢
 				MS561101BA_startConversion(MS561101BA_D1 + MS5611Press_OSR);
-				Current_delay = MS5611_Delay_us[MS5611Press_OSR];//×ª»»Ê±¼ä
-				Start_Convert_Time = micros();//¼ÆÊ±¿ªÊ¼
-				Now_doing = SCPressureing;//ÏÂÒ»¸ö×´Ì¬
+				Current_delay = MS5611_Delay_us[MS5611Press_OSR];//è½¬æ¢æ—¶é—´
+				Start_Convert_Time = micros();//è®¡æ—¶å¼€å§‹
+				Now_doing = SCPressureing;//ä¸‹ä¸€ä¸ªçŠ¶æ€
 			}
 			break;
  
-		case SCPressureing:	 //ÕıÔÚ×ª»»ÆøÑ¹Öµ
+		case SCPressureing:	 //æ­£åœ¨è½¬æ¢æ°”å‹å€¼
 			if((micros()-Start_Convert_Time) > Current_delay)
-			{ //ÑÓÊ±Ê±¼äµ½ÁËÂğ£¿
-				MS561101BA_getPressure();   //¸üĞÂ ¼ÆËã	
-				Baro_ALT_Updated = 0xff; 	//¸ß¶È¸üĞÂ Íê³É¡£
-			//	Now_doing = SCTemperature;  //´ÓÍ·ÔÙÀ´
-				//¿ªÆôÎÂ¶È×ª»»
+			{ //å»¶æ—¶æ—¶é—´åˆ°äº†å—ï¼Ÿ
+				MS561101BA_getPressure();   //æ›´æ–° è®¡ç®—	
+				Baro_ALT_Updated = 0xff; 	//é«˜åº¦æ›´æ–° å®Œæˆã€‚
+			//	Now_doing = SCTemperature;  //ä»å¤´å†æ¥
+				//å¼€å¯æ¸©åº¦è½¬æ¢
 				MS561101BA_startConversion(MS561101BA_D2 + MS5611Temp_OSR);
-				Current_delay = MS5611_Delay_us[MS5611Temp_OSR] ;//×ª»»Ê±¼ä
-				Start_Convert_Time = micros(); //¼ÆÊ±¿ªÊ¼
-				Now_doing = CTemperatureing;//ÏÂÒ»¸ö×´Ì¬
+				Current_delay = MS5611_Delay_us[MS5611Temp_OSR] ;//è½¬æ¢æ—¶é—´
+				Start_Convert_Time = micros(); //è®¡æ—¶å¼€å§‹
+				Now_doing = CTemperatureing;//ä¸‹ä¸€ä¸ªçŠ¶æ€
 			}
 			break;
 		default: 
@@ -406,7 +406,7 @@ void MS5611_ThreadNew(void)
 			break;
 	}
 }
-//×¢Òâ£¬Ê¹ÓÃÇ°È·±£
+//æ³¨æ„ï¼Œä½¿ç”¨å‰ç¡®ä¿
 uint8_t  WaitBaroInitOffset(void)
 {
 	uint32_t startTime=0;
@@ -417,7 +417,7 @@ uint8_t  WaitBaroInitOffset(void)
 	{
 			MS5611_ThreadNew();
 			now=micros();
-			if((now-startTime)/1000 >= PA_OFFSET_INIT_NUM * 50)	//³¬Ê±
+			if((now-startTime)/1000 >= PA_OFFSET_INIT_NUM * 50)	//è¶…æ—¶
 			{
 				return 0;
 			}

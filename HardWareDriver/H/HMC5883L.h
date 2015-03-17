@@ -30,10 +30,10 @@
 #define HMC58X3_R_IDB 11
 #define HMC58X3_R_IDC 12
 
-void HMC5883L_SetUp(void);	//³õÊ¼»¯
-void HMC58X3_getID(char id[3]);	//¶ÁĞ¾Æ¬ID
-void HMC58X3_getValues(int16_t *x,int16_t *y,int16_t *z); //¶ÁADC
-void HMC58X3_mgetValues(float *arry); //IMU ×¨ÓÃµÄ¶ÁÈ¡´ÅÁ¦¼ÆÖµ
+void HMC5883L_SetUp(void);	//åˆå§‹åŒ–
+void HMC58X3_getID(char id[3]);	//è¯»èŠ¯ç‰‡ID
+void HMC58X3_getValues(int16_t *x,int16_t *y,int16_t *z); //è¯»ADC
+void HMC58X3_mgetValues(float *arry); //IMU ä¸“ç”¨çš„è¯»å–ç£åŠ›è®¡å€¼
 void HMC58X3_getlastValues(int16_t *x,int16_t *y,int16_t *z);
 
 #endif

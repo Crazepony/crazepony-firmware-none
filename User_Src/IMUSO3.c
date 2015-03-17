@@ -126,7 +126,7 @@ void NonlinearSO3AHRSupdate(float gx, float gy, float gz, float ax, float ay, fl
     	halfez += (mx * halfwy - my * halfwx);
 	}
 
-	//Ôö¼ÓÒ»¸öÌõ¼ş£º  ¼ÓËÙ¶ÈµÄÄ£Á¿ÓëGÏà²î²»Ô¶Ê±¡£ 0.75*G < normAcc < 1.25*G
+	//å¢åŠ ä¸€ä¸ªæ¡ä»¶ï¼š  åŠ é€Ÿåº¦çš„æ¨¡é‡ä¸Gç›¸å·®ä¸è¿œæ—¶ã€‚ 0.75*G < normAcc < 1.25*G
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
 	if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) 	
 	{
@@ -137,7 +137,7 @@ void NonlinearSO3AHRSupdate(float gx, float gy, float gz, float ax, float ay, fl
 		recipNorm = invSqrt(ax * ax + ay * ay + az * az);
 		//--added!!!
 //		accNorm=1.0f/recipNorm;
-//		if(accNorm > 0.75 * CONSTANTS_ONE_G && accNorm < 1.25 * CONSTANTS_ONE_G )  //¼ÓËÙ¶È¹ı´óÊ±
+//		if(accNorm > 0.75 * CONSTANTS_ONE_G && accNorm < 1.25 * CONSTANTS_ONE_G )  //åŠ é€Ÿåº¦è¿‡å¤§æ—¶
 //		{
 			ax *= recipNorm;
 			ay *= recipNorm;

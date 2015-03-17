@@ -18,7 +18,7 @@ float accOffset[3];
 float gyroOffset[3];
 float magOffset[3];
 float NRFaddr[5]; 
-float BTstate;    //À¶ÑÀÊÇ·ñĞèÒªÖØĞÂĞ´²ÎÊı×´Ì¬
+float BTstate;    //è“ç‰™æ˜¯å¦éœ€è¦é‡æ–°å†™å‚æ•°çŠ¶æ€
 float NRFmatchFlag;	
 
 }config_table_t;

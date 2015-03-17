@@ -188,7 +188,7 @@ void calculateTemperature(void)
 
 void calculatePressureAltitude(void)
 {
-	float pressureAlt50Hz;	//×îºó¼ÆËãµÃµ½µÄ¸ß¶ÈÖµ
+	float pressureAlt50Hz;	//æœ€åè®¡ç®—å¾—åˆ°çš„é«˜åº¦å€¼
 
 	int64_t offset;
 	int64_t offset2 = 0;
@@ -245,7 +245,7 @@ void initPressure(void)
     uint8_t data[2];
 
     ms5611I2C = I2C1;
-    ms5611Address = 0xEE;	 //0XEEÎªMS5611µÄ°ËÎ»µØÖ·£¬0X77ÎªMS5611µÄÆßÎ»µØÖ·£¬IIC¶ÁĞ´º¯ÊıÊäÈë²ÎÊıÎª°ËÎ»µØÖ·
+    ms5611Address = 0xEE;	 //0XEEä¸ºMS5611çš„å…«ä½åœ°å€ï¼Œ0X77ä¸ºMS5611çš„ä¸ƒä½åœ°å€ï¼ŒIICè¯»å†™å‡½æ•°è¾“å…¥å‚æ•°ä¸ºå…«ä½åœ°å€
 
 		DBG_PRINT("init pressure MS5611\n");
 	

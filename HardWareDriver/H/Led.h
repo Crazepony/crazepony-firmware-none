@@ -60,7 +60,7 @@ uint16_t cnt;
 
 extern LED_t LEDCtrl;
 
-void LedInit(void);   //Led³õÊ¼»¯º¯ÊıÍâ²¿ÉùÃ÷
+void LedInit(void);   //Ledåˆå§‹åŒ–å‡½æ•°å¤–éƒ¨å£°æ˜
 void LEDFSM(void);
 
 

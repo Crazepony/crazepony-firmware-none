@@ -3,20 +3,20 @@
 #include "stm32f10x.h"
 
 
-//#define Debug  //µ÷ÊÔÓë·ñµÄÌõ¼ş±àÒë
+//#define Debug  //è°ƒè¯•ä¸å¦çš„æ¡ä»¶ç¼–è¯‘
 
-//µ¡ËÙ
+//æ€ é€Ÿ
 #define SLOW_THRO 200
-//¶¨Òå·É»ú×î´óÇãĞ±½Ç¶È
+//å®šä¹‰é£æœºæœ€å¤§å€¾æ–œè§’åº¦
 #define  Angle_Max  40.0
 #define  YAW_RATE_MAX  180.0f/M_PI_F		//deg/s  
-//¾ÀÕı×ËÌ¬Îó²î£¬¿ÉÒÔÓÃÀ´µÖ¿¹ÖØĞÄÆ«ÒÆµÈ´øÀ´µÄ³õÊ¼²»Æ½ºâ
-//#define  Rool_error_init   7      //Èç¹û·É»úÆğ·É³¯×óÆ«£¬Rool_error_init³¯ÕıÏòÔö´óĞŞ¸Ä;³¯ÓÒÆ«£¬Rool_error_init³¯¸ºÏòÔö´óĞŞ¸Ä
-//#define  Pitch_error_init  -5      //Èç¹û·É»úÆğ·É³¯Ç°Æ«£¬Pitch_error_init³¯¸ºÏòÔö´óĞŞ¸Ä;³¯ºóÆ«£¬Pitch_error_init³¯ÕıÏòÔö´óĞŞ¸Ä
-//¶¨¸ß²¿·Ö
+//çº æ­£å§¿æ€è¯¯å·®ï¼Œå¯ä»¥ç”¨æ¥æŠµæŠ—é‡å¿ƒåç§»ç­‰å¸¦æ¥çš„åˆå§‹ä¸å¹³è¡¡
+//#define  Rool_error_init   7      //å¦‚æœé£æœºèµ·é£æœå·¦åï¼ŒRool_error_initæœæ­£å‘å¢å¤§ä¿®æ”¹;æœå³åï¼ŒRool_error_initæœè´Ÿå‘å¢å¤§ä¿®æ”¹
+//#define  Pitch_error_init  -5      //å¦‚æœé£æœºèµ·é£æœå‰åï¼ŒPitch_error_initæœè´Ÿå‘å¢å¤§ä¿®æ”¹;æœååï¼ŒPitch_error_initæœæ­£å‘å¢å¤§ä¿®æ”¹
+//å®šé«˜éƒ¨åˆ†
 #define LAND_SPEED						1.2f		//m/s^2
 #define ALT_VEL_MAX 					4.0f
-#define THR_MIN								0.5f		//min thrust £¬¸ù¾İ»úÖØºÍ×îĞ¡½µËÙ¶ø¶¨£¬ÓÃÓÚÏÂ½µËÙ¶È¹ı´óÊ±£¬ÓÍÃÅ¹ıĞ¡£¬µ¼ÖÂÊ§ºâ¡£ÔÙÔö¼Ófuzzy control £¬ÔÚÓÍÃÅĞ¡Ê±ÓÃ¸ü´óµÄ×ËÌ¬²ÎÊı
+#define THR_MIN								0.5f		//min thrust ï¼Œæ ¹æ®æœºé‡å’Œæœ€å°é™é€Ÿè€Œå®šï¼Œç”¨äºä¸‹é™é€Ÿåº¦è¿‡å¤§æ—¶ï¼Œæ²¹é—¨è¿‡å°ï¼Œå¯¼è‡´å¤±è¡¡ã€‚å†å¢åŠ fuzzy control ï¼Œåœ¨æ²¹é—¨å°æ—¶ç”¨æ›´å¤§çš„å§¿æ€å‚æ•°
 
 
 #define HOVER_THRU	-0.63//-0.5f  //
@@ -31,7 +31,7 @@ extern float altLand;
 extern uint8_t isAltLimit;
 extern float thrustZSp,thrustZInt;
 
-// PID½á¹¹Ìå
+// PIDç»“æ„ä½“
 typedef struct
 {
     float P;
@@ -50,11 +50,11 @@ typedef struct
 }PID_Typedef;
 
 
-//Ğ´ÈëFlash²ÎÊı½á¹¹Ìå
+//å†™å…¥Flashå‚æ•°ç»“æ„ä½“
 typedef struct
 {
-  u16 WriteBuf[10];       //Ğ´ÈëflashµÄÁÙÊ±Êı×é
-  u16 ReadBuf[10];        //¶ÁÈ¡FlashµÄÁÙÊ±Êı×é
+  u16 WriteBuf[10];       //å†™å…¥flashçš„ä¸´æ—¶æ•°ç»„
+  u16 ReadBuf[10];        //è¯»å–Flashçš„ä¸´æ—¶æ•°ç»„
   
 }Parameter_Typedef;
 
@@ -77,10 +77,10 @@ void CtrlAttiNew(void);
 
 void SetHeadFree(uint8_t on);
 
-extern u16 PIDWriteBuf[3];//Ğ´ÈëflashµÄÁÙÊ±Êı×Ö£¬ÓÉNRF24L01_RXDATA[i]¸³Öµ 
+extern u16 PIDWriteBuf[3];//å†™å…¥flashçš„ä¸´æ—¶æ•°å­—ï¼Œç”±NRF24L01_RXDATA[i]èµ‹å€¼ 
 
-extern PID_Typedef pitch_angle_PID;	//½Ç¶È»·µÄPID
-extern PID_Typedef pitch_rate_PID;		//½ÇËÙÂÊ»·µÄPID
+extern PID_Typedef pitch_angle_PID;	//è§’åº¦ç¯çš„PID
+extern PID_Typedef pitch_rate_PID;		//è§’é€Ÿç‡ç¯çš„PID
 
 extern PID_Typedef roll_angle_PID;
 extern PID_Typedef roll_rate_PID;
@@ -92,8 +92,8 @@ extern PID_Typedef	alt_PID;
 extern PID_Typedef alt_vel_PID;
 
 
-extern Parameter_Typedef PIDParameter;//ÊµÀı»¯Ò»¸öPIDµÄFlash²ÎÊı
-extern Parameter_Typedef BTParameter; //ÊµÀı»¯Ò»¸öÀ¶ÑÀFlash²ÎÊı
+extern Parameter_Typedef PIDParameter;//å®ä¾‹åŒ–ä¸€ä¸ªPIDçš„Flashå‚æ•°
+extern Parameter_Typedef BTParameter; //å®ä¾‹åŒ–ä¸€ä¸ªè“ç‰™Flashå‚æ•°
 
 
 extern float gyroxGloble;
