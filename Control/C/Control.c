@@ -363,6 +363,191 @@ uint8_t isAltLimit=0;
 float altLand;
 //#define DEBUG_HOLD_REAL_ALT
 //only in climb rate mode and landind mode. now we don't work on manual mode
+void CtrlAltilite(void)
+{
+	float manThr=0,alt=0,velZ=0;
+	float altSp=0;
+	float posZVelSp=0;
+	float altSpOffset,altSpOffsetMax=0;
+	float dt=0,t=0;
+	static float tPrev=0,velZPrev=0;
+	float posZErr=0,velZErr=0,valZErrD=0;
+		float thrustXYSpLen=0,thrustSpLen=0;
+		float thrustXYMax=0;
+	
+	
+	
+
+	//get dt		//保证dt运算不能被打断，保持更新，否则dt过大，积分爆满。
+	if(tPrev==0)
+	{
+			tPrev=micros();
+			return;
+	}
+	else
+	{
+			t=micros();
+			dt=(t-tPrev) /1000000.0f;
+			tPrev=t;
+	}
+	
+	if(altCtrlMode==MANUAL || !FLY_ENABLE)		
+		return;
+	//--------------pos z ctrol---------------//
+	//get current alt 
+	//alt=-nav.z;
+	//get desired move rate from stick
+	manThr=RC_DATA.THROTTLE / 1000.0f;
+	spZMoveRate= -dbScaleLinear(manThr-0.5f,0.5f,ALT_CTRL_Z_DB);	// scale to -1~1 . NED frame
+	spZMoveRate = spZMoveRate * ALT_VEL_MAX;	// scale to vel min max
+
+#ifdef DEBUG_HOLD_REAL_ALT
+	if(spZMoveRate==0)
+	{
+			if(!recAltFlag)
+			{
+					holdAlt=alt;
+					recAltFlag=1;
+					 
+			}
+			altSp=holdAlt;
+	}
+	else
+	{
+		recAltFlag=0;
+#endif
+		//get alt setpoint in CLIMB rate mode
+		//altSp 	=-nav.z;						//only alt is not in ned frame.
+		//altSp  -= spZMoveRate * dt;	 
+		//limit alt setpoint
+		altSpOffsetMax=ALT_VEL_MAX / alt_PID.P * 2.0f;
+		altSpOffset = -spZMoveRate * dt; 
+		if( altSpOffset > altSpOffsetMax)		//or alt - alt > altSpOffsetMax
+			altSp=-spZMoveRate * dt +  altSpOffsetMax;
+		else if( altSpOffset < -altSpOffsetMax)
+			altSp=-spZMoveRate * dt - altSpOffsetMax;
+#ifdef DEBUG_HOLD_REAL_ALT
+	}
+#endif
+	//限高
+	if(isAltLimit)
+	{
+		if(altSp - altLand > ALT_LIMIT)
+		{
+				altSp=altLand+ALT_LIMIT;
+				spZMoveRate=0;
+		}
+	}
+	
+	// pid and feedforward control . in ned frame
+	posZErr= -spZMoveRate * dt;
+	posZVelSp = posZErr * alt_PID.P + spZMoveRate * ALT_FEED_FORWARD;
+	//consider landing mode
+	if(altCtrlMode==LANDING)
+		posZVelSp = LAND_SPEED;
+	//limit 
+//	if(posZVelSp>ALT_VEL_MAX)
+//		posZVelSp=ALT_VEL_MAX;
+//	else if(posZVelSp<-ALT_VEL_MAX)
+//		posZVelSp=-ALT_VEL_MAX;
+	
+	//--------------pos z vel ctrl -----------//
+	if(zIntReset)		//tobe tested .  how to get hold throttle. give it a estimated value!!!!!!!!!!!
+	{
+		thrustZInt=HOVER_THRU; //-manThr;		//650/1000 = 0.65
+		zIntReset=0;
+	}
+	velZ=(imu.accb[2]-9.8)*dt;	
+	//printf(" ---> %5.2f\r\n",(float) velZ);
+	velZErr = posZVelSp - velZ;
+	valZErrD = (spZMoveRate - velZ) * alt_PID.P - (velZ - velZPrev) / dt;	//spZMoveRate is from manual stick vel control
+	velZPrev=velZ;
+	
+	thrustZSp= velZErr * alt_vel_PID.P + valZErrD * alt_vel_PID.D + thrustZInt;	//in ned frame. thrustZInt contains hover thrust
+	
+		//limit thrust min !!
+	if(altCtrlMode!=LANDING)
+	{
+			if (-thrustZSp < THR_MIN) {
+						thrustZSp = -THR_MIN; 
+					} 
+					
+	}
+	//与动力分配相关	testing
+		satXY=0;
+		satZ=0;
+		thrustXYSp[0]= sinf(RC_DATA.ROOL * M_PI_F /180.0f) ;//目标角度转加速度 ，力 
+		thrustXYSp[1]= sinf(RC_DATA.PITCH * M_PI_F /180.0f) ; 	//归一化
+		thrustXYSpLen= sqrtf(thrustXYSp[0] * thrustXYSp[0] + thrustXYSp[1] * thrustXYSp[1]);
+		//limit tilt max
+		if(thrustXYSpLen >0.01f )
+		{
+			thrustXYMax=-thrustZSp * tanf(TILT_MAX);
+			if(thrustXYSpLen > thrustXYMax)
+			{
+					float k=thrustXYMax / thrustXYSpLen;
+					thrustXYSp[1] *=k;
+					thrustXYSp[0] *= k;
+					satXY=1;
+					thrustXYSpLen= sqrtf(thrustXYSp[0] * thrustXYSp[0] + thrustXYSp[1] * thrustXYSp[1]);
+			}
+			
+		}
+		//limit max thrust!! 
+		thrustSpLen=sqrtf(thrustXYSpLen * thrustXYSpLen + thrustZSp * thrustZSp);
+		if(thrustSpLen > THR_MAX)
+		{
+				if(thrustZSp < 0.0f)	//going up
+				{
+							if (-thrustZSp > THR_MAX) 
+							{
+									/* thrust Z component is too large, limit it */
+									thrustXYSp[0] = 0.0f;
+									thrustXYSp[1] = 0.0f;
+									thrustZSp = -THR_MAX;
+									satXY = true;
+									satZ = true;
+
+								} 
+								else {
+									float k = 0;
+									/* preserve thrust Z component and lower XY, keeping altitude is more important than position */
+									thrustXYMax = sqrtf(THR_MAX * THR_MAX- thrustZSp * thrustZSp);
+									k=thrustXYMax / thrustXYSpLen;
+							//		float thrust_xy_abs =thrustXYSpLen;// math::Vector<2>(thrust_sp(0), thrust_sp(1)).length();
+									thrustXYSp[1] *=k;
+									thrustXYSp[0] *= k;
+									satXY=1;
+								}
+				}
+				else {		//going down
+								/* Z component is negative, going down, simply limit thrust vector */
+								float k = THR_MAX / thrustSpLen;
+								thrustZSp *= k;
+								thrustXYSp[1] *=k;
+								thrustXYSp[0] *= k;
+								satXY = true;
+								satZ = true;
+							}
+			
+		} 
+		rollSp= asinf(thrustXYSp[0]) * 180.0f /M_PI_F;
+		pitchSp = asinf(thrustXYSp[1]) * 180.0f /M_PI_F;				
+	
+	
+	// if saturation ,don't integral
+	if(!satZ )//&& fabs(thrustZSp)<THR_MAX
+	{
+			thrustZInt += velZErr * alt_vel_PID.I * dt;		//
+			if (thrustZInt > 0.0f)
+							thrustZInt = 0.0f;
+	}
+	
+// 	Roll= thrustXYSp[0] * 1000;
+ // Pitch = thrustXYSp[1] * 1000;
+
+	
+}
 void CtrlAlti(void)
 {
 	float manThr=0,alt=0,velZ=0;
