@@ -143,7 +143,7 @@ void FlightModeFSMSimple(void)
 {
 			if(FLY_ENABLE)
 			{
-					if(RC_DATA.THROTTLE>=600 )
+					if(RC_DATA.THROTTLE>=570 )
 					{ 
 							if(altCtrlMode!=CLIMB_RATE)
 							{
