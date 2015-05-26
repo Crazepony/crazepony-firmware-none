@@ -22,6 +22,7 @@ Tim.c file
 */
 #include "tim.h"
 #include "config.h"
+#include "imu.h"
 
 #define TASK_TICK_FREQ				1000			//Hz 主任务频率
 
@@ -95,9 +96,9 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf(" ******************************************************************\r\n");
             printf("\r\n");
             printf("\r\n");
-            printf(" Yaw ---> %5.2f degree\r\n",(float)Q_ANGLE.Yaw);
-            printf(" Pitch---> %5.2f degree\r\n",(float)Q_ANGLE.Pitch);
-            printf(" Roll ---> %5.2f degree\r\n",(float) Q_ANGLE.Roll);
+            printf(" Yaw ---> %5.2f degree\r\n",(float)imu.yaw);
+            printf(" Pitch---> %5.2f degree\r\n",(float)imu.pitch);
+            printf(" Roll ---> %5.2f degree\r\n",(float)imu.roll);
             printf("==================\r\n");
             printf(" Motor M1 PWM---> %d\r\n",TIM2->CCR1);
             printf(" Motor M2 PWM---> %d\r\n",TIM2->CCR2);
