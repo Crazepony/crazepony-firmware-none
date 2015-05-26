@@ -11,7 +11,7 @@
                                            /_____/
 */
 /* Control.c file
-编写者：小马  (Camel) 、祥
+编写者：小马  (Camel) 、祥、Nieyong
 作者E-mail：375836945@qq.com
 编译环境：MDK-Lite  Version: 4.23
 初版时间: 2014-01-28
@@ -76,50 +76,10 @@ uint32_t ctrlPrd=0;
 uint8_t headFreeMode=0;
 float headHold=0;
 
-//函数名：Controler()
-//输入：无
-//输出: 无
-//描述：飞机控制函数主体，被定时器调用
-//作者：马骏
-
-void Controler(void)
-{     
-    static char Counter_Cnt=0;
-	
-//		static uint32_t tPrev=0;
-	
-    Counter_Cnt++;
-		
-    /*******************向上位机发送姿态信息，如果要在PC上位机看实时姿态,宏开关控制***************/
-    #ifndef Debug
-  //  Send_AtitudeToPC();     
-    #else
-    #endif  
-    if(Counter_Cnt>=5)
-    {
-//				ctrlPrd=micros() - tPrev;
-//				tPrev=micros();
-					
-				Counter_Cnt=0;
-				#if(RC_SRC==NFRC)
-					Nrf_Irq();           //从2.4G接收控制目标参数
-				//#else
-				//ReceiveDataFormUART();//从蓝牙透传模块接收控制目标参数，和2.4G接收控制只能选其一
-				#endif
-				PID_Calculate();     //=2时控制一次,频率200HZ	
-    }
-		
-		
-}
-
-
-
-
-
 //#define CONSTRAIN(x,min,max)  {if(x<min) x=min; if(x>max) x=max;}
 
 //-----------位置式PID-----------
-void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t dertT)
+static void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t dertT)
 {
  float termI=0;
  float dt= dertT/1000000.0;
@@ -144,90 +104,8 @@ void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t dertT)
 	}
 	else
 			PID->Integ= 0;
-	
 }
 
-
-
-
-
-//函数名：PID_Calculate()
-
-void PID_Calculate(void)
-{  
-
-	
-  /*********************************************************
-     计算期望姿态与实际姿态的差值
-    *********************************************************/
-    EXP_ANGLE.X = (float)(RC_DATA.ROOL);
-    EXP_ANGLE.Y = (float)(RC_DATA.PITCH);
-    EXP_ANGLE.Z = (float)(RC_DATA.YAW);
-
-    DIF_ANGLE.X = EXP_ANGLE.X - Q_ANGLE.Roll;
-    DIF_ANGLE.X = DIF_ANGLE.X;
-    
-    DIF_ANGLE.Y = EXP_ANGLE.Y - Q_ANGLE.Pitch;
-    DIF_ANGLE.Y = DIF_ANGLE.Y;
-
-    DIF_ACC.Z =  DMP_DATA.dmp_accz - ONE_G;     //Z 轴加速度实际与静止时的差值，g为当地重力加速度,初始化时采样
-  
-    /*********************************************************
-     PID核心算法部分
-    *********************************************************/
-  //------------俯仰控制------------
-    //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
-    //外环控 制。输入为角度,输出为角速度。PID->Output作为内环的输入。
-    PID_Postion_Cal(&pitch_angle_PID,EXP_ANGLE.Y,Q_ANGLE.Pitch,0);
-    
-    //内环控制，输入为角速度，输出为PWM增量
-    PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,gyroyGloble,0);
-    //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
-    
-    
-    //外环控 制。输入为角度,输出为角速度。PID->Output作为内环的输入。
-    PID_Postion_Cal(&roll_angle_PID,EXP_ANGLE.X,Q_ANGLE.Roll,0);
-    
-    //内环控制，输入为角速度，输出为PWM增量
-    PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,gyroxGloble,0);
-    //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
-    
-
-    //外环控 制。输入为角度,输出为角速度。PID->Output作为内环的输入。
-    PID_Postion_Cal(&yaw_angle_PID,EXP_ANGLE.Z,Q_ANGLE.Yaw,0);		//-----Problem
-    
-    //内环控制，输入为角速度，输出为PWM增量
-    PID_Postion_Cal(&yaw_rate_PID,-2*EXP_ANGLE.Z,DMP_DATA.GYROz,0);		//--------Problem tobe tested
-    //参数整定原则为先内后外，故在整定内环时将外环的PID均设为0
-    
-    
-    //基础油门动力
-    //Thr = 0.001*RC_DATA.THROTTLE*RC_DATA.THROTTLE;   //RC_DATA.THROTTLE为0到1000,将摇杆油门曲线转换为下凹的抛物线
-    Thro = RC_DATA.THROTTLE;
-    Thro -=  80*DIF_ACC.Z;                             //对Z轴用一次负反馈控制
-	//	Thr = Thr / (cosf(Q_ANGLE.Pitch*M_PI_F/180.0f)*cosf(Q_ANGLE.Roll*M_PI_F/180.0f));	//对倾斜做补偿
-    
-    Pitch = pitch_rate_PID.Output;
-    Roll  = roll_rate_PID.Output;
-    Yaw   = yaw_rate_PID.Output; 
-    
-   //将输出值融合到四个电机 
-    Motor[2] = (int16_t)(Thro - Pitch -Roll- Yaw );    //M3  
-    Motor[0] = (int16_t)(Thro + Pitch +Roll- Yaw );    //M1
-    Motor[3] = (int16_t)(Thro - Pitch +Roll+ Yaw );    //M4 
-    Motor[1] = (int16_t)(Thro + Pitch -Roll+ Yaw );    //M2    
-    
-  if((FLY_ENABLE==0xA5))
-//		if(!motorLock)
-			MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);   
-   else                  
-			MotorPwmFlash(0,0,0,0);//避免飞机落地重启时突然打转 
-   // if(NRF24L01_RXDATA[10]==0xA5) 
-	//		MotorPwmFlash(5,5,Motor[2],Motor[3]); //一键操作，翻滚返航等，测试功能，不要用
- 
-}
-
-//
 void SetHeadFree(uint8_t on)
 {
 	if(on==1)
