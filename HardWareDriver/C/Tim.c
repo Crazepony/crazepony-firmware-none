@@ -10,14 +10,14 @@
                                             ____/ /
                                            /_____/
 Tim.c file
-编写者：小马  (Camel)
+编写者：小马  (Camel)、Nieyong
 作者E-mail：375836945@qq.com
 编译环境：MDK-Lite  Version: 4.23
 初版时间: 2014-01-28
 功能：
 1.初始化定时器3和定时器4
-2.定时器3-->串口打印各种参数
-3.定时器4-->姿态解算以及PID输出，属于关键中断，将定时器4的主优先级以及从优先级设为最高很有必要
+2.定时器3-->串口打印各种参数（生产调试使用，默认情况下串口输出上位机数据）
+3.定时器4-->飞控主循环基准定时器，属于关键中断，将定时器4的主优先级以及从优先级设为最高很有必要
 ------------------------------------
 */
 #include "tim.h"
@@ -38,24 +38,14 @@ volatile uint16_t loop500Hzcnt,loop200HzCnt,loop50HzCnt , loop600HzCnt,loop100Hz
 
 
 //控制入口
-void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
+void TIM4_IRQHandler(void)		//1ms中断一次
 {
     if( TIM_GetITStatus(TIM4 , TIM_IT_Update) != RESET ) 
     {     
 					anyCnt++;
-				//	anyCnt2++;
 					loop200HzCnt++;
-//					if(++loop200HzCnt * 200 >= (1000))
-//					{
-//							loop200HzCnt=0;
-//							loop200HzFlag=1;
-//					}
 					loop100HzCnt++;
-//					if(++loop100HzCnt * 100 >= (1000))
-//					{
-//							loop100HzCnt=0;
-//							loop100HzFlag=1;
-//					}
+
 					if(++loop50HzCnt * 50 >= (1000))
 					{
 							loop50HzCnt=0;
@@ -71,35 +61,6 @@ void TIM4_IRQHandler(void)		//1ms中断一次,用于程序读取6050等
 							loop10HzCnt=0;
 							loop10HzFlag=1;
 					}
-	/*				if(cntBatChk++>500)	//
-					{
-						Battery.BatteryAD  = GetBatteryAD();            //电池电压检测  
-            Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算
-						cntBatChk=0;
-					}
-					//IMU 
-		//			DMP_Routing();	        //DMP 线程  所有的数据都在这里更新
-		//			DMP_getYawPitchRoll();  //读取 姿态角
-
-					//control
-			//		LEDC_troggle;
-          Controler(); //控制函数
-               
-          //HMC58X3_mgetValues(&Compass_HMC[0]);       
-          LedCounter++;//led闪烁计数值
-          if(Battery.BatteryAD > Battery.BatteryADmin)//当电池电压在设定值之上时，正常模式  3.17v
-          {
-              if(LedCounter==10){ LedA_off;LedB_off;}   //遥控端使能后，闪灯提示        
-              else if(LedCounter==30){LedCounter=0;LedA_on;LedB_on;}
-          }
-          else //电池电压低时，闪灯提示
-          {
-              if(LedCounter==10){ LedA_off;LedB_off;LedC_off;LedD_off;}   //遥控端使能后，闪灯提示        
-              else if(LedCounter==20){LedCounter=0;LedA_on;LedB_on;LedC_on;LedD_on;}
-          }
-          if(LedCounter>=31)LedCounter=0;
-
-          */
           
           TIM_ClearITPendingBit(TIM4 , TIM_FLAG_Update);   //清除中断标志   
     }
@@ -114,11 +75,8 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
 {
     if( TIM_GetITStatus(TIM3 , TIM_IT_Update) != RESET ) 
     {     
-       
-
-           
-           Battery.BatteryAD  = GetBatteryAD();            //电池电压检测  
-           Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算
+			Battery.BatteryAD  = GetBatteryAD();            //电池电压检测  
+			Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算
 #ifdef Debug
       DebugCounter++;
       if( DebugCounter==500)
@@ -167,30 +125,12 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf(" 电机M3 PWM值---> %d\r\n",TIM2->CCR3);
             printf(" 电机M4 PWM值---> %d\r\n",TIM2->CCR4);
             printf("==================\r\n");
-            printf(" 电池电压---> %3.2fv\r\n",Battery.BatteryVal);//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
+						//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
+            printf(" 电池电压---> %3.2fv\r\n",Battery.BatteryVal);
             printf("==================\r\n");
-          
-//             printf(" ---> %d\r\n",(int) PIDParameter.ReadBuf[0]);
-//             printf(" ---> %d\r\n",(int) PIDParameter.ReadBuf[1]);
-//             printf(" ---> %d\r\n",(int) PIDParameter.ReadBuf[2]);
-//             
-//             printf(" ---> %d\r\n",(int) BTParameter.ReadBuf[0]);
-//             printf(" ---> %d\r\n",(int) BTParameter.ReadBuf[1]);
-//             printf(" ---> %d\r\n",(int) BTParameter.ReadBuf[2]);
-//             
-            
-// 
-//             printf(" X磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[0]);
-//             printf(" Y磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[1]);
-//             printf(" Z磁场强度---> %5.2f °/s\r\n",(float) Compass_HMC[2]);
-//       
-
-
         }
 #else      
-             
 #endif
-        
         TIM_ClearITPendingBit(TIM3 , TIM_FLAG_Update);   //清除中断标志   
     }
 }
@@ -253,13 +193,13 @@ void TimerNVIC_Configuration()
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
     //TIM3
     NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;//定时器3作为串口打印定时器，优先级低于姿态解算
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;//串口打印定时器，优先级低于姿态解算
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
     //TIM4
     NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;//定时器4作为姿态解算，优先级高于串口打印
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;//飞控主循环基准定时器，优先级高于串口打印
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
