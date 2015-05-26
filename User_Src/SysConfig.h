@@ -11,6 +11,8 @@
 #define lostRC_Landing
 //#define STOP_MOTOR_FOREVER
 
+#define UART_DEBUG
+
  
 enum {SRC_PC,SRC_APP};
 extern uint8_t btSrc;

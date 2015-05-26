@@ -88,8 +88,12 @@ int main(void)
 
 	IMU_Init();			// sample rate and cutoff freq.  sample rate is too low now due to using dmp.
 
-	//定时器4初始化，定时间隔为1ms，定时采样传感器数据，更新PID输出
-	//PID更新周期为4ms，所以姿态更新频率为250Hz
+#ifdef UART_DEBUG
+	//定时器3初始化，串口调试信息输出
+	TIM3_Init(SysClock,5000);
+#endif
+
+	//定时器4初始化，用于飞控主循环基准定时
 	TIM4_Init(SysClock,1000);	    
 	
 	MotorPwmFlash(10,10,10,10);
@@ -189,9 +193,11 @@ int main(void)
 				CtrlAttiAng();	 
 
 			  //PC Monitor
+#ifndef UART_DEBUG
 				if(btSrc!=SRC_APP){
 					CommPCUploadHandle();	//tobe improved inside
 				}
+#endif
 				
 				execTime[3]=micros()-startTime[3];
 		}
@@ -236,11 +242,13 @@ int main(void)
 		}
  		
 		//pc cmd process. need to return as quickly as ps
+#ifndef UART_DEBUG
 		if(pcCmdFlag)
 		{
 				pcCmdFlag=0;
 				CommPCProcessCmd();
 		}
+#endif
   }//end of while(1)
 }
 

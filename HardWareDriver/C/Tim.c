@@ -72,12 +72,11 @@ int DebugCounter;             //打印信息输出时间间隔计数值
 
 
 void TIM3_IRQHandler(void)		//打印中断服务程序
-{
+{	
     if( TIM_GetITStatus(TIM3 , TIM_IT_Update) != RESET ) 
     {     
 			Battery.BatteryAD  = GetBatteryAD();            //电池电压检测  
 			Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算
-#ifdef Debug
       DebugCounter++;
       if( DebugCounter==500)
             {
@@ -95,42 +94,20 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf(" *                                            /_____/             *\r\n");
             printf(" ******************************************************************\r\n");
             printf("\r\n");
-            printf(" Crazepony-II报告：系统正在运行...\r\n"); 
             printf("\r\n");
-            printf("\r\n--->机身实时姿态广播信息<---\r\n");
-            printf("\r\n");
-            printf(" 偏航角---> %5.2f°\r\n",(float)Q_ANGLE.Yaw);
-            printf(" 俯仰角---> %5.2f°\r\n",(float)Q_ANGLE.Pitch);
-            printf(" 横滚角---> %5.2f°\r\n",(float) Q_ANGLE.Roll);
-            printf(" ==================\r\n");
-            printf(" X轴期望角度---> %5.2f°\r\n",(float)EXP_ANGLE.X);
-            printf(" Y轴期望角度---> %5.2f°\r\n",(float)EXP_ANGLE.Y);
-            printf(" Z轴期望角度---> %5.2f°\r\n",(float)EXP_ANGLE.Z);
-            
-            printf(" ==================\r\n");
-            printf(" Y轴误差角度---> %5.2f°\r\n",(float)DIF_ANGLE.Y);
-            printf(" X轴误差角度---> %5.2f°\r\n",(float)DIF_ANGLE.X);
+            printf(" Yaw ---> %5.2f degree\r\n",(float)Q_ANGLE.Yaw);
+            printf(" Pitch---> %5.2f degree\r\n",(float)Q_ANGLE.Pitch);
+            printf(" Roll ---> %5.2f degree\r\n",(float) Q_ANGLE.Roll);
             printf("==================\r\n");
-            printf(" X轴加速度---> %5.2fm/s2\r\n",(float) DMP_DATA.dmp_accx);
-            printf(" Y轴加速度---> %5.2fm/s2\r\n",(float) DMP_DATA.dmp_accy);
-            printf(" Z轴加速度---> %5.2fm/s2\r\n",(float) DMP_DATA.dmp_accz);
-            
-            printf(" ==================\r\n");
-            printf(" X轴角速度---> %5.2f °/s\r\n",(float) DMP_DATA.dmp_gyrox);
-            printf(" Y轴角速度---> %5.2f °/s\r\n",(float) DMP_DATA.dmp_gyroy);
-            printf(" Z轴角速度---> %5.2f °/s\r\n",(float) DMP_DATA.dmp_gyroz);
-            printf("==================\r\n");
-            printf(" 电机M1 PWM值---> %d\r\n",TIM2->CCR1);
-            printf(" 电机M2 PWM值---> %d\r\n",TIM2->CCR2);
-            printf(" 电机M3 PWM值---> %d\r\n",TIM2->CCR3);
-            printf(" 电机M4 PWM值---> %d\r\n",TIM2->CCR4);
+            printf(" Motor M1 PWM---> %d\r\n",TIM2->CCR1);
+            printf(" Motor M2 PWM---> %d\r\n",TIM2->CCR2);
+            printf(" Motor M3 PWM---> %d\r\n",TIM2->CCR3);
+            printf(" Motor M4 PWM---> %d\r\n",TIM2->CCR4);
             printf("==================\r\n");
 						//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
-            printf(" 电池电压---> %3.2fv\r\n",Battery.BatteryVal);
+            printf(" Battery Voltage---> %3.2fv\r\n",Battery.BatteryVal);
             printf("==================\r\n");
         }
-#else      
-#endif
         TIM_ClearITPendingBit(TIM3 , TIM_FLAG_Update);   //清除中断标志   
     }
 }

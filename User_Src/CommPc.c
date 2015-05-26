@@ -338,7 +338,8 @@ static void EndianConvert(uint8_t arr[], uint8_t len)
 		arr[len-1-i]=arrS[i];
 }
 
-void DebugUploadHandle2()
+
+static void DebugUploadHandle2()
 {
 	uint8_t i;
 		
@@ -371,19 +372,13 @@ void DebugUploadHandle2()
 		
 		BufAdd8Chk(checksum);
 		BufUpload();
-	/*	
-	  for(i=0;i<4;i++)
-			up2.sum+=*((uint8_t *)(&up2)+i);
-		for(i=0;i<30;i++)
-			up2.sum+=up2.data[i];
-	  
-		UartSendBuffer((uint8_t *)(&up2),up2.len + 5);
-		*/
+
 }
-//extern float angTarget[3];
-void DebubUploadHandle3()
+
+
+static void DebubUploadHandle3()
 {
-	uint8_t i;
+		uint8_t i;
 		up2.cmd=0x08;
 		up2.len=6*2;
 		up2.data[0]=0;
@@ -407,15 +402,19 @@ void DebubUploadHandle3()
 		UartSendBuffer( &(up2.sum),1);
 }
 
+
 void CommPCUploadHandle()
 {
 		static uint8_t pkgDivCnt=0;
 		
 		uint8_t i=0;
 			
-			pkgDivCnt++;
+		pkgDivCnt++;
 		if(pkgDivCnt>2)
+		{
 			pkgDivCnt=0;
+		}
+		
 		if(pkgDivCnt == 0)		//div time to send different datapacket to avoid use too much cpu at a time
 		{
 			DebugUploadHandle();
@@ -435,6 +434,8 @@ void CommPCUploadHandle()
 			DebugUploadHandle2();
 		}
 		else if(pkgDivCnt==2)
+		{
 			DebubUploadHandle3();
+		}
 }
 
