@@ -240,6 +240,11 @@ uint8_t satZ=0,satXY=0;	//是否过饱和
 uint8_t isAltLimit=0;
 float altLand;
 //#define DEBUG_HOLD_REAL_ALT
+
+//函数名：CtrlAlti()
+//输入：无
+//输出: 最终结果输出到全局变量thrustZSp
+//描述：控制高度，也就是高度悬停控制函数
 //only in climb rate mode and landind mode. now we don't work on manual mode
 void CtrlAlti(void)
 {
@@ -250,27 +255,22 @@ void CtrlAlti(void)
 	float dt=0,t=0;
 	static float tPrev=0,velZPrev=0;
 	float posZErr=0,velZErr=0,valZErrD=0;
-		float thrustXYSpLen=0,thrustSpLen=0;
-		float thrustXYMax=0;
+	float thrustXYSpLen=0,thrustSpLen=0;
+	float thrustXYMax=0;
 	
-	
-	
-
 	//get dt		//保证dt运算不能被打断，保持更新，否则dt过大，积分爆满。
-	if(tPrev==0)
-	{
+	if(tPrev==0){
 			tPrev=micros();
 			return;
-	}
-	else
-	{
+	}else{
 			t=micros();
 			dt=(t-tPrev) /1000000.0f;
 			tPrev=t;
 	}
 	
-	if(altCtrlMode==MANUAL || !FLY_ENABLE)		
+	if(altCtrlMode==MANUAL || !FLY_ENABLE)
 		return;
+	
 	//--------------pos z ctrol---------------//
 	//get current alt 
 	alt=-nav.z;
@@ -323,11 +323,6 @@ void CtrlAlti(void)
 	//consider landing mode
 	if(altCtrlMode==LANDING)
 		posZVelSp = LAND_SPEED;
-	//limit 
-//	if(posZVelSp>ALT_VEL_MAX)
-//		posZVelSp=ALT_VEL_MAX;
-//	else if(posZVelSp<-ALT_VEL_MAX)
-//		posZVelSp=-ALT_VEL_MAX;
 	
 	//--------------pos z vel ctrl -----------//
 	if(zIntReset)		//tobe tested .  how to get hold throttle. give it a estimated value!!!!!!!!!!!
@@ -342,7 +337,7 @@ void CtrlAlti(void)
 	
 	thrustZSp= velZErr * alt_vel_PID.P + valZErrD * alt_vel_PID.D + thrustZInt;	//in ned frame. thrustZInt contains hover thrust
 	
-		//limit thrust min !!
+	//limit thrust min !!
 	if(altCtrlMode!=LANDING)
 	{
 			if (-thrustZSp < THR_MIN) {
@@ -350,66 +345,66 @@ void CtrlAlti(void)
 					} 
 					
 	}
+	
 	//与动力分配相关	testing
-		satXY=0;
-		satZ=0;
-		thrustXYSp[0]= sinf(RC_DATA.ROOL * M_PI_F /180.0f) ;//目标角度转加速度 ，力 
-		thrustXYSp[1]= sinf(RC_DATA.PITCH * M_PI_F /180.0f) ; 	//归一化
-		thrustXYSpLen= sqrtf(thrustXYSp[0] * thrustXYSp[0] + thrustXYSp[1] * thrustXYSp[1]);
-		//limit tilt max
-		if(thrustXYSpLen >0.01f )
+	satXY=0;
+	satZ=0;
+	thrustXYSp[0]= sinf(RC_DATA.ROOL * M_PI_F /180.0f) ;//目标角度转加速度
+	thrustXYSp[1]= sinf(RC_DATA.PITCH * M_PI_F /180.0f) ; 	//归一化
+	thrustXYSpLen= sqrtf(thrustXYSp[0] * thrustXYSp[0] + thrustXYSp[1] * thrustXYSp[1]);
+	//limit tilt max
+	if(thrustXYSpLen >0.01f )
+	{
+		thrustXYMax=-thrustZSp * tanf(TILT_MAX);
+		if(thrustXYSpLen > thrustXYMax)
 		{
-			thrustXYMax=-thrustZSp * tanf(TILT_MAX);
-			if(thrustXYSpLen > thrustXYMax)
-			{
-					float k=thrustXYMax / thrustXYSpLen;
-					thrustXYSp[1] *=k;
-					thrustXYSp[0] *= k;
-					satXY=1;
-					thrustXYSpLen= sqrtf(thrustXYSp[0] * thrustXYSp[0] + thrustXYSp[1] * thrustXYSp[1]);
-			}
-			
+				float k=thrustXYMax / thrustXYSpLen;
+				thrustXYSp[1] *=k;
+				thrustXYSp[0] *= k;
+				satXY=1;
+				thrustXYSpLen= sqrtf(thrustXYSp[0] * thrustXYSp[0] + thrustXYSp[1] * thrustXYSp[1]);
 		}
-		//limit max thrust!! 
-		thrustSpLen=sqrtf(thrustXYSpLen * thrustXYSpLen + thrustZSp * thrustZSp);
-		if(thrustSpLen > THR_MAX)
-		{
-				if(thrustZSp < 0.0f)	//going up
-				{
-							if (-thrustZSp > THR_MAX) 
-							{
-									/* thrust Z component is too large, limit it */
-									thrustXYSp[0] = 0.0f;
-									thrustXYSp[1] = 0.0f;
-									thrustZSp = -THR_MAX;
-									satXY = true;
-									satZ = true;
-
-								} 
-								else {
-									float k = 0;
-									/* preserve thrust Z component and lower XY, keeping altitude is more important than position */
-									thrustXYMax = sqrtf(THR_MAX * THR_MAX- thrustZSp * thrustZSp);
-									k=thrustXYMax / thrustXYSpLen;
-							//		float thrust_xy_abs =thrustXYSpLen;// math::Vector<2>(thrust_sp(0), thrust_sp(1)).length();
-									thrustXYSp[1] *=k;
-									thrustXYSp[0] *= k;
-									satXY=1;
-								}
-				}
-				else {		//going down
-								/* Z component is negative, going down, simply limit thrust vector */
-								float k = THR_MAX / thrustSpLen;
-								thrustZSp *= k;
-								thrustXYSp[1] *=k;
-								thrustXYSp[0] *= k;
+		
+	}
+	//limit max thrust!! 
+	thrustSpLen=sqrtf(thrustXYSpLen * thrustXYSpLen + thrustZSp * thrustZSp);
+	if(thrustSpLen > THR_MAX)
+	{
+			if(thrustZSp < 0.0f)	//going up
+			{
+						if (-thrustZSp > THR_MAX) 
+						{
+								/* thrust Z component is too large, limit it */
+								thrustXYSp[0] = 0.0f;
+								thrustXYSp[1] = 0.0f;
+								thrustZSp = -THR_MAX;
 								satXY = true;
 								satZ = true;
+
+							} 
+							else {
+								float k = 0;
+								/* preserve thrust Z component and lower XY, keeping altitude is more important than position */
+								thrustXYMax = sqrtf(THR_MAX * THR_MAX- thrustZSp * thrustZSp);
+								k=thrustXYMax / thrustXYSpLen;
+								thrustXYSp[1] *=k;
+								thrustXYSp[0] *= k;
+								satXY=1;
 							}
-			
-		} 
-		rollSp= asinf(thrustXYSp[0]) * 180.0f /M_PI_F;
-		pitchSp = asinf(thrustXYSp[1]) * 180.0f /M_PI_F;				
+			}
+			else {		//going down
+							/* Z component is negative, going down, simply limit thrust vector */
+							float k = THR_MAX / thrustSpLen;
+							thrustZSp *= k;
+							thrustXYSp[1] *=k;
+							thrustXYSp[0] *= k;
+							satXY = true;
+							satZ = true;
+						}
+		
+	} 
+	rollSp= asinf(thrustXYSp[0]) * 180.0f /M_PI_F;
+	pitchSp = asinf(thrustXYSp[1]) * 180.0f /M_PI_F;				
 	
 	
 	// if saturation ,don't integral
@@ -419,11 +414,6 @@ void CtrlAlti(void)
 			if (thrustZInt > 0.0f)
 							thrustZInt = 0.0f;
 	}
-	
-// 	Roll= thrustXYSp[0] * 1000;
- // Pitch = thrustXYSp[1] * 1000;
-
-	
 }
  
 
@@ -447,6 +437,7 @@ void CtrlDynamic(void)
 				//way2	
 				cosTilt=imu.DCMgb[2][2];
 				Thro=Thro/cosTilt;
+			
 				//way3
 		//	thrAngCorrect=THR_HOLD_LEVEL * (1.0f/cosTilt - 1.0);
 		//	Thro += thrAngCorrect;	
