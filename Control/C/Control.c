@@ -420,55 +420,49 @@ void CtrlAlti(void)
 #define ANG_COR_COEF 50.0f
 #define THR_HOLD_LEVEL 1600		//悬停油门 ， can measure after baro
 
-void CtrlDynamic(void)
+
+//函数名：CtrlMotor()
+//输入：无
+//输出: 4个电机的PWM输出
+//描述：输出PWM，控制电机，本函数会被主循环中100Hz循环调用
+void CtrlMotor(void)
 {
 		static float thrAngCorrect;	//对倾斜做修正
 		float  cosTilt = imu.accb[2] / ONE_G;
 	
-		
 		if(altCtrlMode==MANUAL)
 		{
 			DIF_ACC.Z =  imu.accb[2] - ONE_G;
 			Thro = RC_DATA.THROTTLE;
-			   // Thr = Thr/(cos) ;                             //对Z轴用一次负反馈控制
-				//way1	
-				//  thrAngCorrect = ANG_COR_COEF * (1-cosTilt) ;
-				 //	Thr += thrAngCorrect;				//采用气压定高时，不用此修正。
-				//way2	
-				cosTilt=imu.DCMgb[2][2];
-				Thro=Thro/cosTilt;
+			// Thr = Thr/(cos) ;                             //对Z轴用一次负反馈控制
+			//way1	
+			//thrAngCorrect = ANG_COR_COEF * (1-cosTilt) ;
+			//Thr += thrAngCorrect;				//采用气压定高时，不用此修正。
 			
-				//way3
-		//	thrAngCorrect=THR_HOLD_LEVEL * (1.0f/cosTilt - 1.0);
-		//	Thro += thrAngCorrect;	
-
+			//way2	
+			cosTilt=imu.DCMgb[2][2];
+			Thro=Thro/cosTilt;
+				
+			//way3
+			//thrAngCorrect=THR_HOLD_LEVEL * (1.0f/cosTilt - 1.0);
+			//Thro += thrAngCorrect;	
+		}else{
+			Thro=(-thrustZSp) * 1000;// /imu.DCMgb[2][2];  //倾角补偿后效果不错，有时过猛
+			if(Thro>1000)
+				Thro=1000;
 		}
-		else 
-		{
-				Thro=(-thrustZSp) * 1000;// /imu.DCMgb[2][2];  //倾角补偿后效果不错，有时过猛
-				if(Thro>1000)
-					Thro=1000;
-			
-			
-		}
-			 //将输出值融合到四个电机 
-			Motor[2] = (int16_t)(Thro - Pitch -Roll- Yaw );    //M3  
-			Motor[0] = (int16_t)(Thro + Pitch +Roll- Yaw );    //M1
-			Motor[3] = (int16_t)(Thro - Pitch +Roll+ Yaw );    //M4 
-			Motor[1] = (int16_t)(Thro + Pitch -Roll+ Yaw );    //M2
+		
+		//将输出值融合到四个电机 
+		Motor[2] = (int16_t)(Thro - Pitch -Roll- Yaw );    //M3  
+		Motor[0] = (int16_t)(Thro + Pitch +Roll- Yaw );    //M1
+		Motor[3] = (int16_t)(Thro - Pitch +Roll+ Yaw );    //M4 
+		Motor[1] = (int16_t)(Thro + Pitch -Roll+ Yaw );    //M2
 	
-   
-}
-
-void CtrlMotor(void)
-{
- 
-	 if((FLY_ENABLE!=0)) 
-				MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);   
+   	if((FLY_ENABLE!=0)) 
+			MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);   
 		else                  
-				MotorPwmFlash(0,0,0,0); 
+			MotorPwmFlash(0,0,0,0); 
 }
-
 
 
 #define PIDParameterAdd   0    //PID参数写入首地址为

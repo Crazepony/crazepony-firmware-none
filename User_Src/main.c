@@ -90,7 +90,7 @@ int main(void)
 
 #ifdef UART_DEBUG
 	//定时器3初始化，串口调试信息输出
-	TIM3_Init(SysClock,5000);
+	TIM3_Init(SysClock,2000);
 #endif
 
 	//定时器4初始化，用于飞控主循环基准定时
@@ -160,7 +160,6 @@ int main(void)
 				} 
 				
 				CtrlAttiRate();
-				CtrlDynamic();
 				CtrlMotor();
 
 				execTime[1]=micros()-startTime[1];

@@ -69,7 +69,6 @@ void CtrlAttiAng(void);
 void CtrlAttiRate(void);
 void CtrlAlti(void);
 void CtrlAltiVel(void);
-void CtrlDynamic(void);
 void CtrlMotor(void);
 void CtrlTest(void);
 void CtrlAttiRateNew(void);
