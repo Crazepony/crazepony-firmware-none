@@ -62,8 +62,6 @@ typedef struct
 void Controler(void);
 void PID_INIT(void);
 void PID_Calculate(void);
-char  ParameterWrite(void);
-void  ParameterRead(void);
 
 void CtrlAttiAng(void);
 void CtrlAttiRate(void);
@@ -89,10 +87,6 @@ extern PID_Typedef yaw_rate_PID;
 
 extern PID_Typedef	alt_PID;
 extern PID_Typedef alt_vel_PID;
-
-
-extern Parameter_Typedef PIDParameter;//实例化一个PID的Flash参数
-extern Parameter_Typedef BTParameter; //实例化一个蓝牙Flash参数
 
 
 extern float gyroxGloble;
