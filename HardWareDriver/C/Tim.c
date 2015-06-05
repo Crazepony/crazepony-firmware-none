@@ -99,15 +99,19 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
             printf(" Yaw ---> %5.2f degree\r\n",(float)imu.yaw);
             printf(" Pitch---> %5.2f degree\r\n",(float)imu.pitch);
             printf(" Roll ---> %5.2f degree\r\n",(float)imu.roll);
-            printf("==================\r\n");
+            printf("====================================\r\n");
             printf(" Motor M1 PWM---> %d\r\n",TIM2->CCR1);
             printf(" Motor M2 PWM---> %d\r\n",TIM2->CCR2);
             printf(" Motor M3 PWM---> %d\r\n",TIM2->CCR3);
             printf(" Motor M4 PWM---> %d\r\n",TIM2->CCR4);
-            printf("==================\r\n");
+            printf("====================================\r\n");
+						printf(" Pressure ---> %5.2f Pa\r\n",(float)MS5611_Pressure);
+            printf(" Altitude ---> %5.2f M\r\n",(float)MS5611_Altitude);
+            printf(" Temperature---> %5.2f C\r\n",(float)MS5611_Temperature);
+						printf("====================================\r\n");
 						//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
             printf(" Battery Voltage---> %3.2fv\r\n",Battery.BatteryVal);
-            printf("==================\r\n");
+            printf("====================================\r\n");
         }
         TIM_ClearITPendingBit(TIM3 , TIM_FLAG_Update);   //清除中断标志   
     }

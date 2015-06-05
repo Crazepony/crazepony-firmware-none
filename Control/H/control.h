@@ -5,7 +5,7 @@
 
 //#define Debug  //调试与否的条件编译
 
-//怠速
+//待速转
 #define SLOW_THRO 200
 //定义飞机最大倾斜角度
 #define  Angle_Max  40.0
@@ -19,7 +19,7 @@
 #define THR_MIN								0.42f		//min thrust ，根据机重和最小降速而定，用于下降速度过大时，油门过小，导致失衡。再增加fuzzy control ，在油门小时用更大的姿态参数
 
 
-#define HOVER_THRU	-0.63//-0.5f  //
+#define HOVER_THRU	         -0.63  //-0.5f  //悬停
 
 
 enum {CLIMB_RATE=0,MANUAL,LANDING};
@@ -76,14 +76,14 @@ void SetHeadFree(uint8_t on);
 
 extern u16 PIDWriteBuf[3];//写入flash的临时数字，由NRF24L01_RXDATA[i]赋值 
 
-extern PID_Typedef pitch_angle_PID;	//角度环的PID
-extern PID_Typedef pitch_rate_PID;		//角速率环的PID
+extern PID_Typedef pitch_angle_PID;	  //pitch角度环的PID
+extern PID_Typedef pitch_rate_PID;		//pitch角速率环的PID
 
-extern PID_Typedef roll_angle_PID;
-extern PID_Typedef roll_rate_PID;
+extern PID_Typedef roll_angle_PID;    //roll角度环的PID
+extern PID_Typedef roll_rate_PID;     //roll角速率环的PID
 
-extern PID_Typedef yaw_angle_PID;
-extern PID_Typedef yaw_rate_PID;
+extern PID_Typedef yaw_angle_PID;     //yaw角度环的PID  
+extern PID_Typedef yaw_rate_PID;      //yaw的角速率环的PID  
 
 extern PID_Typedef	alt_PID;
 extern PID_Typedef alt_vel_PID;

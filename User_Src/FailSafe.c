@@ -162,7 +162,7 @@ void FlightModeFSMSimple(void)
 					{
 							if(altCtrlMode==MANUAL)
 							{
-									RC_DATA.THROTTLE=SLOW_THRO;
+									RC_DATA.THROTTLE=SLOW_THRO;           //手动模式待机转200
 							}
 					}
 					

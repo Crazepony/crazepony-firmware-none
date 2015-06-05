@@ -52,14 +52,14 @@ float Thro=0,Roll=0,Pitch=0,Yaw=0;
 
 
 //----PID结构体实例化----
-PID_Typedef pitch_angle_PID;	//角度环的PID
-PID_Typedef pitch_rate_PID;		//角速率环的PID
+PID_Typedef pitch_angle_PID;	//pitch角度环的PID
+PID_Typedef pitch_rate_PID;		//pitch角速率环的PID
 
-PID_Typedef roll_angle_PID;
-PID_Typedef roll_rate_PID;
+PID_Typedef roll_angle_PID;   //roll角度环的PID
+PID_Typedef roll_rate_PID;    //roll角速率环的PID
 
-PID_Typedef yaw_angle_PID;
-PID_Typedef yaw_rate_PID;
+PID_Typedef yaw_angle_PID;    //yaw角度环的PID 
+PID_Typedef yaw_rate_PID;     //yaw角速率环的PID
 
 PID_Typedef	alt_PID;
 PID_Typedef alt_vel_PID;
@@ -89,16 +89,17 @@ static void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t
 	
 	PID->Deriv= (PID->Error-PID->PreError)/dt;
 	
-	PID->Output=PID->P*PID->Error+PID->I*PID->Integ+PID->D * PID->Deriv;
+	PID->Output=(PID->P * PID->Error) + (PID->I * PID->Integ) + (PID->D * PID->Deriv);    //PID:比例环节+积分环节+微分环节
 	
 	PID->PreError=PID->Error;
 	//仅用于角度环和角速度环的
+
 	if(FLY_ENABLE && offLandFlag)
 	{
-			if(fabs(PID->Output) < Thro )		//比油门还大时不积分
+			if(fabs(PID->Output) < Thro )		              //比油门还大时不积分
 			{
-				termI=(PID->Integ) + (PID->Error) * dt;
-				if(termI > - PID->iLimit && termI < PID->iLimit && PID->Output > - PID->iLimit && PID->Output < PID->iLimit)
+				termI=(PID->Integ) + (PID->Error) * dt;     //积分环节
+				if(termI > - PID->iLimit && termI < PID->iLimit && PID->Output > - PID->iLimit && PID->Output < PID->iLimit)       //在-300~300时才进行积分环节
 						PID->Integ=termI;
 			}
 	}
@@ -122,8 +123,6 @@ void SetHeadFree(uint8_t on)
 //run after get rc cmd
 void CtrlAttiAng(void)
 {
- 
-
 		static float yawHold=0;
 		static uint32_t tPrev=0;
 		float yawRateTarget=0;
@@ -143,7 +142,7 @@ void CtrlAttiAng(void)
 			angTarget[ROLL]=rollSp;
 			angTarget[PITCH]=pitchSp;
 		}
-	//	angTarget[YAW]=(float)(RC_DATA.YAW);		//因为右手系
+//		angTarget[YAW]=(float)(RC_DATA.YAW);		//因为右手系
 //		yawRateTarget=
 //		angTarget[YAW]= (angTarget[YAW] + yawRateTarget * dt);
 
@@ -161,10 +160,8 @@ void CtrlAttiAng(void)
         angTarget[PITCH] = tarPitFree;
 		}
  
- 
 		PID_Postion_Cal(&pitch_angle_PID,angTarget[PITCH],imu.pitch,dt);
-		PID_Postion_Cal(&roll_angle_PID,angTarget[ROLL],imu.roll,dt);
-	//	PID_Postion_Cal(&yaw_angle_PID,angTarget[YAW],imu.yaw,dt);	 
+		PID_Postion_Cal(&roll_angle_PID,angTarget[ROLL],imu.roll,dt);	 
 }
 
 
@@ -359,7 +356,7 @@ void CtrlAlti(void)
 		if(thrustXYSpLen > thrustXYMax)
 		{
 				float k=thrustXYMax / thrustXYSpLen;
-				thrustXYSp[1] *=k;
+				thrustXYSp[1] *= k;
 				thrustXYSp[0] *= k;
 				satXY=1;
 				thrustXYSpLen= sqrtf(thrustXYSp[0] * thrustXYSp[0] + thrustXYSp[1] * thrustXYSp[1]);
@@ -378,8 +375,8 @@ void CtrlAlti(void)
 								thrustXYSp[0] = 0.0f;
 								thrustXYSp[1] = 0.0f;
 								thrustZSp = -THR_MAX;
-								satXY = true;
-								satZ = true;
+								satXY = 1;
+								satZ = 1;
 
 							} 
 							else {
@@ -398,8 +395,8 @@ void CtrlAlti(void)
 							thrustZSp *= k;
 							thrustXYSp[1] *=k;
 							thrustXYSp[0] *= k;
-							satXY = true;
-							satZ = true;
+							satXY = 1;
+							satZ = 1;
 						}
 		
 	} 
@@ -453,10 +450,10 @@ void CtrlMotor(void)
 		}
 		
 		//将输出值融合到四个电机 
-		Motor[2] = (int16_t)(Thro - Pitch -Roll- Yaw );    //M3  
-		Motor[0] = (int16_t)(Thro + Pitch +Roll- Yaw );    //M1
-		Motor[3] = (int16_t)(Thro - Pitch +Roll+ Yaw );    //M4 
-		Motor[1] = (int16_t)(Thro + Pitch -Roll+ Yaw );    //M2
+		Motor[2] = (int16_t)(Thro - Pitch - Roll - Yaw );    //M3  
+		Motor[0] = (int16_t)(Thro + Pitch + Roll - Yaw );    //M1
+		Motor[3] = (int16_t)(Thro - Pitch + Roll + Yaw );    //M4 
+		Motor[1] = (int16_t)(Thro + Pitch - Roll + Yaw );    //M2
 	
    	if((FLY_ENABLE!=0)) 
 			MotorPwmFlash(Motor[0],Motor[1],Motor[2],Motor[3]);   

@@ -111,7 +111,7 @@ void NonlinearSO3AHRSupdate(float gx, float gy, float gz, float ax, float ay, fl
     	// Reference direction of Earth's magnetic field
     	hx = 2.0f * (mx * (0.5f - q2q2 - q3q3) + my * (q1q2 - q0q3) + mz * (q1q3 + q0q2));
     	hy = 2.0f * (mx * (q1q2 + q0q3) + my * (0.5f - q1q1 - q3q3) + mz * (q2q3 - q0q1));
-	hz = 2.0f * mx * (q1q3 - q0q2) + 2.0f * my * (q2q3 + q0q1) + 2.0f * mz * (0.5f - q1q1 - q2q2);
+			hz = 2.0f * mx * (q1q3 - q0q2) + 2.0f * my * (q2q3 + q0q1) + 2.0f * mz * (0.5f - q1q1 - q2q2);
     	bx = sqrt(hx * hx + hy * hy);
     	bz = hz;
     
@@ -279,9 +279,7 @@ void IMUSO3Thread(void)
 			return;
 	}
 	
-	
 
-	
 	gyro[0] = imu.gyro[0] - imu.gyroOffset[0];
 	gyro[1] = imu.gyro[1] - imu.gyroOffset[1];
 	gyro[2] = imu.gyro[2] - imu.gyroOffset[2];
