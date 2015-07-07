@@ -101,16 +101,16 @@ void NRFmatching(void)
 				break;	//exit when time out,and do not change original address
 			}
 		  
-			RX_ADDRESS[4] ++;
-			if(RX_ADDRESS[4] == 0xff ){
-				RX_ADDRESS[4] = 0x00;
-			}
-      
 			SetRX_Mode();                 // reset RX mode write RX panel address
 		  sta = NRF_Read_Reg(NRF_READ_REG + NRFRegSTATUS);
       
 		  if((sta & 0x0E )== 0x00){
 				NRFMatched = 1;
+			}else{
+				RX_ADDRESS[4] ++;		//search the next RX_ADDRESS
+				if(RX_ADDRESS[4] == 0xff ){
+					RX_ADDRESS[4] = 0x00;
+				}
 			}
   }while((sta & 0x0E )== 0x0E); 
 	
