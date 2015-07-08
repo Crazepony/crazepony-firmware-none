@@ -59,12 +59,7 @@ void IMU_Process(void)
 		imu.gyroRaw[0]=DMP_DATA.dmp_gyrox ;		//
 		imu.gyroRaw[1]=DMP_DATA.dmp_gyroy ;
 		imu.gyroRaw[2]=DMP_DATA.dmp_gyroz ;
-		//offset 
-//		for(i=0;i<3;i++)
-//		{
-//				imu.accRaw[i]=imu.accRaw[i]-imu.accOffset[i];
-//				imu.gyroRaw[i]=imu.gyroRaw[i]-imu.gyroOffset[i];
-//		}
+
 		//filter
 		imu.accb[0]=LPF2pApply_1(imu.accRaw[0]-imu.accOffset[0]);
 		imu.accb[1]=LPF2pApply_2(imu.accRaw[1]-imu.accOffset[1]);
@@ -102,7 +97,6 @@ uint8_t IMU_Calibrate(void)
 	now=millis();
 
 
-//#ifndef IMU_SW
 #if (1)
 		dt=now-tPrev;	
 
@@ -136,8 +130,6 @@ uint8_t IMU_Calibrate(void)
 					{
 						imu.accOffset[i]=accSum[i]/(float)cnt;
 						imu.gyroOffset[i]=gyroSum[i]/(float)cnt;
-		//				accSum[i]=0;
-		//				gyroSum[i]=0;
 					} 
 					
 					imu.accOffset[2]=imu.accOffset[2] - CONSTANTS_ONE_G;
@@ -168,7 +160,6 @@ uint8_t IMU_Calibrate(void)
 		for(i=0;i<3;i++)
 		{
 			accSum[i]+=imu.accRaw[i];			//tobe 
-	//		gyroSum[i]+=imu.gyroRaw[i];
 		}
 		cnt++;
 		if(caliTime > ACC_CALC_TIME)
@@ -176,7 +167,6 @@ uint8_t IMU_Calibrate(void)
 				for(i=0;i<3;i++)
 				{
 					imu.accOffset[i]=accSum[i]/cnt;
-	//				imu.gyroOffset[i]=gyroSum[i]/(float)cnt;
 					accSum[i]=0;
 				} 
 				imu.accOffset[2]=imu.accOffset[2] - CONSTANTS_ONE_G;
@@ -210,12 +200,7 @@ void ReadIMUSensorHandle(void)
 				imu.accRaw[i]= (float)imu.accADC[i] *ACC_SCALE * CONSTANTS_ONE_G ;
 				imu.gyroRaw[i]=(float)imu.gyroADC[i] * GYRO_SCALE * M_PI_F /180.f;		//deg/s
 		}
-		//cut offset 
-//		for(i=0;i<3;i++)
-//		{
-//				imu.accRaw[i]-=imu.accOffset[i];
-//				imu.gyroRaw[i]-=imu.gyroOffset[i];
-//		}
+
 		imu.accb[0]=LPF2pApply_1(imu.accRaw[0]-imu.accOffset[0]);
 		imu.accb[1]=LPF2pApply_2(imu.accRaw[1]-imu.accOffset[1]);
 		imu.accb[2]=LPF2pApply_3(imu.accRaw[2]-imu.accOffset[2]);
@@ -229,14 +214,16 @@ void ReadIMUSensorHandle(void)
 		imu.gyro[2]=LPF2pApply_6(imu.gyroRaw[2]-imu.gyroOffset[2]); 
 		#endif
 		//low pass filter.  inertial or digital . tobe tested
-//		for(i=0;i<2;i++)	//tobe fixed to digital filter
-//		{
-//				accFilted[i] = accFilted[i] * (1.0f - (1.0f / ACC_XY_LPF_FACTOR)) + accRaw[i] * (1.0f /ACC_XY_LPF_FACTOR); 
-//				
-//				gyroFilted[i] = gyroFilted[i] * (1.0f - (1.0f / GYRO_XY_LPF_FACTOR)) + gyroRaw[i] * (1.0f/GYRO_XY_LPF_FACTOR);
-//		}
-//		accFilted[2]=LPF2pApply_3(accRaw[2]);			// need to set cutoff freq and sample rate before 
-//		gyroFilted[2] = gyroFilted[2] * (1.0f - (1.0f / GYRO_Z_LPF_FACTOR)) + gyroRaw[2] * (1.0f/GYRO_Z_LPF_FACTOR);
+		/*
+		for(i=0;i<2;i++)	//tobe fixed to digital filter
+		{
+				accFilted[i] = accFilted[i] * (1.0f - (1.0f / ACC_XY_LPF_FACTOR)) + accRaw[i] * (1.0f /ACC_XY_LPF_FACTOR); 
+				
+				gyroFilted[i] = gyroFilted[i] * (1.0f - (1.0f / GYRO_XY_LPF_FACTOR)) + gyroRaw[i] * (1.0f/GYRO_XY_LPF_FACTOR);
+		}
+		accFilted[2]=LPF2pApply_3(accRaw[2]);			// need to set cutoff freq and sample rate before 
+		gyroFilted[2] = gyroFilted[2] * (1.0f - (1.0f / GYRO_Z_LPF_FACTOR)) + gyroRaw[2] * (1.0f/GYRO_Z_LPF_FACTOR);
+		*/
 		
 } 
 
@@ -259,22 +246,17 @@ uint8_t IMUCheck(void)
 	accZb=imu.accRaw[2]-imu.accOffset[2];	
 	
 	if((accZb > CONSTANTS_ONE_G-ACCZ_ERR_MAX ) && (accZb < CONSTANTS_ONE_G + ACCZ_ERR_MAX))
-	//	return 1;
 		imu.caliPass=1;
 	else
 		imu.caliPass=0;
-		//return 0;
-		
-	
+
 	return imu.caliPass;
 		
 }
 
 
 #ifdef USE_SW_IMU
-//
-//int16_t accADC[3];
-//int16_t gyroADC[3];
+
 int16_t accADCOffset[3]={0,0,0},gyroADCOffset[3]={-10,17,0};
 float accRaw[3];
 float gyroRaw[3];		//deg/s
@@ -282,7 +264,6 @@ volatile float accFilted[3]={0,0,0};	//m/s2,in body frame, filtered
 volatile float gyroFilted[3]={0};
 float DCMgb[3][3]={0};
 float accZoffsetTemp=0.6f ;	//m/s2
-//static float q[4];
 
 //imu
 volatile float qa0=1, qa1=0, qa2=0, qa3=0;	//初始化值
