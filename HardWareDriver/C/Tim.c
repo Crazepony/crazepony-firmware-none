@@ -70,7 +70,7 @@ void TIM4_IRQHandler(void)		//1ms中断一次
 
 
 int DebugCounter;             //打印信息输出时间间隔计数值
-
+extern u8 RX_ADDRESS[5];
 
 void TIM3_IRQHandler(void)		//打印中断服务程序
 {	
@@ -111,6 +111,7 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
 						printf("====================================\r\n");
 						//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
             printf(" Battery Voltage---> %3.2fv\r\n",Battery.BatteryVal);
+						printf(" RX Addr ---> 0x%x\r\n",RX_ADDRESS[4]);
             printf("====================================\r\n");
         }
         TIM_ClearITPendingBit(TIM3 , TIM_FLAG_Update);   //清除中断标志   

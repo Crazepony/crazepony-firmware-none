@@ -75,9 +75,6 @@ int main(void)
   //HMC5883L_SetUp();           //初始化磁力计HMC5883L
 
   NRF24L01_INIT();              //NRF24L01初始化
-  SetRX_Mode();                 //设无线模块为接收模式
-  
-	NRFmatching();								//NRF24L01对频
 	
   PowerOn();                    //开机等待
   BT_ATcmdWrite();              //蓝牙写配置

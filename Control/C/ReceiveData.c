@@ -100,8 +100,9 @@ void NRFmatching(void)
 				RX_ADDRESS[4] = table.NRFaddr[4];
 				break;	//exit when time out,and do not change original address
 			}
-		  
+
 			SetRX_Mode();                 // reset RX mode write RX panel address
+			delay_ms(4);									// delay is needed after reset NRF
 		  sta = NRF_Read_Reg(NRF_READ_REG + NRFRegSTATUS);
       
 		  if((sta & 0x0E )== 0x00){
@@ -112,6 +113,7 @@ void NRFmatching(void)
 					RX_ADDRESS[4] = 0x00;
 				}
 			}
+
   }while((sta & 0x0E )== 0x0E); 
 	
 	SetRX_Mode();                 // reset RX mode
