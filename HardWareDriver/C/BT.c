@@ -123,7 +123,6 @@ u32 BT_CurBaud_Get(void)
 				Uart1SendaBTCmd(ATcmdAsk);
 				if(CmdJudgement(ATcmdAnswer) == true)
 				{
-				  //printf("\r\nHM-06 baud -->%d\r\n",bandsel[i]);
 					break;//得到当前波特率为Bandsel[i] 
 				}
 			}
@@ -149,7 +148,6 @@ void BT_ATcmdWrite(void)
 						UART1_init(SysClock,BT_CurBaud);//以当前波特率重新初始化串口 
 						/*开始配置蓝牙设备名,pin码，波特率*/
 						Uart1SendaBTCmd(ATcmdAsk);
-						//printf("\r\n与蓝牙通信中...\r\n");
 								if(CmdJudgement(ATcmdAnswer) == true)//有蓝牙返回，才往下写指令
 									{
 										Uart1SendaBTCmd(ATcmdNameAsk);

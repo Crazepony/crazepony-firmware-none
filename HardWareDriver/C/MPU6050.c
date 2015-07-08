@@ -174,20 +174,6 @@ void MPU6050_Check(void)
 *功　　能:	    初始化 	MPU6050 以进入可用状态。
 *******************************************************************************/
 void MPU6050_initialize(void) {
-	//int16_t temp[6];
-//	unsigned char i;
-
-/* 
-		MPU6050_reset();
-    delay_ms(5); // wait after reset 50ms
-		MPU6050_setRate(0);  
-		MPU6050_setClockSource(MPU6050_CLOCK_PLL_ZGYRO);
-		//printf(("设置DLPF带宽为42Hz...\r\n"));
-		MPU6050_setDLPFMode(MPU6050_DLPF_BW_42);
-		//printf(("设置角速度精度为 +/- 2000 deg/sec...\r\n"));
-		MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
-		MPU6050_setFullScaleAccelRange(MPU6050_ACCEL_FS_4);	//加速度度最大量程 
-	*/
 
 		IICwriteByte(devAddr, MPU6050_RA_PWR_MGMT_1, 0x80);      //PWR_MGMT_1    -- DEVICE_RESET 1
     delay_ms(50);
@@ -195,7 +181,6 @@ void MPU6050_initialize(void) {
     IICwriteByte(devAddr, MPU6050_RA_PWR_MGMT_1, 0x03);      //PWR_MGMT_1    -- SLEEP 0; CYCLE 0; TEMP_DIS 0; CLKSEL 3 (PLL with Z Gyro reference)
     IICwriteByte(devAddr, MPU6050_RA_INT_PIN_CFG, 0 << 7 | 0 << 6 | 0 << 5 | 0 << 4 | 0 << 3 | 0 << 2 | 1 << 1 | 0 << 0);  // INT_PIN_CFG   -- INT_LEVEL_HIGH, INT_OPEN_DIS, LATCH_INT_DIS, INT_RD_CLEAR_DIS, FSYNC_INT_LEVEL_HIGH, FSYNC_INT_DIS, I2C_BYPASS_EN, CLOCK_DIS
     IICwriteByte(devAddr, MPU6050_RA_CONFIG, MPU6050_DLPF_BW_42);  //CONFIG        -- EXT_SYNC_SET 0 (disable input pin for data sync) ; default DLPF_CFG = 0 => ACC bandwidth = 260Hz  GYRO bandwidth = 256Hz)
-//    IICwriteByte(devAddr, MPU6050_RA_GYRO_CONFIG, 0x18);      //GYRO_CONFIG   -- FS_SEL = 3: Full scale set to 2000 deg/sec
 		MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
     // Accel scale 8g (4096 LSB/g)
     IICwriteByte(devAddr, MPU6050_RA_ACCEL_CONFIG, 2 << 3);

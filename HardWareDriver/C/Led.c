@@ -58,7 +58,6 @@ void LedInit(void)
   
     AFIO->MAPR|=2<<24;      //关闭JATG,千万不能将SWD也关闭，否则芯片作废，亲测!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     LedA_off;LedB_off;LedC_off;LedD_off;
-  //  printf("状态LED灯初始化完成...\r\n");
 }
 
 //底层更新 ，10Hz
