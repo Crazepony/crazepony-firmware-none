@@ -29,34 +29,22 @@ static uint8_t  isEEPROMValid(void)
 
 //table defalat . if 
 void TableResetDefault(void)
-{
-//		table.version=1.0f;
-		
+{		
 		STMFLASH_Write(TABLE_ADDRESS,(uint16_t *)(&(table.version)),2);
 }
+
 //load params for EEPROM
 void TableReadEEPROM(void)
 {
-//		uint8_t i=0;
 		uint8_t paramNums=sizeof(table)/sizeof(float);
-//		for(i=0;i<sizeof(table);i++)
-//		{
-//			 p=(float *)(&table) + i;
-//			 STMFLASH_Read(TABLE_ADDRESS,(uint16_t *)p,2);
-//		}	
+
 		STMFLASH_Read(TABLE_ADDRESS,(uint16_t *)(&table),paramNums * 2);
 }
-//
+
 void TableWriteEEPROM(void)
 {
-//		uint8_t i=0;
-//		float *p;
 		uint8_t paramNums=sizeof(table)/sizeof(float);
-//		for(i=0;i<sizeof(table);i++)
-//		{
-//			 p=(float *)(&table) + i;
-//			 STMFLASH_Write(TABLE_ADDRESS,(uint16_t *)p,2);
-//		}
+
 		STMFLASH_Write(TABLE_ADDRESS,(uint16_t *)(&table),paramNums * 2);
 }
 
@@ -94,8 +82,11 @@ void TableToParam(void)
 			
 		}
 		
-		for(i=0;i<5;i++)
-		((u8 *)(&RX_ADDRESS))[i] = ((float *)(&table.NRFaddr))[i];
+		for(i=0;i<5;i++){
+			((u8 *)(&RX_ADDRESS))[i] = ((float *)(&table.NRFaddr))[i];
+			
+			printf("RX_ADDRESS[%d]:0x%x\r\n",i,RX_ADDRESS[i]);
+		}
 		
 	  BTstate = table.BTstate;
 		NRFMatched = table.NRFmatchFlag;
@@ -103,7 +94,6 @@ void TableToParam(void)
 		
 		
 }
-//
 
 
 void ParamToTable(void)
@@ -139,7 +129,7 @@ void ParamToTable(void)
 		
 		
 }
-//
+
 void LoadParamsFromEEPROM(void)
 {
 	if(isEEPROMValid())
@@ -150,6 +140,7 @@ void LoadParamsFromEEPROM(void)
 	}
 	else
 	{
+			printf("load params from eeprom failed,set default value\r\n");
 		
 			ParamSetDefault();//版本检测不对，各项参数设为默认值
 			ParamToTable();
@@ -157,7 +148,7 @@ void LoadParamsFromEEPROM(void)
 			TableWriteEEPROM();
 	}
 }
-//
+
 void SaveParamsToEEPROM(void)
 {
 		ParamToTable();
