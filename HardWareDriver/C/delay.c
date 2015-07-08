@@ -45,7 +45,7 @@ void delay_init(u8 SYSCLK)
 	SysTick->CTRL&=0xfffffffb;//bit2清空,选择外部时钟  HCLK/8
 	fac_us=SYSCLK/8;		    
 	fac_ms=(u16)fac_us*1000;
-  printf("延时函数初始化完成...\r\n");
+  printf("Delay function init success...\r\n");
 }				
 				    
 //延时nms

@@ -121,7 +121,7 @@ void PowerOn()
     LedA_off;LedB_off;LedC_off;LedD_off;
     Delay(900000);
     }
-    printf("解锁成功,进入飞行模式...\r\n");
+    printf("Armed success...\r\n");
 }
 
 

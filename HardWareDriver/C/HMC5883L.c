@@ -237,8 +237,8 @@ void HMC5883_Check()
   HMC58X3_getID(&ID_temp[0]); //对ID临时数组赋值
   
   if((ID_temp[0]==0x48)&&(ID_temp[1]==0x34)&&(ID_temp[2]==0x33))//HMC的固定ID号为三个字节，16进制表示分别为48,34,33
-  printf("已检测到电子罗盘HMC5883L...\r\n");
-  else printf("未检测到电子罗盘HMC5883L...\r\n");
+  printf("HMC5883L check success...\r\n");
+  else printf("HMC5883L not found...\r\n");
   
   
 }   

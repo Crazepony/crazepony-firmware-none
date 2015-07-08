@@ -180,7 +180,7 @@ u8 NRF24L01_Check(void)
       break; 
    } 
   
-   if (i==5)   {printf("初始化NRF24L01成功...\r\n");return 1 ;}        //MCU 与NRF 成功连接 
-   else        {printf("初始化NRF24L01出错...\r\n");return 0 ;}        //MCU与NRF不正常连接    
+   if (i==5)   {printf("Init NRF24L01 success...\r\n");return 1 ;}        //MCU 与NRF 成功连接 
+   else        {printf("Init NRF24L01 failed...\r\n");return 0 ;}        //MCU与NRF不正常连接    
 } 
 

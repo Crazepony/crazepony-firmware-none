@@ -172,7 +172,7 @@ void BT_ATcmdWrite(void)
 											else BTstate = BTneedwrite;
 									
 									}
-								else  {BTstate = BTneedwrite; printf("\r\n与蓝牙通信失败\r\n");}  
+								else  {BTstate = BTneedwrite; printf("\r\nCommunicate with BT failed\r\n");}  
 					}
 					else ;
 			UART1_init(SysClock,BT_BAUD_Set);

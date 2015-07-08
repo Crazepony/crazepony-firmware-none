@@ -163,9 +163,9 @@ void MPU6050_Check(void)
 { 
   switch(MPU6050_testConnection())
   {
-    case 0:printf("未检测到MPU6050...\r\n");
+    case 0:printf("MPU6050 not found...\r\n");
       break;
-    case 1:printf("已检测到MPU6050...\r\n");
+    case 1:printf("MPU6050 check success...\r\n");
       break;
   }
 } 

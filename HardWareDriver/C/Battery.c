@@ -87,7 +87,7 @@ void BatteryCheckInit()
   
   
   
-  printf("电压监测AD初始完成...\r\n");
+  printf("Batter voltage AD init ...\r\n");
   
 }
 

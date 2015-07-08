@@ -128,8 +128,8 @@ void UART1_init(u32 pclk2,u32 bound)
   UartRxbuf.pbuf = &rx_buffer[0];
   
   
-  printf("系统时钟频率：%dMHz \r\n",pclk2);
-  printf("串口1初始化波特率：%d \r\n",bound);
+  printf("MCU clock frequency:%dMHz \r\n",pclk2);
+  printf("UART 1 baud frequncy:%d \r\n",bound);
  
   
 }

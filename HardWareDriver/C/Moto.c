@@ -112,5 +112,5 @@ void MotorInit(void)
     
     // 启动计时器。
     TIM_Cmd(TIM2,ENABLE);
-    printf("电机初始化完成...\r\n");
+    printf("Motor init success...\r\n");
 }

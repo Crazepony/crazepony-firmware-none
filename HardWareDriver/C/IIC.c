@@ -43,7 +43,7 @@ void IIC_Init(void)
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   //应用配置到GPIOB 
   GPIO_Init(GPIOB, &GPIO_InitStructure);
-  printf("IIC总线初始化完成...\r\n");
+  printf("IIC bus init success...\r\n");
 }
 
 /**************************实现函数********************************************
