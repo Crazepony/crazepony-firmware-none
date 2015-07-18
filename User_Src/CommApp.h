@@ -37,7 +37,6 @@ extern uint32_t lastGetRCTime;
 extern uint8_t flyLogApp;
 extern uint8_t armState;
 
-void CommAppCmdProcess(void);
 void CommApp(unsigned char ch);
 void CommAppUpload(void);
 void RCDataProcess(void);

@@ -212,7 +212,7 @@ int main(void)
 					BatteryCheck();
 				}
 				
-				//App monitor
+				//手机APP有请求飞控信息，则发送给手机APP
 				if(flyLogApp)	
 				{
 					CommAppUpload();

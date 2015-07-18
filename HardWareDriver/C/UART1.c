@@ -193,7 +193,7 @@ void UartBufClear(UartBuf *Ringbuf)
 
 void UartSendBuffer(uint8_t *dat, uint8_t len)
 {
-uint8_t i;
+	uint8_t i;
 	
 	for(i=0;i<len;i++)
 	{
@@ -222,26 +222,22 @@ void USART1_IRQHandler(void)
   
   else if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
   {
-				USART_ClearITPendingBit(USART1, USART_IT_RXNE);//清除接收中断标志
+		USART_ClearITPendingBit(USART1, USART_IT_RXNE);//清除接收中断标志
+		
     //此种环形缓冲数组串口接收方式，适用于解包各种数据，很方便。对数据的要求是:
     //发送方必须要求有数据包头，以便解决串口数据无地址的问题
     Udatatmp = (uint8_t) USART_ReceiveData(USART1);          //临时数据赋值
 		
 
-     UartBuf_WD(&UartRxbuf,Udatatmp);               //写串口接收缓冲数组
+		UartBuf_WD(&UartRxbuf,Udatatmp);               //写串口接收缓冲数组
     
-   // if(UartBuf_Cnt(&UartRxbuf)==0) USART_SendData(USART1, '');//串口接收数组长度等于0时，发送接收数组空标志
-   // if(UartBuf_Cnt(&UartRxbuf)==UartRxbuf.Mask) USART_SendData(USART1, '');//串口接收数组长度等于掩码时，发送接收缓冲满标志
-//#if(BT_SRC==APP)
 #ifdef BT_SRC_APP
-  	CommApp(Udatatmp);//UartBuf_RD(&UartRxbuf));
+  	CommApp(Udatatmp);
 #endif
 #ifdef BT_SRC_PC
   	CommPC(Udatatmp);
 #endif
 		
-
-
 	}
   
 }
