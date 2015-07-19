@@ -10,7 +10,7 @@
                                             ____/ /
                                            /_____/
 BT.c file
-编写者：小马  (Camel)
+编写者：小马  (Camel)，nieyong
 作者E-mail：375836945@qq.com
 编译环境：MDK-Lite  Version: 4.23
 初版时间: 2014-01-28
@@ -95,86 +95,76 @@ const char ATcmdCodeAsk[] = 	 {"AT+PIN?"};
 const char ATcmdCodeAnswer[] = {"OK+PIN:1234"};	
 const char ATcmdCodeSet[] =		 {"AT+PIN1234"};          //蓝牙配对密码默认为1234
 
+const char ATcmdRenewAsk[] = 	 {"AT+RENEW"};	//恢复出厂设置
+const char ATcmdRenewAnswer[] = {"OK+RENEW"};	
+
 const char ATcmdBaudAsk[] =		 {"AT+BAUD?"};
 const char ATcmdBaudAnswer[] = {"OK+BAUD:115200"};
-const char ATcmdBaudSet[] =    {"AT+BAUD8"};            //修改此处，可以修改蓝牙波特率
-																//baud1--->1200
-																//baud2--->2400
-																//baud3--->4800
-																//baud4--->9600
-																//baud5--->19200
-																//baud6--->38400
-																//baud7--->57600
-																//baud8--->115200                                        
+const char ATcmdBaudSet[] =    {"AT+BAUD4"};            //修改此处，可以修改蓝牙波特率
+//HM-06模块，即蓝牙2.1模块的配置
+//baud1--->1200
+//baud2--->2400
+//baud3--->4800
+//baud4--->9600
+//baud5--->19200
+//baud6--->38400
+//baud7--->57600
+//baud8--->115200
 
+//HM-11模块，即蓝牙4.0 BLE模块的配置，注意和HM-06的区别
+//baud0--->9600
+//baud4--->115200                                        
 
-/*得到蓝牙透传当前通信波特率,返回当前波特率值*/
-u32 BT_CurBaud_Get(void)
-{
-	static u32 bandsel[8] = {1200,2400,4800,9600,19200,38400,57600,115200};//蓝牙波特率率表
-  u8 i;
-
-		BT_on();        //开蓝牙
-    delay_ms(500); //等待蓝牙稳定
-		/**确定当前蓝牙波特率**/
-			for(i=0;i<8;i++)
-			{
-				UART1_init(SysClock,bandsel[i]); 
-				Uart1SendaBTCmd(ATcmdAsk);
-				if(CmdJudgement(ATcmdAnswer) == true)
-				{
-					break;//得到当前波特率为Bandsel[i] 
-				}
-			}
-	return bandsel[i];
-}
-
-extern void SaveParamsToEEPROM(void);
 
 /********************************************
               写蓝牙参数函数
 ********************************************/
 void BT_ATcmdWrite(void)
-{
-	static	u32 BT_CurBaud;
-
-	BT_CurBaud = BT_CurBaud_Get();
-	if((BT_CurBaud == BT_BAUD_Set))  BTstate = BThavewrote;//检测到蓝牙当前的波特率和设定值不同，就写入设定值
-	else 				BTstate = BTneedwrite;
-
-				if(BTstate == BTneedwrite)
-					{
-						LedA_off;LedB_off;LedC_off;LedD_off;
-						UART1_init(SysClock,BT_CurBaud);//以当前波特率重新初始化串口 
-						/*开始配置蓝牙设备名,pin码，波特率*/
-						Uart1SendaBTCmd(ATcmdAsk);
-								if(CmdJudgement(ATcmdAnswer) == true)//有蓝牙返回，才往下写指令
-									{
-										Uart1SendaBTCmd(ATcmdNameAsk);
-											if(CmdJudgement(ATcmdNameAnswer) == false)  {Uart1SendaBTCmd(ATcmdNameSet);LedA_off;LedB_on;LedC_off;LedD_on; }   
-												
-											else ;
-										Uart1SendaBTCmd(ATcmdCodeAsk);
-											if(CmdJudgement(ATcmdCodeAnswer) == false) {Uart1SendaBTCmd(ATcmdCodeSet); LedA_on;LedB_off;LedC_on;LedD_off; }
-												 
-											else ;
-										Uart1SendaBTCmd(ATcmdBaudAsk);
-											if(CmdJudgement(ATcmdBaudAnswer) == false) {
-																																	Uart1SendaBTCmd(ATcmdBaudSet);
-																																	LedA_off;LedB_on;LedC_off;LedD_on;												
-																																	BTstate = BThavewrote;
-																																	SaveParamsToEEPROM();
-																																	LedA_on;LedB_on;LedC_on;LedD_on;
-																																	delay_ms(1000);
-																																	LedA_off;LedB_off;LedC_off;LedD_off;
-																																	}//最后修改波特率,并写入EEPROM
-														
-											else BTstate = BTneedwrite;
-									
-									}
-								else  {BTstate = BTneedwrite; printf("\r\nCommunicate with BT failed\r\n");}  
-					}
-					else ;
-			UART1_init(SysClock,BT_BAUD_Set);
+{	
+	printf("BT baund check and init begin.printf is useless.\r\n\r\n");
+	
+	//首先检测蓝牙模块的串口是否已经配置为115200
+	Uart1SendaBTCmd(ATcmdAsk);
+	if(CmdJudgement(ATcmdAnswer) == false){
+		//检测蓝牙模块的串口是否还是默认的9600
+		
+		UART1_init(SysClock,9600);	//初始化STM32的UART波特率为9600
+		Uart1SendaBTCmd(ATcmdAsk);
+		if(CmdJudgement(ATcmdAnswer) == true){
+			//蓝牙模块还是默认配置，需要修改其名字，波特率
+			
+			//修改蓝牙的名字为Crazepony
+			Uart1SendaBTCmd(ATcmdNameSet);
+			
+			//修改蓝牙波特率为115200
+			Uart1SendaBTCmd(ATcmdBaudSet);
+			
+			LedA_on;LedB_on;LedC_on;LedD_on;
+			while(1);
+			
+		}else{
+			//蓝牙模块波特率既不是115200，也不是9600
+			//全闪烁表示该异常情况
+			LedA_off;LedB_off;LedC_off;LedD_off;
+			delay_ms(800);
+			LedA_on;LedB_on;LedC_on;LedD_on;
+			delay_ms(800);
+			LedA_off;LedB_off;LedC_off;LedD_off;
+			delay_ms(800);
+			LedA_on;LedB_on;LedC_on;LedD_on;
+			delay_ms(800);
+			LedA_off;LedB_off;LedC_off;LedD_off;
+		}
+		
+		//最终STM32的UART波特率设置回115200
+		UART1_init(SysClock,BT_BAUD_Set);
+	
+	}else{
+		//已经是115200，可以直接通信
+		printf("BT module baud is 115200 okay\r\n");
+	}
+	
+	printf("\r\nBT baund check and init end.\r\n");
+	
 }
 
