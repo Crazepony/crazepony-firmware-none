@@ -116,53 +116,73 @@ const char ATcmdBaudSet[] =    {"AT+BAUD4"};            //修改此处，可以�
 //baud4--->115200                                        
 
 
+//轮询蓝牙模块所有可能的波特率，获取当前波特率
+//并且配置其波特率为115200，
+u32 BT_Scan_Buad(void)
+{
+	//蓝牙波特率率表，将9600（默认波特率）和230400（hm-06遗留bug）放到最前
+	//115200（将要配置的波特率）放到最后
+	static u32 bandsel[9] = {230400,9600,1200,2400,4800,19200,38400,57600,115200};
+  u8 i;
+	
+	for(i=0;i<9;i++)
+	{
+		UART1_init(SysClock,bandsel[i]); 
+		Uart1SendaBTCmd(ATcmdAsk);
+		if(CmdJudgement(ATcmdAnswer) == true)
+		{
+			return bandsel[i];
+		}
+	}
+	
+	return 115200;
+}
+
 /********************************************
               写蓝牙参数函数
 ********************************************/
 void BT_ATcmdWrite(void)
 {	
+	u8 i;
+	static	u32 BT_CurBaud;
+	static u32 bandsel[9] = {230400,9600,1200,2400,4800,19200,38400,57600,115200};
+	
+	
 	printf("BT baund check and init begin.printf is useless.\r\n\r\n");
+		
+	BT_CurBaud = BT_Scan_Buad();
+	
 	
 	//首先检测蓝牙模块的串口是否已经配置为115200
-	Uart1SendaBTCmd(ATcmdAsk);
-	if(CmdJudgement(ATcmdAnswer) == false){
-		//检测蓝牙模块的串口是否还是默认的9600
+	if(BT_CurBaud != BT_BAUD_Set){
 		
-		UART1_init(SysClock,9600);	//初始化STM32的UART波特率为9600
-		Uart1SendaBTCmd(ATcmdAsk);
-		if(CmdJudgement(ATcmdAnswer) == true){
-			//蓝牙模块还是默认配置，需要修改其名字，波特率
-			
-			//修改蓝牙的名字为Crazepony
-			Uart1SendaBTCmd(ATcmdNameSet);
-			
-			//修改蓝牙波特率为115200
-			Uart1SendaBTCmd(ATcmdBaudSet);
-			
+		//蓝牙模块需要修改其名字，波特率
+		
+		//修改蓝牙的名字为Crazepony
+		Uart1SendaBTCmd(ATcmdNameSet);
+		
+		//修改蓝牙波特率为115200
+		Uart1SendaBTCmd(ATcmdBaudSet);
+		
+		//LED闪烁表示原来蓝牙模块是哪个波特率
+		for(i=0;i<9;i++)
+		{
 			LedA_on;LedB_on;LedC_on;LedD_on;
-			while(1);
+			delay_ms(1000);
+			LedA_off;LedB_off;LedC_off;LedD_off;
+			delay_ms(1000);
 			
-		}else{
-			//蓝牙模块波特率既不是115200，也不是9600
-			//全闪烁表示该异常情况
-			LedA_off;LedB_off;LedC_off;LedD_off;
-			delay_ms(800);
-			LedA_on;LedB_on;LedC_on;LedD_on;
-			delay_ms(800);
-			LedA_off;LedB_off;LedC_off;LedD_off;
-			delay_ms(800);
-			LedA_on;LedB_on;LedC_on;LedD_on;
-			delay_ms(800);
-			LedA_off;LedB_off;LedC_off;LedD_off;
+			if(BT_CurBaud == bandsel[i]){
+				break;
+			}
 		}
-		
-		//最终STM32的UART波特率设置回115200
-		UART1_init(SysClock,BT_BAUD_Set);
-	
 	}else{
 		//已经是115200，可以直接通信
 		printf("BT module baud is 115200 okay\r\n");
 	}
+			
+	//最终STM32的UART波特率设置回115200
+	UART1_init(SysClock,BT_BAUD_Set);
 	
 	printf("\r\nBT baund check and init end.\r\n");
 	
