@@ -50,7 +50,6 @@ int main(void)
 	cycleCounterInit();				// Init cycle counter
 	SysTick_Config(SystemCoreClock / 1000);	//SysTick开启系统tick定时器并初始化其中断，1ms
 
-
 	UART1_init(SysClock,BT_BAUD_Set); //串口1初始化
 	
   NVIC_INIT();	                //中断初始化
@@ -191,7 +190,7 @@ int main(void)
 			  //PC Monitor
 #ifndef UART_DEBUG
 				if(btSrc!=SRC_APP){
-					CommPCUploadHandle();	//tobe improved inside
+					//CommPCUploadHandle();	//tobe improved inside
 				}
 #endif
 				
