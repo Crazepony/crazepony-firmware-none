@@ -147,6 +147,12 @@ void BT_ATcmdWrite(void)
 	static	u32 BT_CurBaud;
 	static u32 bandsel[9] = {230400,9600,1200,2400,4800,19200,38400,57600,115200};
 	
+	Uart1SendaBTCmd(ATcmdAsk);
+	if(CmdJudgement(ATcmdAnswer) == true)
+	{
+		//HM-11模块已经是115200波特率，无需配置
+		return ;
+	}
 	
 	printf("BT baund check and init begin.printf is useless.\r\n\r\n");
 		
