@@ -76,78 +76,68 @@ uint32_t ctrlPrd=0;
 uint8_t headFreeMode=0;
 float headHold=0;
 
-//#define CONSTRAIN(x,min,max)  {if(x<min) x=min; if(x>max) x=max;}
 
-//-----------位置式PID-----------
+//函数名：PID_Postion_Cal()
+//描述：位置式PID
 static void PID_Postion_Cal(PID_Typedef * PID,float target,float measure,int32_t dertT)
 {
- float termI=0;
- float dt= dertT/1000000.0;
-	//-----------位置式PID-----------
+	float termI=0;
+	float dt= dertT/1000000.0;
+
 	//误差=期望值-测量值
 	PID->Error=target-measure;
-	
+
 	PID->Deriv= (PID->Error-PID->PreError)/dt;
-	
+
 	PID->Output=(PID->P * PID->Error) + (PID->I * PID->Integ) + (PID->D * PID->Deriv);    //PID:比例环节+积分环节+微分环节
-	
+
 	PID->PreError=PID->Error;
 	//仅用于角度环和角速度环的
 
-	if(FLY_ENABLE && offLandFlag)
-	{
-			if(fabs(PID->Output) < Thro )		              //比油门还大时不积分
-			{
-				termI=(PID->Integ) + (PID->Error) * dt;     //积分环节
-				if(termI > - PID->iLimit && termI < PID->iLimit && PID->Output > - PID->iLimit && PID->Output < PID->iLimit)       //在-300~300时才进行积分环节
-						PID->Integ=termI;
-			}
+	if(FLY_ENABLE && offLandFlag){
+		if(fabs(PID->Output) < Thro )		              //比油门还大时不积分
+		{
+			termI=(PID->Integ) + (PID->Error) * dt;     //积分环节
+			if(termI > - PID->iLimit && termI < PID->iLimit && PID->Output > - PID->iLimit && PID->Output < PID->iLimit)       //在-300~300时才进行积分环节
+					PID->Integ=termI;
+		}
+	}else{
+		PID->Integ= 0;
 	}
-	else
-			PID->Integ= 0;
 }
+
 
 void SetHeadFree(uint8_t on)
 {
-	if(on==1)
-	{
+	if(on==1){
 		headHold=imu.yaw;
 		headFreeMode=1;
-	}
-	else
+	}else{
 		headFreeMode=0;
+	}
 }
 
 
-	
-//run after get rc cmd
+//函数名：CtrlAttiAng(void)
+//描述：对飞行器姿态控制（pitch，roll，yaw）控制中，串级PID中的角度环控制
 void CtrlAttiAng(void)
 {
-		static float yawHold=0;
 		static uint32_t tPrev=0;
-		float yawRateTarget=0;
 		float angTarget[3]={0};
 		float dt=0,t=0;
 		t=micros();
 		dt=(tPrev>0)?(t-tPrev):0;
 		tPrev=t;
 		
-		if(altCtrlMode==MANUAL)
-		{
+		if(altCtrlMode==MANUAL){
 			angTarget[ROLL]=(float)(RC_DATA.ROOL);
 			angTarget[PITCH]=(float)(RC_DATA.PITCH);
-		}
-		else
-		{
+		}else{
 			angTarget[ROLL]=rollSp;
 			angTarget[PITCH]=pitchSp;
 		}
-//		angTarget[YAW]=(float)(RC_DATA.YAW);		//因为右手系
-//		yawRateTarget=
-//		angTarget[YAW]= (angTarget[YAW] + yawRateTarget * dt);
 
-		if(headFreeMode)
-		{
+		if(headFreeMode){
 			#ifdef YAW_CORRECT
         float radDiff = -(imu.yaw - headHold) * M_PI_F / 180.0f; 
 			#else
@@ -167,7 +157,8 @@ void CtrlAttiAng(void)
 
 
 
-//run in 200Hz or 400Hz loop 
+//函数名：CtrlAttiRate(void)
+//描述：对飞行器姿态控制（pitch，roll，yaw）控制中，串级PID中的角速度环控制
 void CtrlAttiRate(void)
 {
  	float yawRateTarget=0;
@@ -178,25 +169,26 @@ void CtrlAttiRate(void)
 	dt=(tPrev>0)?(t-tPrev):0;
 	tPrev=t;
 		
-		yawRateTarget=-(float)RC_DATA.YAW;
-		//注意，原来的pid参数，对应的是 ad值,故转之
-		#ifdef IMU_SW
-		PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,imu.gyro[PITCH]*180.0f/M_PI_F,dt);	
-		PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,imu.gyro[ROLL]*180.0f/M_PI_F,dt);//gyroxGloble
-		PID_Postion_Cal(&yaw_rate_PID,yawRateTarget,imu.gyro[YAW]*180.0f/M_PI_F,dt);//DMP_DATA.GYROz
-	  #else
-		//原参数对应于 DMP的直接输出gyro , 是deg.  且原DMP之后的处理运算是错误的
-		PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,imu.gyro[PITCH]*DMP_GYRO_SCALE,0);	
-		PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,imu.gyro[ROLL]*DMP_GYRO_SCALE,0);//gyroxGloble
-		PID_Postion_Cal(&yaw_rate_PID,yawRateTarget,imu.gyro[YAW]*DMP_GYRO_SCALE,0);          //DMP_DATA.GYROz
-		#endif
-		
-		Pitch = pitch_rate_PID.Output;
-    Roll  = roll_rate_PID.Output;
-    Yaw   = yaw_rate_PID.Output; 
+	yawRateTarget=-(float)RC_DATA.YAW;
+	
+	//注意，原来的pid参数，对应的是 ad值,故转之
+	#ifdef IMU_SW
+	PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,imu.gyro[PITCH]*180.0f/M_PI_F,dt);	
+	PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,imu.gyro[ROLL]*180.0f/M_PI_F,dt);//gyroxGloble
+	PID_Postion_Cal(&yaw_rate_PID,yawRateTarget,imu.gyro[YAW]*180.0f/M_PI_F,dt);//DMP_DATA.GYROz
+	#else
+	
+	//原参数对应于 DMP的直接输出gyro , 是deg.  且原DMP之后的处理运算是错误的
+	PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,imu.gyro[PITCH]*DMP_GYRO_SCALE,0);	
+	PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,imu.gyro[ROLL]*DMP_GYRO_SCALE,0);//gyroxGloble
+	PID_Postion_Cal(&yaw_rate_PID,yawRateTarget,imu.gyro[YAW]*DMP_GYRO_SCALE,0);          //DMP_DATA.GYROz
+	#endif
+
+	Pitch = pitch_rate_PID.Output;
+	Roll  = roll_rate_PID.Output;
+	Yaw   = yaw_rate_PID.Output; 
 }
 
-//----------to be tested--//
 //cut deadband, move linear
 float dbScaleLinear(float x, float x_end, float deadband)
 {
@@ -210,9 +202,6 @@ float dbScaleLinear(float x, float x_end, float deadband)
 		return 0.0f;
 	}
 }
-
-//alti ctrl , output thrustZSp ,  ned frame , thrust force on z axis. 
-
 
 
 float thrInit;
@@ -236,20 +225,20 @@ uint8_t satZ=0,satXY=0;	//是否过饱和
 #define ALT_LIMIT							2.0f		//限高 3.5
 uint8_t isAltLimit=0;
 float altLand;
-//#define DEBUG_HOLD_REAL_ALT
+
 
 
 //函数名：estimateHoverThru()
 //输入：无
-//输出: 预估得到的悬停油门值
-//描述：预估悬停油门值，直接影响到该飞行器的z轴悬停
+//输出: 预估得到的悬停油门基准值
+//描述：预估悬停油门基准值，直接影响到该飞行器的z轴悬停
 //悬停油门值相关因素有：电池电压
 //Get a estimated value for hold throttle.It will have a direct affection on hover
 //Battery voltage
 float estimateHoverThru(void){
 	float hoverHru = 0.55f;
 	
-	//电池电压检测  
+	//电池电压检测
 	Battery.BatteryAD  = GetBatteryAD();
 	Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算
 	
@@ -351,7 +340,7 @@ void CtrlAlti(void)
 	if(altCtrlMode==LANDING)
 		posZVelSp = LAND_SPEED;
 	
-	//--------------pos z vel ctrl -----------//
+	//获取一个预估的Z轴悬停基准值，相关因素有电池电压
 	//get hold throttle. give it a estimated value
 	if(zIntReset){
 		thrustZInt = estimateHoverThru();
@@ -455,7 +444,6 @@ void CtrlAlti(void)
 //描述：输出PWM，控制电机，本函数会被主循环中100Hz循环调用
 void CtrlMotor(void)
 {
-		static float thrAngCorrect;	//对倾斜做修正
 		float  cosTilt = imu.accb[2] / ONE_G;
 	
 		if(altCtrlMode==MANUAL)
