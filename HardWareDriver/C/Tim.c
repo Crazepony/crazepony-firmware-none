@@ -23,6 +23,7 @@ Tim.c file
 #include "tim.h"
 #include "config.h"
 #include "imu.h"
+#include "control.h"
 
 #define TASK_TICK_FREQ				1000			//Hz 主任务频率
 
@@ -74,6 +75,8 @@ extern u8 RX_ADDRESS[5];
 
 void TIM3_IRQHandler(void)		//打印中断服务程序
 {	
+		float hoverThru;
+	
     if( TIM_GetITStatus(TIM3 , TIM_IT_Update) != RESET ) 
     {     
 			Battery.BatteryAD  = GetBatteryAD();            //电池电压检测  
@@ -111,6 +114,9 @@ void TIM3_IRQHandler(void)		//打印中断服务程序
 						printf("====================================\r\n");
 						//根据采集到的AD值，计算实际电压。硬件上是对电池进行分压后给AD采集的，所以结果要乘以2
             printf(" Battery Voltage---> %3.2fv\r\n",Battery.BatteryVal);
+						
+						hoverThru = estimateHoverThru();
+						printf(" Hover Thru---> %3.2f\r\n",hoverThru);
 						printf(" RX Addr ---> 0x%x\r\n",RX_ADDRESS[4]);
             printf("====================================\r\n");
         }

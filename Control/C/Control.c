@@ -238,6 +238,32 @@ uint8_t isAltLimit=0;
 float altLand;
 //#define DEBUG_HOLD_REAL_ALT
 
+
+//函数名：estimateHoverThru()
+//输入：无
+//输出: 预估得到的悬停油门值
+//描述：预估悬停油门值，直接影响到该飞行器的z轴悬停
+//悬停油门值相关因素有：电池电压
+//Get a estimated value for hold throttle.It will have a direct affection on hover
+//Battery voltage
+float estimateHoverThru(void){
+	float hoverHru = 0.55f;
+	
+	//电池电压检测  
+	Battery.BatteryAD  = GetBatteryAD();
+	Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算
+	
+	if(Battery.BatteryVal > 3.9){
+		hoverHru = 0.45f;
+	}else if(Battery.BatteryVal > 3.8){
+		hoverHru = 0.52f;
+	}else{
+		hoverHru = 0.58f;
+	}
+	
+	return hoverHru;
+}
+
 //函数名：CtrlAlti()
 //输入：无
 //输出: 最终结果输出到全局变量thrustZSp
@@ -322,11 +348,12 @@ void CtrlAlti(void)
 		posZVelSp = LAND_SPEED;
 	
 	//--------------pos z vel ctrl -----------//
-	if(zIntReset)		//tobe tested .  how to get hold throttle. give it a estimated value!!!!!!!!!!!
-	{
-		thrustZInt=HOVER_THRU; //-manThr;		//650/1000 = 0.65
-		zIntReset=0;
+	//get hold throttle. give it a estimated value
+	if(zIntReset){
+		thrustZInt = estimateHoverThru();
+		zIntReset = 0;
 	}
+	
 	velZ=nav.vz;	
 	velZErr = posZVelSp - velZ;
 	valZErrD = (spZMoveRate - velZ) * alt_PID.P - (velZ - velZPrev) / dt;	//spZMoveRate is from manual stick vel control

@@ -66,7 +66,7 @@ void RCDataProcess(void)
 			altCtrlMode=MANUAL;		//上锁后加的处理
 			 zIntReset=1;		//
 			 thrustZSp=0;	
-			 thrustZInt=HOVER_THRU;
+			 thrustZInt=estimateHoverThru();
 			 offLandFlag=0;
 			
 			armState=DISARMED;
