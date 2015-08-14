@@ -24,23 +24,23 @@ uint16_t rcData[4]={1500,1500,1500,1500};
 #define CONSTRAIN(x,min,max) {if(x<min) x=min; if(x>max) x=max;}
 extern float dbScaleLinear(float x, float x_end, float deadband);
 
-// input: rcData , raw data from remote control source
-// output: RC_DATA, desired  thro, pitch, roll, yaw
+
+//函数名：RCDataProcess(void)
+//输入：无
+//描述：处理接收到的遥控数据。
+//遥控数据可能来自2.4G遥控器，如函数ReceiveDataFormNRF()
+//也可能来自手机APP遥控，如函数CommAppCmdProcess()
+//所以该函数防止在CommApp.c文件中有失妥当
+//该函数以50Hz频率在main函数中执行
+//Porcess the RC data from 2.4G RC or smartphone APP
 void RCDataProcess(void)
 {
-	  CONSTRAIN(rcData[THROTTLE],1000,2000);
-		CONSTRAIN(rcData[YAW],1000,2000);
-		CONSTRAIN(rcData[PITCH],1000,2000);
-		CONSTRAIN(rcData[ROLL],1000,2000);
-	 
-//						 CUT_DB(rcData[YAW],1500,APP_YAW_DB);
-//						 CUT_DB(rcData[PITCH],1500,APP_PR_DB);
-//						 CUT_DB(rcData[ROLL],1500,APP_PR_DB);
+	CONSTRAIN(rcData[THROTTLE],1000,2000);
+	CONSTRAIN(rcData[YAW],1000,2000);
+	CONSTRAIN(rcData[PITCH],1000,2000);
+	CONSTRAIN(rcData[ROLL],1000,2000);
  
-	 RC_DATA.THROTTLE=rcData[THROTTLE]-1000;
-//						 RC_DATA.YAW=(rcData[YAW]-1500)/500.0 *Angle_Max;
-//						 RC_DATA.PITCH=(rcData[PITCH]-1500)/500.0 *Angle_Max; // + Pitch_error_init;
-//						 RC_DATA.ROOL=(rcData[ROLL]-1500)/500.0 *Angle_Max;  // + Rool_error_init;
+	RC_DATA.THROTTLE=rcData[THROTTLE]-1000;
 	RC_DATA.YAW= YAW_RATE_MAX * dbScaleLinear((rcData[YAW] - 1500),500,APP_YAW_DB);
 	RC_DATA.PITCH= Angle_Max * dbScaleLinear((rcData[PITCH] - 1500),500,APP_PR_DB);
 	RC_DATA.ROOL= Angle_Max * dbScaleLinear((rcData[ROLL] - 1500),500,APP_PR_DB);
@@ -48,15 +48,10 @@ void RCDataProcess(void)
 	switch(armState)
 	{
 		case REQ_ARM:
-			
-			 
-			if(IMUCheck() && !Battery.alarm)
-			{	
+			if(IMUCheck() && !Battery.alarm){	
 				armState=ARMED;
 				FLY_ENABLE=0xA5;
-			}
-			else
-			{
+			}else{
 				FLY_ENABLE=0;
 				armState=DISARMED;
 			}
@@ -64,10 +59,10 @@ void RCDataProcess(void)
 		case REQ_DISARM:
 			FLY_ENABLE=0;
 			altCtrlMode=MANUAL;		//上锁后加的处理
-			 zIntReset=1;		//
-			 thrustZSp=0;	
-			 thrustZInt=estimateHoverThru();
-			 offLandFlag=0;
+			zIntReset=1;
+			thrustZSp=0;	
+			thrustZInt=estimateHoverThru();
+			offLandFlag=0;
 			
 			armState=DISARMED;
 		break;

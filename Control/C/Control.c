@@ -281,7 +281,8 @@ void CtrlAlti(void)
 	float thrustXYSpLen=0,thrustSpLen=0;
 	float thrustXYMax=0;
 	
-	//get dt		//保证dt运算不能被打断，保持更新，否则dt过大，积分爆满。
+	//get dt		
+	//保证dt运算不能被打断，保持更新，否则dt过大，积分爆满。
 	if(tPrev==0){
 			tPrev=micros();
 			return;
@@ -291,8 +292,11 @@ void CtrlAlti(void)
 			tPrev=t;
 	}
 	
-	if(altCtrlMode==MANUAL || !FLY_ENABLE)
+	//only in climb rate mode and landind mode. now we don't work on manual mode
+	//手动模式不使用该高度控制算法
+	if(MANUAL == altCtrlMode || !FLY_ENABLE){
 		return;
+	}
 	
 	//--------------pos z ctrol---------------//
 	//get current alt 
