@@ -74,25 +74,15 @@ void BatteryCheckInit()
 	while(ADC1->CR2&1<<2);  //等待校准结束
 	//该位由软件设置以开始校准，并在校准结束时由硬件清除  
   
-  
-  
-  
-  
   Battery.BatReal = 3.95;//单位为v 电池实际电压  校准电压时修改
   Battery.ADinput = 1.98;//单位为v R15和R17连接处电压 校准电压时修改
   Battery.ADRef   = 3.26;//单位为v 单片机供电电压   校准电压时修改
   Battery.Bat_K   = Battery.BatReal/Battery.ADinput;//计算电压计算系数
   Battery.BatteryADmin = 2000;//电压门限AD值
   
-  
-  
-  
   printf("Batter voltage AD init ...\r\n");
   
 }
-
-
-
 
 
 //获得ADC值
@@ -155,30 +145,27 @@ void BatteryCheck(void)
 {
 		Battery.BatteryAD  = GetBatteryAD();            //电池电压检测  
 		Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算	
-	  if(FLY_ENABLE)
-		{
-			if(Battery.BatteryAD <= Battery.BatteryADmin)
-			{
+	
+	  if(FLY_ENABLE){
+			if(Battery.BatteryAD <= Battery.BatteryADmin){
 					Battery.alarm=1;
-			}
-			else
+			}else{
 					Battery.alarm=0;
-		}
-		else
-		{
-			if((Battery.BatteryVal < BAT_ALARM_VAL)&&(Battery.BatteryVal > BAT_CHG_VAL))	//低于3.7v 且大于充电检测电压 BAT_CHG_VAL
+			}
+		}else{
+			if((Battery.BatteryVal < BAT_ALARM_VAL)&&(Battery.BatteryVal > BAT_CHG_VAL)){	//低于3.7v 且大于充电检测电压 BAT_CHG_VAL
 				Battery.alarm=1;
-			else
+			}else{
 				Battery.alarm=0;
+			}
 		}
 		
-		if(Battery.BatteryVal < BAT_CHG_VAL) //on charge
-		{
+		if(Battery.BatteryVal < BAT_CHG_VAL){ //on charge
 			Battery.chargeSta = 1; 
 			BT_off();
-		}
-		else 					
+		}else{
 			Battery.chargeSta = 0;
+		}
 
 }
 
