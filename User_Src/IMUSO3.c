@@ -131,7 +131,6 @@ void NonlinearSO3AHRSupdate(float gx, float gy, float gz, float ax, float ay, fl
 	if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) 	
 	{
 		float halfvx, halfvy, halfvz;
-		float accNorm=0;
 	
 		// Normalise accelerometer measurement
 		recipNorm = invSqrt(ax * ax + ay * ay + az * az);

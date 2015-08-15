@@ -42,7 +42,6 @@ void IMU_Init(void)
 //----base on dmp
 void IMU_Process(void)
 {
-	uint8_t i,j;
 		//read ADC
 		imu.accADC[0]=DMP_DATA.ACCx;
 		imu.accADC[1]=DMP_DATA.ACCy;
@@ -87,11 +86,11 @@ uint8_t IMU_Calibrate(void)
 	static float accSum[3]={0,0,0};
 	static float gyroSum[3]={0,0,0};
 	static uint16_t cnt=0;
-	static uint16_t tPrev=0,startTime=0;
+	static uint16_t tPrev=0;
 	static uint8_t calibrating=0;
 	uint8_t ret=0;
 	uint8_t i=0;
-	uint16_t dt=0,now=0,caliTime=0;;
+	uint16_t dt=0,now=0;;
 
 
 	now=millis();

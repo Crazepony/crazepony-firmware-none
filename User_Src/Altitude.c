@@ -66,7 +66,6 @@ void AltitudeCombineThread(void)
 	static uint32_t tPre=0;
 	uint32_t t;
 	float dt;
-	static float posZPrev=0;
 	
 	/* accelerometer bias correction */
 	float accel_bias_corr[3] = { 0.0f, 0.0f, 0.0f };

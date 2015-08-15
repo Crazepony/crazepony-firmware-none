@@ -98,7 +98,6 @@ float MS561101BA_getAvg(float * buff, int size)
 void MS561101BA_readPROM(void) 
 {
 	u8  inth,intl;
-	uint8_t i2cret[2];
 	int i;
 	for (i=0;i<MS561101BA_PROM_REG_COUNT;i++) 
 	{
@@ -224,10 +223,7 @@ void MS561101BA_GetTemperature(void)
 *******************************************************************************/
 float MS561101BA_get_altitude(void)
 {
-	static float Altitude,AltPre;
-	float dz,dt;
-	uint32_t current=0;
-	static uint32_t tp=0;
+	static float Altitude;
 
 	// 是否初始化过0米气压值？
 	if(Alt_offset_Pa == 0)

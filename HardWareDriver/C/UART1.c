@@ -211,7 +211,6 @@ volatile uint8_t Udatatmp;//串口接收临时数据字节
 //------------------------------------------------------
 void USART1_IRQHandler(void)
 {
-  uint8_t i;
 	
   if(USART_GetITStatus(USART1, USART_IT_TXE) != RESET)
   {   

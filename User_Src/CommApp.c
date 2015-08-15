@@ -224,3 +224,4 @@ void CommAppUpload(void)
 		//开启串口发送
 		USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
 }
+

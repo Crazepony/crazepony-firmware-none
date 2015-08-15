@@ -306,9 +306,6 @@ void ReturnPIDHead(uint8_t pidType)
 //interface with hawker 
 void DebugUploadHandle(void)
 {
- 
-uint8_t i=0;//,sum=0;
-
 	up.roll.val= imu.roll * 100;
 	up.pitch.val= imu.pitch * 100;
 	up.yaw.val= imu.yaw * 100;
@@ -341,8 +338,6 @@ static void EndianConvert(uint8_t arr[], uint8_t len)
 
 static void DebugUploadHandle2()
 {
-	uint8_t i;
-		
 		checksum=0;
 //		UartBufClear(&UartTxbuf);
 		BufAdd8Chk(0xAA);

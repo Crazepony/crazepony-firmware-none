@@ -17,3 +17,4 @@ void LPF2pSetCutoffFreq_6(float sample_freq, float cutoff_freq);
 float LPF2pApply_6(float sample);
 
 #endif
+
