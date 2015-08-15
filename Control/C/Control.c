@@ -295,34 +295,18 @@ void CtrlAlti(void)
 	spZMoveRate= -dbScaleLinear(manThr-0.5f,0.5f,ALT_CTRL_Z_DB);	// scale to -1~1 . NED frame
 	spZMoveRate = spZMoveRate * ALT_VEL_MAX;	// scale to vel min max
 
-#ifdef DEBUG_HOLD_REAL_ALT
-	if(spZMoveRate==0)
-	{
-			if(!recAltFlag)
-			{
-					holdAlt=alt;
-					recAltFlag=1;
-					 
-			}
-			altSp=holdAlt;
+	//get alt setpoint in CLIMB rate mode
+	altSp 	=-nav.z;						//only alt is not in ned frame.
+	altSp  -= spZMoveRate * dt;	 
+	//limit alt setpoint
+	altSpOffsetMax=ALT_VEL_MAX / alt_PID.P * 2.0f;
+	altSpOffset = altSp-alt; 
+	if( altSpOffset > altSpOffsetMax){
+		altSp=alt +  altSpOffsetMax;
+	}else if( altSpOffset < -altSpOffsetMax){
+		altSp=alt - altSpOffsetMax;
 	}
-	else
-	{
-		recAltFlag=0;
-#endif
-		//get alt setpoint in CLIMB rate mode
-		altSp 	=-nav.z;						//only alt is not in ned frame.
-		altSp  -= spZMoveRate * dt;	 
-		//limit alt setpoint
-		altSpOffsetMax=ALT_VEL_MAX / alt_PID.P * 2.0f;
-		altSpOffset = altSp-alt; 
-		if( altSpOffset > altSpOffsetMax)		//or alt - alt > altSpOffsetMax
-			altSp=alt +  altSpOffsetMax;
-		else if( altSpOffset < -altSpOffsetMax)
-			altSp=alt - altSpOffsetMax;
-#ifdef DEBUG_HOLD_REAL_ALT
-	}
-#endif
+
 	//限高
 	if(isAltLimit)
 	{
@@ -355,12 +339,10 @@ void CtrlAlti(void)
 	thrustZSp= velZErr * alt_vel_PID.P + valZErrD * alt_vel_PID.D + thrustZInt;	//in ned frame. thrustZInt contains hover thrust
 	
 	//limit thrust min !!
-	if(altCtrlMode!=LANDING)
-	{
-			if (-thrustZSp < THR_MIN) {
-						thrustZSp = -THR_MIN; 
-					} 
-					
+	if(altCtrlMode!=LANDING){
+		if (-thrustZSp < THR_MIN){
+			thrustZSp = -THR_MIN; 
+		} 
 	}
 	
 	//与动力分配相关	testing
@@ -427,16 +409,12 @@ void CtrlAlti(void)
 	// if saturation ,don't integral
 	if(!satZ )//&& fabs(thrustZSp)<THR_MAX
 	{
-			thrustZInt += velZErr * alt_vel_PID.I * dt;		//
+			thrustZInt += velZErr * alt_vel_PID.I * dt;
 			if (thrustZInt > 0.0f)
 							thrustZInt = 0.0f;
 	}
 }
  
-
-#define ANG_COR_COEF 50.0f
-#define THR_HOLD_LEVEL 1600		//悬停油门 ， can measure after baro
-
 
 //函数名：CtrlMotor()
 //输入：无
@@ -450,18 +428,8 @@ void CtrlMotor(void)
 		{
 			DIF_ACC.Z =  imu.accb[2] - ONE_G;
 			Thro = RC_DATA.THROTTLE;
-			// Thr = Thr/(cos) ;                             //对Z轴用一次负反馈控制
-			//way1	
-			//thrAngCorrect = ANG_COR_COEF * (1-cosTilt) ;
-			//Thr += thrAngCorrect;				//采用气压定高时，不用此修正。
-			
-			//way2	
 			cosTilt=imu.DCMgb[2][2];
 			Thro=Thro/cosTilt;
-				
-			//way3
-			//thrAngCorrect=THR_HOLD_LEVEL * (1.0f/cosTilt - 1.0);
-			//Thro += thrAngCorrect;	
 		}else{
 			Thro=(-thrustZSp) * 1000;// /imu.DCMgb[2][2];  //倾角补偿后效果不错，有时过猛
 			if(Thro>1000)
