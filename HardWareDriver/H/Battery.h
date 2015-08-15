@@ -4,7 +4,7 @@
 
 
 #define BAT_CHK_PRD 5000	//ms
-#define BAT_ALARM_VAL  3.7	  //on ground
+#define BAT_ALARM_VAL  3.6	  //on ground
 #define BAT_CHG_VAL    1.0	  // charge battery val.  unit :v
 
 
