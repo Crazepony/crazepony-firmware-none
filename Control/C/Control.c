@@ -242,16 +242,29 @@ float estimateHoverThru(void){
 	Battery.BatteryAD  = GetBatteryAD();
 	Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算
 	
+//	if(Battery.BatteryVal > 4.05){
+//		hoverHru = -0.35f;
+//	}else if(Battery.BatteryVal > 3.90){
+//		hoverHru = -0.40f;
+//	}else if(Battery.BatteryVal > 3.80){
+//		hoverHru = -0.45f;
+//	}else if(Battery.BatteryVal > 3.70){
+//		hoverHru = -0.50f;
+//	}else{
+//		hoverHru = -0.55f;
+//	}
+	
+	
 	if(Battery.BatteryVal > 4.05){
-		hoverHru = -0.35f;
+		hoverHru = -0.05f;
 	}else if(Battery.BatteryVal > 3.90){
-		hoverHru = -0.40f;
+		hoverHru = -0.10f;
 	}else if(Battery.BatteryVal > 3.80){
-		hoverHru = -0.45f;
+		hoverHru = -0.15f;
 	}else if(Battery.BatteryVal > 3.70){
-		hoverHru = -0.50f;
+		hoverHru = -0.20f;
 	}else{
-		hoverHru = -0.55f;
+		hoverHru = -0.25f;
 	}
 	
 	return hoverHru;
