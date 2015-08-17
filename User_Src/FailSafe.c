@@ -32,57 +32,46 @@ uint8_t lostRCFlag=0,autoLanded=0;
 #define LAND_THRO_ALT_VEL 200 
 #define LOST_RC_TIME_MAX  1000
 
-//copter crash down
+
+//函数名：FailSafeCrash(void)
+//描述：飞机侧翻，检测到过大的pitch或者roll角度，关闭电机，防止电机堵转烧坏
+//Stop the motors when copter crash down and get a huge pitch or roll value
 void FailSafeCrash(void)
 {
-			 
-			if(fabs(imu.pitch)>80 || fabs(imu.roll)>80 )
-			{
-			//	RC_DATA.THROTTLE=LAND_THRO;
-				MotorPwmFlash(0,0,0,0);
-				FLY_ENABLE=0;
-			} 
+	if(fabs(imu.pitch)>80 || fabs(imu.roll)>80 )
+	{
+		MotorPwmFlash(0,0,0,0);
+		FLY_ENABLE=0;
+	}
 }
+
+
 //
 void FailSafeLostRC(void)
 {
 	uint16_t lostRCTime=0;
 	
-	//飞行过程丢失RC检测 
-			//	if(offLandFlag)	// RC_DATA.THROTTLE range :0-1000 ; 下降油门
-			//	{
-					newTime=millis();	//ms
-					lostRCTime=(newTime>lastGetRCTime)?(newTime-lastGetRCTime):(65536-lastGetRCTime+newTime);
-					if(lostRCTime > LOST_RC_TIME_MAX) 	 
-					{
-						if(offLandFlag)
-						{
-						#ifdef lostRC_Landing //auto landing -->  testing 
-							
-								altCtrlMode=LANDING;
-								rcData[0]=1500;rcData[1]=1500;rcData[2]=1500;rcData[3]=1500;
-							//	lastGetRCTime=newTime;
-						#else
-							FLY_ENABLE=0;    // disable crazepony 
-						#endif
-						}
-						lostRCFlag=1;
-					}
-					else 
-					{
-					  //altCtrlMode=CLIMB_RATE;// relink 
-						lostRCFlag=0;
-					}
-						
-		//		}
+	newTime=millis();	//ms
+	lostRCTime=(newTime>lastGetRCTime)?(newTime-lastGetRCTime):(65536-lastGetRCTime+newTime);
+	if(lostRCTime > LOST_RC_TIME_MAX){
+		if(offLandFlag){
+			altCtrlMode=LANDING;
+			rcData[0]=1500;rcData[1]=1500;rcData[2]=1500;rcData[3]=1500;
+		}
+		
+		lostRCFlag=1;
+	}else{
+		lostRCFlag=0;
+	}
+		
 }
+
 //闪烁状态由几个系统的标志决定,优先级依次按判断顺序上升
 void FailSafeLEDAlarm(void)
 {
 		
 		LEDCtrl.event=E_READY;
 	
-
 		if(!imu.ready)		//开机imu准备
 			LEDCtrl.event=E_CALI;
 		if(lostRCFlag)
@@ -115,24 +104,19 @@ void AutoLand(void)
 			if(landStartTime==0)
 				landStartTime=millis();
 			landTime=millis() - landStartTime;
-//			if(landed==1)
-			if( landTime>4000 /*&& ( -nav.vz <0.35)  &&( -thrustZSp < 0.6)*/  )	//降到地检测 //||(fabs(nav.vz)<0.1 && fabs(nav.az)<0.1)
+			if( landTime>4000)
 			{
 					altCtrlMode=MANUAL;
 					FLY_ENABLE=0;
-		//			LedC_on;LedD_on;
 					offLandFlag=0;
 					landStartTime=0;
 					autoLanded=1;
-		 	//		landed=0;
-		//			landTime=0;
 			}
 	}
 	else
 	{
 			altCtrlMode=MANUAL;
 			FLY_ENABLE=0;
-		//	LedC_on;LedD_on;
 			autoLanded=0;
 		
 	}
@@ -147,15 +131,12 @@ void FlightModeFSMSimple(void)
 					{ 
 							if(altCtrlMode!=CLIMB_RATE)
 							{
-							// 		hoverThrust=-0.65f;
 									zIntReset=1;
 									thrustZSp=0;
 									altCtrlMode=CLIMB_RATE;
 									offLandFlag=1;
 									altLand=-nav.z;		//记录起飞时的高度
-									#ifdef AUTO_MW
 									SetHeadFree(1);
-									#endif
 							}
 					}
 					else
