@@ -229,9 +229,8 @@ int main(void)
 				
 				FailSafeCrash();
 				
-				FailSafeLEDAlarm();	 
-				
-				LEDFSM();			//闪烁
+				//处理LED闪烁事件
+				LEDFSM();			
 				
 				execTime[2]=micros()-startTime[2];
 		}

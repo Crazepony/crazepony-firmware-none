@@ -23,10 +23,14 @@ led.c file
 #include "Led.h"
 #include "UART1.h"
 #include "config.h"
+#include "imu.h"
+#include "FailSafe.h"
 
 LED_t LEDCtrl;
 //接口显存
 LEDBuf_t LEDBuf;
+
+extern int LostRCFlag;
 
 
 /********************************************
@@ -94,9 +98,27 @@ void LEDReflash(void)
 //事件驱动层
 void LEDFSM(void)
 {
-//	static uint16_t cnt=0;
-//	uint8_t event=0;
+	//闪烁状态由几个系统的标志决定,优先级依次按判断顺序上升
+	LEDCtrl.event=E_READY;
+
+	if(!imu.ready)		//开机imu准备
+		LEDCtrl.event=E_CALI;
 	
+	if(1 == LostRCFlag)
+			LEDCtrl.event=E_LOST_RC;	
+
+	if(!imu.caliPass)
+		LEDCtrl.event=E_CALI_FAIL;
+	
+	if(Battery.alarm)
+		LEDCtrl.event=E_BAT_LOW;
+	
+	if(imuCaliFlag)
+		LEDCtrl.event=E_CALI;
+	
+	if((Battery.chargeSta))			//battery charge check
+		LEDCtrl.event = E_BatChg;
+		
 	switch(LEDCtrl.event)
 	{
 		case E_READY:
@@ -130,10 +152,6 @@ void LEDFSM(void)
 				if(++LEDCtrl.cnt >= 4)
 					LEDCtrl.cnt=0;
 				LEDBuf.byte= 1<<LEDCtrl.cnt ;
-//				if(LEDCtrl.cnt==0)
-//						LEDBuf.byte =LA;
-//				else
-//						LEDBuf.byte =0;
 			break;
 		case E_AUTO_LANDED:
 				 LEDBuf.byte=0x0f;

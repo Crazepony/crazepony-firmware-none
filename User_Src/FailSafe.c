@@ -26,7 +26,7 @@ Author:		祥 、小马
 #include "control.h"
 
 uint32_t newTime=0;
-uint8_t lostRCFlag=0,autoLanded=0;
+int LostRCFlag=0;
 
 #define LAND_THRO 				500 
 #define LAND_THRO_ALT_VEL 200 
@@ -59,38 +59,10 @@ void FailSafeLostRC(void)
 			rcData[0]=1500;rcData[1]=1500;rcData[2]=1500;rcData[3]=1500;
 		}
 		
-		lostRCFlag=1;
+		LostRCFlag = 1;
 	}else{
-		lostRCFlag=0;
+		LostRCFlag = 0;
 	}
-		
-}
-
-//闪烁状态由几个系统的标志决定,优先级依次按判断顺序上升
-void FailSafeLEDAlarm(void)
-{
-		
-		LEDCtrl.event=E_READY;
-	
-		if(!imu.ready)		//开机imu准备
-			LEDCtrl.event=E_CALI;
-		if(lostRCFlag)
-			LEDCtrl.event=E_LOST_RC;	
-
-		if(!imu.caliPass)
-			LEDCtrl.event=E_CALI_FAIL;
-		
-		if(Battery.alarm)
-			LEDCtrl.event=E_BAT_LOW;
-		
-		if(imuCaliFlag)
-			LEDCtrl.event=E_CALI;
-		
-		if(autoLanded && !FLY_ENABLE)
-			LEDCtrl.event=E_AUTO_LANDED;
-		  
-		if((Battery.chargeSta))			//battery charge check
-			LEDCtrl.event = E_BatChg;
 }
 
 //
@@ -110,14 +82,12 @@ void AutoLand(void)
 					FLY_ENABLE=0;
 					offLandFlag=0;
 					landStartTime=0;
-					autoLanded=1;
 			}
 	}
 	else
 	{
 			altCtrlMode=MANUAL;
 			FLY_ENABLE=0;
-			autoLanded=0;
 		
 	}
 }
