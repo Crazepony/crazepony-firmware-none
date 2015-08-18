@@ -33,24 +33,23 @@ int LostRCFlag=0;
 #define LOST_RC_TIME_MAX  1000
 
 
-//函数名：FailSafeCrash(void)
-//描述：飞机侧翻，检测到过大的pitch或者roll角度，关闭电机，防止电机堵转烧坏
-//Stop the motors when copter crash down and get a huge pitch or roll value
-void FailSafeCrash(void)
+//函数名：FailSafe(void)
+//描述：失效保护函数
+//失效保护的情景有：侧翻，丢失遥控信号
+void FailSafe(void)
 {
+	uint16_t lostRCTime=0;
+	
+	//飞机侧翻，检测到过大的pitch或者roll角度，关闭电机，防止电机堵转烧坏
+	//Stop the motors when copter crash down and get a huge pitch or roll value
 	if(fabs(imu.pitch)>80 || fabs(imu.roll)>80 )
 	{
 		MotorPwmFlash(0,0,0,0);
 		FLY_ENABLE=0;
 	}
-}
-
-
-//
-void FailSafeLostRC(void)
-{
-	uint16_t lostRCTime=0;
 	
+	//丢失遥控信号
+	//disconnected from the RC
 	newTime=millis();	//ms
 	lostRCTime=(newTime>lastGetRCTime)?(newTime-lastGetRCTime):(65536-lastGetRCTime+newTime);
 	if(lostRCTime > LOST_RC_TIME_MAX){

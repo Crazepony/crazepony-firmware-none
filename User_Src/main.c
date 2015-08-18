@@ -225,9 +225,8 @@ int main(void)
 						SaveParamsToEEPROM();
 				}
 
-				FailSafeLostRC();
-				
-				FailSafeCrash();
+				//失控保护，例如侧翻，丢失遥控信号等
+				FailSafe();
 				
 				//处理LED闪烁事件
 				LEDFSM();			

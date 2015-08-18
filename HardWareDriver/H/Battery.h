@@ -6,7 +6,7 @@
 #define BAT_CHK_PRD 5000	//ms
 #define BAT_ALARM_VAL  3.6	  //on ground
 #define BAT_CHG_VAL    1.0	  // charge battery val.  unit :v
-#define BAT_OVERDIS_VAL 3.2		//过放保护电压值，持续低于该电压则自动江降落，over discharge protect value
+#define BAT_OVERDIS_VAL 3.3		//过放保护电压值，持续低于该电压则自动江降落，over discharge protect value
 
 
 //电压信息结构体

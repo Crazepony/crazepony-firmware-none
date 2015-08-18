@@ -3,9 +3,7 @@
 
 void AutoLand(void);
 
-void FailSafeCrash(void);
-
-void FailSafeLostRC(void);
+void FailSafe(void);
  
 void FlightModeFSMSimple(void);
  
