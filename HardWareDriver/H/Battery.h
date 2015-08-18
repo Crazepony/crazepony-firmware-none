@@ -6,7 +6,7 @@
 #define BAT_CHK_PRD 5000	//ms
 #define BAT_ALARM_VAL  3.6	  //on ground
 #define BAT_CHG_VAL    1.0	  // charge battery val.  unit :v
-
+#define BAT_OVERDIS_VAL 3.2		//过放保护电压值，持续低于该电压则自动江降落，over discharge protect value
 
 
 //电压信息结构体
@@ -22,6 +22,7 @@ float  Bat_K;                 //计算电压值系数，用于电压校准
 int    BatteryADmin;          //电压门限
 char   alarm;									//报警位
 char   chargeSta;							//充电状态
+int    overDischargeCnt;			//过放保护计数，防止误判
 }Bat_Typedef;
 
 

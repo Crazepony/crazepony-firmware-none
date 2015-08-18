@@ -25,6 +25,7 @@ Battery.c file
 #include "stdio.h"
 #include "CommApp.h"
 #include "ReceiveData.h"
+#include "control.h"
 
 //实例化一个电压信息结构体
 Bat_Typedef Battery;
@@ -79,6 +80,7 @@ void BatteryCheckInit()
   Battery.ADRef   = 3.26;//单位为v 单片机供电电压   校准电压时修改
   Battery.Bat_K   = Battery.BatReal/Battery.ADinput;//计算电压计算系数
   Battery.BatteryADmin = 2000;//电压门限AD值
+	Battery.overDischargeCnt = 0;
   
   printf("Batter voltage AD init ...\r\n");
   
@@ -151,6 +153,18 @@ void BatteryCheck(void)
 					Battery.alarm=1;
 			}else{
 					Battery.alarm=0;
+			}
+			
+			//过放保护，Battery overdischarge protect
+			if(Battery.BatteryVal <= BAT_OVERDIS_VAL){
+				Battery.overDischargeCnt++;
+				
+				if(Battery.overDischargeCnt > 8){
+					altCtrlMode=LANDING;
+					rcData[0]=1500;rcData[1]=1500;rcData[2]=1500;rcData[3]=1500;
+				}
+			}else{
+				Battery.overDischargeCnt = 0;
 			}
 		}else{
 			if((Battery.BatteryVal < BAT_ALARM_VAL)&&(Battery.BatteryVal > BAT_CHG_VAL)){	//低于3.7v 且大于充电检测电压 BAT_CHG_VAL
