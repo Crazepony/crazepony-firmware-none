@@ -53,9 +53,9 @@ void FailSafe(void)
 	newTime=millis();	//ms
 	lostRCTime=(newTime>lastGetRCTime)?(newTime-lastGetRCTime):(65536-lastGetRCTime+newTime);
 	if(lostRCTime > LOST_RC_TIME_MAX){
-		if(offLandFlag){
+		if(offLandFlag || (0 != FLY_ENABLE)){
+			//飞机已经离地offLandFlag，或者已经开启了怠速旋转FLY_ENABLE
 			altCtrlMode=LANDING;
-			rcData[0]=1500;rcData[1]=1500;rcData[2]=1500;rcData[3]=1500;
 		}
 		
 		LostRCFlag = 1;

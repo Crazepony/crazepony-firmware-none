@@ -118,6 +118,10 @@ void LEDFSM(void)
 	
 	if((Battery.chargeSta))			//battery charge check
 		LEDCtrl.event = E_BatChg;
+	
+	if(LANDING == altCtrlMode){
+		LEDCtrl.event = E_AUTO_LANDED;
+	}
 		
 	switch(LEDCtrl.event)
 	{

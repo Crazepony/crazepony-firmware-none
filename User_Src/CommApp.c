@@ -35,6 +35,15 @@ extern float dbScaleLinear(float x, float x_end, float deadband);
 //Porcess the RC data from 2.4G RC or smartphone APP
 void RCDataProcess(void)
 {
+	//飞机电池过放，处于自动降落状态
+	//对遥控数据不再响应，使用归中值
+	if(LANDING == altCtrlMode){
+		rcData[THROTTLE] = 1500;
+		rcData[YAW] = 1500;
+		rcData[PITCH] = 1500;
+		rcData[ROLL] = 1500;
+	}
+	
 	CONSTRAIN(rcData[THROTTLE],1000,2000);
 	CONSTRAIN(rcData[YAW],1000,2000);
 	CONSTRAIN(rcData[PITCH],1000,2000);
