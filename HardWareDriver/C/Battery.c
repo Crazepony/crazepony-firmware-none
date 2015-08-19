@@ -79,7 +79,6 @@ void BatteryCheckInit()
   Battery.ADinput = 1.98;//单位为v R15和R17连接处电压 校准电压时修改
   Battery.ADRef   = 3.26;//单位为v 单片机供电电压   校准电压时修改
   Battery.Bat_K   = Battery.BatReal/Battery.ADinput;//计算电压计算系数
-  Battery.BatteryADmin = 2000;//电压门限AD值
 	Battery.overDischargeCnt = 0;
   
   printf("Batter voltage AD init ...\r\n");
@@ -149,7 +148,8 @@ void BatteryCheck(void)
 		Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算	
 	
 	  if(FLY_ENABLE){
-			if(Battery.BatteryAD <= Battery.BatteryADmin){
+			//处于电机开启等飞行状态，在过放电压值（BAT_OVERDIS_VAL）以上0.05v以上，开始报警
+			if(Battery.BatteryVal <= (BAT_OVERDIS_VAL + 0.05)){
 					Battery.alarm=1;
 			}else{
 					Battery.alarm=0;
