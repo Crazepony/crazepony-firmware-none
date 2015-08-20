@@ -148,8 +148,8 @@ void BatteryCheck(void)
 		Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算	
 	
 	  if(FLY_ENABLE){
-			//处于电机开启等飞行状态，在过放电压值（BAT_OVERDIS_VAL）以上0.05v以上，开始报警
-			if(Battery.BatteryVal <= (BAT_OVERDIS_VAL + 0.05)){
+			//处于电机开启等飞行状态，在过放电压值（BAT_OVERDIS_VAL）以上0.03v以上，开始报警
+			if(Battery.BatteryVal <= (BAT_OVERDIS_VAL + 0.03)){
 					Battery.alarm=1;
 			}else{
 					Battery.alarm=0;

@@ -6,7 +6,7 @@
 #define BAT_CHK_PRD 5000	//ms
 #define BAT_ALARM_VAL  3.65	  //这是电机未开启的报警电压值，开启电机之后，电池电压会下降0.3-0.4v左右
 #define BAT_CHG_VAL    1.0	  // charge battery val.  unit :v
-#define BAT_OVERDIS_VAL 3.35		//过放保护电压值，持续低于该电压则自动江降落，over discharge protect value
+#define BAT_OVERDIS_VAL 3.15		//过放保护电压值，持续低于该电压则自动降落，over discharge protect value
 
 
 //电压信息结构体
