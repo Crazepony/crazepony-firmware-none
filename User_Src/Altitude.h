@@ -25,12 +25,9 @@ extern float z_est[3];	// estimate z Vz  Az
 extern uint8_t landed;
 
 
-void inertial_filter_predict(float dt, float x[3]);
-
-void inertial_filter_correct(float e, float dt, float x[3], int i, float w);
+static void inertial_filter_predict(float dt, float x[3]);
+static void inertial_filter_correct(float e, float dt, float x[3], int i, float w);
 
 void AltitudeCombineThread(void);
-
-uint8_t DetectLand(void);
 
 #endif

@@ -175,12 +175,12 @@ int main(void)
 			  
 				FlightModeFSMSimple();
 				
-				//DetectLand();
 				if(altCtrlMode==LANDING)	 
 				{	  
 						AutoLand();
 				}
 				
+				//高度融合
 		 		AltitudeCombineThread();
 
 				CtrlAlti();		 
