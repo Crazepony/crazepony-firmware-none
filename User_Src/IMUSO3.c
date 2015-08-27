@@ -1,6 +1,21 @@
 /*
-* Part of this algrithom is referred from pixhawk.
+      ____                      _____                  +---+
+     / ___\                     / __ \                 | R |
+    / /                        / /_/ /                 +---+
+   / /   ________  ____  ___  / ____/___  ____  __   __
+  / /  / ___/ __ `/_  / / _ \/ /   / __ \/ _  \/ /  / /
+ / /__/ /  / /_/ / / /_/  __/ /   / /_/ / / / / /__/ /
+ \___/_/   \__,_/ /___/\___/_/    \___ /_/ /_/____  /
+                                                 / /
+                                            ____/ /
+                                           /_____/
+Filename:	IMUSO3.c
+Author:		祥 、nieyong
+说明：这是Crazepony软件姿态解算融合文件，Crazepony已经不再使用DMP硬件解算
+Part of this algrithom is referred from pixhawk.
+------------------------------------
 */
+
 #include "stm32f10x.h"
 #include "stm32f10x_it.h"
 #include <math.h>
@@ -16,9 +31,11 @@ static float q1q1, q1q2, q1q3;
 static float q2q2, q2q3;
 static float q3q3;
 static uint8_t bFilterInit = 0;
-//---------------------------------------------------------------------------------------------------
- 
-float invSqrt(float number) 
+
+//函数名：invSqrt(void)
+//描述：求平方根的倒数
+//该函数是经典的Carmack求平方根算法，效率极高，使用魔数0x5f375a86
+static float invSqrt(float number) 
 {
     volatile long i;
     volatile float x, y;
@@ -35,7 +52,7 @@ float invSqrt(float number)
 
 //! Using accelerometer, sense the gravity vector.
 //! Using magnetometer, sense yaw.
-void NonlinearSO3AHRSinit(float ax, float ay, float az, float mx, float my, float mz)
+static void NonlinearSO3AHRSinit(float ax, float ay, float az, float mx, float my, float mz)
 {
     float initialRoll, initialPitch;
     float cosRoll, sinRoll, cosPitch, sinPitch;
@@ -83,7 +100,7 @@ void NonlinearSO3AHRSinit(float ax, float ay, float az, float mx, float my, floa
     q3q3 = q3 * q3;
 }
 
-void NonlinearSO3AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, float twoKp, float twoKi, float dt) 
+static void NonlinearSO3AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, float twoKp, float twoKi, float dt) 
 {
 	float recipNorm;
 	float halfex = 0.0f, halfey = 0.0f, halfez = 0.0f;
@@ -134,24 +151,20 @@ void NonlinearSO3AHRSupdate(float gx, float gy, float gz, float ax, float ay, fl
 	
 		// Normalise accelerometer measurement
 		recipNorm = invSqrt(ax * ax + ay * ay + az * az);
-		//--added!!!
-//		accNorm=1.0f/recipNorm;
-//		if(accNorm > 0.75 * CONSTANTS_ONE_G && accNorm < 1.25 * CONSTANTS_ONE_G )  //加速度过大时
-//		{
-			ax *= recipNorm;
-			ay *= recipNorm;
-			az *= recipNorm;
 
-			// Estimated direction of gravity and magnetic field
-			halfvx = q1q3 - q0q2;
-			halfvy = q0q1 + q2q3;
-			halfvz = q0q0 - 0.5f + q3q3;
-		
-			// Error is sum of cross product between estimated direction and measured direction of field vectors
-			halfex += ay * halfvz - az * halfvy;
-			halfey += az * halfvx - ax * halfvz;
-			halfez += ax * halfvy - ay * halfvx;
-//		}
+		ax *= recipNorm;
+		ay *= recipNorm;
+		az *= recipNorm;
+
+		// Estimated direction of gravity and magnetic field
+		halfvx = q1q3 - q0q2;
+		halfvy = q0q1 + q2q3;
+		halfvz = q0q0 - 0.5f + q3q3;
+	
+		// Error is sum of cross product between estimated direction and measured direction of field vectors
+		halfex += ay * halfvz - az * halfvy;
+		halfey += az * halfvx - ax * halfvz;
+		halfez += ax * halfvy - ay * halfvx;
 	}
 
 	// Apply feedback only when valid data has been gathered from the accelerometer or magnetometer
@@ -179,13 +192,6 @@ void NonlinearSO3AHRSupdate(float gx, float gy, float gz, float ax, float ay, fl
 		gz += twoKp * halfez;
 	}
 	
-	//! Integrate rate of change of quaternion
-#if 0
-	gx *= (0.5f * dt);		// pre-multiply common factors
-	gy *= (0.5f * dt);
-	gz *= (0.5f * dt);
-#endif 
-
 	// Time derivative of quaternion. q_dot = 0.5*q\otimes omega.
 	//! q_k = q_{k-1} + dt*\dot{q}
 	//! \dot{q} = 0.5*q \otimes P(\omega)
@@ -207,26 +213,29 @@ void NonlinearSO3AHRSupdate(float gx, float gy, float gz, float ax, float ay, fl
 	q3 *= recipNorm;
 
 	// Auxiliary variables to avoid repeated arithmetic
-    q0q0 = q0 * q0;
-    q0q1 = q0 * q1;
-    q0q2 = q0 * q2;
-    q0q3 = q0 * q3;
-    q1q1 = q1 * q1;
-    q1q2 = q1 * q2;
-   	q1q3 = q1 * q3;
-    q2q2 = q2 * q2;
-    q2q3 = q2 * q3;
-    q3q3 = q3 * q3;   
+	q0q0 = q0 * q0;
+	q0q1 = q0 * q1;
+	q0q2 = q0 * q2;
+	q0q3 = q0 * q3;
+	q1q1 = q1 * q1;
+	q1q2 = q1 * q2;
+	q1q3 = q1 * q3;
+	q2q2 = q2 * q2;
+	q2q3 = q2 * q3;
+	q3q3 = q3 * q3;   
 }
 
 #define so3_comp_params_Kp 1.0f
 #define so3_comp_params_Ki  0.05f
 
  
-
+//函数名：IMUSO3Thread(void)
+//描述：姿态软件解算融合函数
+//该函数对姿态的融合是软件解算，Crazepony现在不使用DMP硬件解算
+//对应的硬件解算函数为IMU_Process()
 void IMUSO3Thread(void)
 {
-		//! Time constant
+	//! Time constant
 	float dt = 0.01f;		//s
 	static uint32_t tPrev=0,startTime=0;	//us
 	uint32_t now;
@@ -243,8 +252,6 @@ void IMUSO3Thread(void)
 	//need to calc gyro offset before imu start working
 	static float gyro_offsets_sum[3]={ 0.0f, 0.0f, 0.0f };// gyro_offsets[3] = { 0.0f, 0.0f, 0.0f },
 	static uint16_t offset_count = 0;
-//	static uint8_t gyroInitialized=0;
-	
 
 	now=micros();
 	dt=(tPrev>0)?(now-tPrev)/1000000.0f:0;
@@ -253,7 +260,7 @@ void IMUSO3Thread(void)
 	ReadIMUSensorHandle();
 	
 	if(!imu.ready)
-	{	
+	{
 		 if(startTime==0)
 				startTime=now;
 				
@@ -328,7 +335,5 @@ void IMUSO3Thread(void)
 		imu.roll=euler[0] * 180.0f / M_PI_F;
 		imu.pitch=euler[1] * 180.0f / M_PI_F;
 		imu.yaw=euler[2] * 180.0f / M_PI_F;
-		
-		
-
 } 
+
