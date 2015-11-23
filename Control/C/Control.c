@@ -236,14 +236,14 @@ float altLand;
 //Get a estimated value for hold throttle.It will have a direct affection on hover
 //Battery voltage
 float estimateHoverThru(void){
-	float hoverHru = 0.55f;
+	float hoverHru = -0.55f;
 	
 	//电池电压检测
 	Battery.BatteryAD  = GetBatteryAD();
 	Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算
 	
 	if(Battery.BatteryVal > 4.05){
-		hoverHru = -0.35f;
+		hoverHru = -0.25f;
 	}else if(Battery.BatteryVal > 3.90){
 		hoverHru = -0.40f;
 	}else if(Battery.BatteryVal > 3.80){
@@ -270,6 +270,31 @@ float estimateHoverThru(void){
 	return hoverHru;
 }
 
+
+//函数名：estimateMinThru()
+//输入：无
+//输出: 预估得到的最小油门值
+//描述：预估最小油门值，根据机重、电池电量而定
+//油门过小，下降速度过大时，导致失衡，例如快速下降时机身晃动厉害。再增加fuzzy control ，在油门小时用更大的姿态参数
+//相关因素有：电池电压
+float estimateMinThru(void){
+	float minThru = -0.55f;
+	
+	//电池电压检测
+	Battery.BatteryAD  = GetBatteryAD();
+	Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算
+	
+	if(Battery.BatteryVal > 4.05){
+		minThru = -0.30f;
+	}else if(Battery.BatteryVal > 3.90){
+		minThru = -0.40f;
+	}else{
+		minThru = -0.55f;
+	}
+	
+	return minThru;
+}
+
 //函数名：CtrlAlti()
 //输入：无
 //输出: 最终结果输出到全局变量thrustZSp
@@ -286,6 +311,7 @@ void CtrlAlti(void)
 	float posZErr=0,velZErr=0,valZErrD=0;
 	float thrustXYSpLen=0,thrustSpLen=0;
 	float thrustXYMax=0;
+	float minThrust;
 	
 	//get dt		
 	//保证dt运算不能被打断，保持更新，否则dt过大，积分爆满。
@@ -355,10 +381,11 @@ void CtrlAlti(void)
 	
 	thrustZSp= velZErr * alt_vel_PID.P + valZErrD * alt_vel_PID.D + thrustZInt;	//in ned frame. thrustZInt contains hover thrust
 	
-	//limit thrust min !!
+	//限制最小下降油门
+	minThrust = estimateMinThru();
 	if(altCtrlMode!=LANDING){
-		if (-thrustZSp < THR_MIN){
-			thrustZSp = -THR_MIN; 
+		if (-thrustZSp < minThrust){
+			thrustZSp = -minThrust; 
 		} 
 	}
 	

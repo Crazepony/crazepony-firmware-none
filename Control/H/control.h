@@ -16,7 +16,6 @@
 //定高部分
 #define LAND_SPEED						1.2f		//m/s^2
 #define ALT_VEL_MAX 					4.0f
-#define THR_MIN								0.38f		//min thrust ，根据机重和最小降速而定，用于下降速度过大时，油门过小，导致失衡。再增加fuzzy control ，在油门小时用更大的姿态参数
 
 enum {CLIMB_RATE=0,MANUAL,LANDING};
 extern uint8_t altCtrlMode;
