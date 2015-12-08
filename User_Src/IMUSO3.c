@@ -100,6 +100,11 @@ static void NonlinearSO3AHRSinit(float ax, float ay, float az, float mx, float m
     q3q3 = q3 * q3;
 }
 
+//函数名：NonlinearSO3AHRSupdate()
+//描述：姿态解算融合，是Crazepony和核心算法
+//使用的是Mahony互补滤波算法，没有使用Kalman滤波算法
+//改算法是直接参考pixhawk飞控的算法，可以在Github上看到出处
+//https://github.com/hsteinhaus/PX4Firmware/blob/master/src/modules/attitude_estimator_so3/attitude_estimator_so3_main.cpp
 static void NonlinearSO3AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, float twoKp, float twoKi, float dt) 
 {
 	float recipNorm;
@@ -150,6 +155,7 @@ static void NonlinearSO3AHRSupdate(float gx, float gy, float gz, float ax, float
 		float halfvx, halfvy, halfvz;
 	
 		// Normalise accelerometer measurement
+		//归一化，得到单位加速度
 		recipNorm = invSqrt(ax * ax + ay * ay + az * az);
 
 		ax *= recipNorm;
