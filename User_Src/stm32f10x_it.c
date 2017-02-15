@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    ADC/ADC1_DMA/stm32f10x_it.c 
+  * @file    ADC/ADC1_DMA/stm32f10x_it.c
   * @author  MCD Application Team
   * @version V3.5.0
   * @date    08-April-2011
@@ -19,7 +19,7 @@
   *
   * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
   ******************************************************************************
-  */ 
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
@@ -35,7 +35,7 @@ volatile uint32_t sysTickUptime = 0;
 
 /** @addtogroup ADC_ADC1_DMA
   * @{
-  */ 
+  */
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -64,10 +64,10 @@ void NMI_Handler(void)
   */
 void HardFault_Handler(void)
 {
-  /* Go to infinite loop when Hard Fault exception occurs */
-  while (1)
-  {
-  }
+    /* Go to infinite loop when Hard Fault exception occurs */
+    while (1)
+    {
+    }
 }
 
 /**
@@ -77,10 +77,10 @@ void HardFault_Handler(void)
   */
 void MemManage_Handler(void)
 {
-  /* Go to infinite loop when Memory Manage exception occurs */
-  while (1)
-  {
-  }
+    /* Go to infinite loop when Memory Manage exception occurs */
+    while (1)
+    {
+    }
 }
 
 /**
@@ -90,10 +90,10 @@ void MemManage_Handler(void)
   */
 void BusFault_Handler(void)
 {
-  /* Go to infinite loop when Bus Fault exception occurs */
-  while (1)
-  {
-  }
+    /* Go to infinite loop when Bus Fault exception occurs */
+    while (1)
+    {
+    }
 }
 
 /**
@@ -103,10 +103,10 @@ void BusFault_Handler(void)
   */
 void UsageFault_Handler(void)
 {
-  /* Go to infinite loop when Usage Fault exception occurs */
-  while (1)
-  {
-  }
+    /* Go to infinite loop when Usage Fault exception occurs */
+    while (1)
+    {
+    }
 }
 
 /**
@@ -137,7 +137,7 @@ void PendSV_Handler(void)
 }
 
 //
- void cycleCounterInit(void)
+void cycleCounterInit(void)
 {
     RCC_ClocksTypeDef clocks;
     RCC_GetClocksFreq(&clocks);
@@ -158,9 +158,9 @@ void SysTick_Handler(void)
 //
 void DelayMs(uint16_t nms)
 {
-		uint32_t t0=micros();
-		while(micros() - t0 < nms * 1000);
-			
+    uint32_t t0=micros();
+    while(micros() - t0 < nms * 1000);
+
 }
 // Return system uptime in microseconds (rollover in 70minutes)
 //返回 us
@@ -198,10 +198,10 @@ uint32_t millis(void)
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
