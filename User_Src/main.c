@@ -95,7 +95,7 @@ int main(void)
 	MotorPwmFlash(10,10,10,10);
 		
 	altCtrlMode=MANUAL;
-	WaitBaroInitOffset();		//等待气压初始化高度完成
+	//WaitBaroInitOffset();		//等待气压初始化高度完成
 	
 	//飞控控制主循环
   while (1)
@@ -142,7 +142,7 @@ int main(void)
 				accUpdated=1;
 			
 				//气压读取
-				MS5611_ThreadNew();		//FSM, take aboue 0.5ms some time
+				//MS5611_ThreadNew();		//FSM, take aboue 0.5ms some time
 
 				//imu校准
 				if(imuCaliFlag)
