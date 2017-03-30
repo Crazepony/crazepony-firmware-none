@@ -162,20 +162,31 @@ void CtrlAttiAng(void)
 void CtrlAttiRate(void)
 {
     float yawRateTarget=0;
+	
     static uint32_t tPrev=0;
-
+	float gryoPitch = imu.gyro[PITCH]-imu.gyroOffset[PITCH];
+	float gryoRoll = imu.gyro[ROLL]-imu.gyroOffset[ROLL];
+	float gryoYaw = imu.gyro[YAW]-imu.gyroOffset[YAW];
+	
     float dt=0,t=0;
     t=micros();
     dt=(tPrev>0)?(t-tPrev):0;
     tPrev=t;
 
     yawRateTarget=-(float)RC_DATA.YAW;
-
     //注意，原来的pid参数，对应的是 ad值,故转之
 #ifdef IMU_SW
-    PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,imu.gyro[PITCH]*180.0f/M_PI_F,dt);
-    PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,imu.gyro[ROLL]*180.0f/M_PI_F,dt);//gyroxGloble
-    PID_Postion_Cal(&yaw_rate_PID,yawRateTarget,imu.gyro[YAW]*180.0f/M_PI_F,dt);//DMP_DATA.GYROz
+	if(fabs(gryoPitch) < 0.001)
+	{
+		gryoPitch = 0;
+	}
+	if(fabs(gryoRoll) < 0.001)
+	{
+		gryoRoll = 0;
+	}
+    PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,gryoPitch*180.0f/M_PI_F,dt);
+    PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,gryoRoll*180.0f/M_PI_F,dt);//gyroxGloble
+    PID_Postion_Cal(&yaw_rate_PID,yawRateTarget,gryoYaw*180.0f/M_PI_F,dt);//DMP_DATA.GYROz
 #else
 
     //原参数对应于 DMP的直接输出gyro , 是deg.  且原DMP之后的处理运算是错误的
@@ -187,6 +198,7 @@ void CtrlAttiRate(void)
     Pitch = pitch_rate_PID.Output;
     Roll  = roll_rate_PID.Output;
     Yaw   = yaw_rate_PID.Output;
+	
 }
 
 //cut deadband, move linear

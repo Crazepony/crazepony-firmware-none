@@ -101,9 +101,6 @@ void CommAppCmdProcess(void)
     case MSP_DISARM_IT://disarm，解锁
         armState=REQ_DISARM;
         break;
-    case MSP_FLY_STATE:
-        flyLogApp=1;
-        break;
     case MSP_ACC_CALI:
         imuCaliFlag=1;
         break;
@@ -163,6 +160,10 @@ void CommApp(uint8_t ch)
             //chksum
             if(UdataBuf[bufP-1]==checksum)
             {
+				if(UdataBuf[4] == MSP_FLY_STATE)
+				{
+					flyLogApp=1;
+				}
                 if(stickOrAppControl != STICK_CTRL)
                 {
                     CommAppCmdProcess();		//could be place to main
@@ -228,7 +229,8 @@ void CommAppUpload(void)
 
     uart16chk((int16_t)(imu.roll * 10));
     uart16chk((int16_t)(imu.pitch * 10));
-    uart16chk((int16_t)(imu.yaw * 10) );
+    //uart16chk((int16_t)(imu.yaw * 10) );
+	uart16chk((int16_t)(-nav.z * 100));
     uart32chk((int32_t)(-nav.z * 100));	//altitude，高度信息
     uart16chk((int16_t)(Battery.BatteryVal * 100));//baterry，电池电压
     uart16chk((int16_t)(-nav.vz * 1000));

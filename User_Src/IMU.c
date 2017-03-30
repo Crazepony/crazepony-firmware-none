@@ -138,7 +138,6 @@ uint8_t IMU_Calibrate(void)
             }
 
             imu.accOffset[2]=imu.accOffset[2] - CONSTANTS_ONE_G;
-
             calibrating=0;
 #ifndef IMU_SW
             imu.ready=1;
