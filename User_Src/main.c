@@ -99,9 +99,17 @@ int main(void)
     MotorPwmFlash(10,10,10,10);
 
     altCtrlMode=MANUAL;
-    //WaitBaroInitOffset();		//等待气压初始化高度完成
-    Initial_FMTI_Sensor();
-
+#ifndef FBM320
+    WaitBaroInitOffset();		//等待气压初始化高度完成
+#else
+	if(I2C_ReadOneByte(FMTISensorAdd_I2C, 0x6B) == 0x42)
+	{
+		okFbm320 = 1;
+		Initial_FMTI_Sensor();
+	}
+#endif
+    
+	printf("who:%d\r\n",I2C_ReadOneByte(FMTISensorAdd_I2C, 0x6B));
     //飞控控制主循环
     while (1)
     {
@@ -147,9 +155,14 @@ int main(void)
             accUpdated=1;
 
             //气压读取
-            //MS5611_ThreadNew();		//FSM, take aboue 0.5ms some time
-            updateFBM320();
-
+#ifndef FBM320
+            MS5611_ThreadNew();		//FSM, take aboue 0.5ms some time
+#else
+			if(okFbm320)
+			{
+				updateFBM320();
+			}
+#endif
             //imu校准
             if(imuCaliFlag)
             {

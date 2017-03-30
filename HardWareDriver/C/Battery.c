@@ -159,7 +159,7 @@ void BatteryCheck(void)
 			if(Battery.BatteryVal <= BAT_OVERDIS_VAL){
 				Battery.overDischargeCnt++;
 				
-				if(Battery.overDischargeCnt > 8){
+				if(Battery.overDischargeCnt > 3){
 					altCtrlMode=LANDING;
 					rcData[0]=1500;rcData[1]=1500;rcData[2]=1500;rcData[3]=1500;
 				}

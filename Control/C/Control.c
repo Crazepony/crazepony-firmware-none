@@ -184,6 +184,10 @@ void CtrlAttiRate(void)
 	{
 		gryoRoll = 0;
 	}
+	if(fabs(gryoYaw) < 0.001)
+	{
+		gryoYaw = 0;
+	}
     PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,gryoPitch*180.0f/M_PI_F,dt);
     PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,gryoRoll*180.0f/M_PI_F,dt);//gyroxGloble
     PID_Postion_Cal(&yaw_rate_PID,yawRateTarget,gryoYaw*180.0f/M_PI_F,dt);//DMP_DATA.GYROz
@@ -297,9 +301,9 @@ float estimateMinThru(void) {
     Battery.BatteryVal = Battery.Bat_K * (Battery.BatteryAD/4096.0) * Battery.ADRef;//实际电压 值计算
 
     if(Battery.BatteryVal > 4.05) {
-        minThru = -0.30f;
-    } else if(Battery.BatteryVal > 3.90) {
         minThru = -0.40f;
+    } else if(Battery.BatteryVal > 3.90) {
+        minThru = -0.45f;
     } else {
         minThru = -0.55f;
     }

@@ -229,8 +229,7 @@ void CommAppUpload(void)
 
     uart16chk((int16_t)(imu.roll * 10));
     uart16chk((int16_t)(imu.pitch * 10));
-    //uart16chk((int16_t)(imu.yaw * 10) );
-	uart16chk((int16_t)(-nav.z * 100));
+    uart16chk((int16_t)(imu.yaw * 10));
     uart32chk((int32_t)(-nav.z * 100));	//altitude，高度信息
     uart16chk((int16_t)(Battery.BatteryVal * 100));//baterry，电池电压
     uart16chk((int16_t)(-nav.vz * 1000));

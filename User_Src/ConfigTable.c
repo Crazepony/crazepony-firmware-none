@@ -85,7 +85,7 @@ void TableToParam(void)
     for(i=0; i<5; i++) {
         ((u8 *)(&RX_ADDRESS))[i] = ((float *)(&table.NRFaddr))[i];
 
-        printf("RX_ADDRESS[%d]:0x%x\r\n",i,RX_ADDRESS[i]);
+        //printf("RX_ADDRESS[%d]:0x%x\r\n",i,RX_ADDRESS[i]);
     }
 
     BTstate = table.BTstate;
@@ -99,11 +99,9 @@ void TableToParam(void)
 void ParamToTable(void)
 {
     uint8_t i=0;
-    float temp;
     for(i=0; i<3; i++)
     {
         ((float *)(&table.pidPitch))[i]=((float *)(&pitch_angle_PID))[i];
-        temp=((float *)(&roll_angle_PID))[i];
         *((float *)(&table.pidRoll) + i) =  ((float *)(&roll_angle_PID))[i];
         ((float *)(&table.pidRoll))[i]=((float *)(&roll_angle_PID))[i];
         ((float *)(&table.pidYaw))[i]=((float *)(&yaw_angle_PID))[i];
@@ -140,7 +138,7 @@ void LoadParamsFromEEPROM(void)
     }
     else
     {
-        printf("load params from eeprom failed,set default value\r\n");
+        //printf("load params from eeprom failed,set default value\r\n");
 
         ParamSetDefault();//版本检测不对，各项参数设为默认值
         ParamToTable();
@@ -186,7 +184,7 @@ void ParamSetDefault(void)
     yaw_angle_PID.I = 0.2;
     yaw_angle_PID.D = 0;
 
-    yaw_rate_PID.P  = 20;
+    yaw_rate_PID.P  = 10;
     yaw_rate_PID.I  = 0;
     yaw_rate_PID.D  = 0;
 #else
