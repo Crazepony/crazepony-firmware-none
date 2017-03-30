@@ -30,6 +30,7 @@
 #include "IMUSO3.h"
 #include "control.h"
 #include "FailSafe.h"
+#include "FT.h"
  
 //sw counter
 uint16_t  batCnt; 
@@ -96,6 +97,7 @@ int main(void)
 		
 	altCtrlMode=MANUAL;
 	//WaitBaroInitOffset();		//等待气压初始化高度完成
+	Initial_FMTI_Sensor();
 	
 	//飞控控制主循环
   while (1)
@@ -143,6 +145,7 @@ int main(void)
 			
 				//气压读取
 				//MS5611_ThreadNew();		//FSM, take aboue 0.5ms some time
+				updateFBM320();
 
 				//imu校准
 				if(imuCaliFlag)
