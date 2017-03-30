@@ -7,12 +7,13 @@
 
 uint8_t flyLogF=0;
 uint8_t flyLogApp=0;
-uint32_t lastGetRCTime;
+uint32_t lastGetStickTime;
+uint32_t lastGetAppTime;
 uint8_t appCmdFlag=0;
 uint8_t armState=DISARMED;//,disarmRequest=0;
+uint8_t stickOrAppControl = STICK_CTRL;
 
 uint8_t btSrc=0;
-
  
 #define MAX_LEN 32
 volatile uint8_t UdataBuf[MAX_LEN];
@@ -162,9 +163,13 @@ void CommApp(uint8_t ch)
 						//chksum
 						if(UdataBuf[bufP-1]==checksum)
 						{
+							if(stickOrAppControl != STICK_CTRL)
+							{
 					 			CommAppCmdProcess();		//could be place to main
-								btSrc=SRC_APP; 
-								lastGetRCTime=millis();		//ms
+								stickOrAppControl = APP_CTRL;
+							}
+							btSrc=SRC_APP; 
+							lastGetAppTime=millis();		//ms
 						}
 						bufP=0; 
 				}

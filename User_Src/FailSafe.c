@@ -30,7 +30,7 @@ int LostRCFlag=0;
 
 #define LAND_THRO 				500 
 #define LAND_THRO_ALT_VEL 200 
-#define LOST_RC_TIME_MAX  1000
+#define LOST_TIME_MAX  1000
 
 
 //函数名：FailSafe(void)
@@ -38,7 +38,8 @@ int LostRCFlag=0;
 //失效保护的情景有：侧翻，丢失遥控信号
 void FailSafe(void)
 {
-	uint16_t lostRCTime=0;
+	uint16_t lostStickTime=0;
+	uint16_t lostAppTime=0;
 	
 	//飞机侧翻，检测到过大的pitch或者roll角度，关闭电机，防止电机堵转烧坏
 	//Stop the motors when copter crash down and get a huge pitch or roll value
@@ -51,15 +52,45 @@ void FailSafe(void)
 	//丢失遥控信号
 	//disconnected from the RC
 	newTime=millis();	//ms
-	lostRCTime=(newTime>lastGetRCTime)?(newTime-lastGetRCTime):(65536-lastGetRCTime+newTime);
-	if(lostRCTime > LOST_RC_TIME_MAX){
-		if(offLandFlag || (0 != FLY_ENABLE)){
+	lostStickTime=(newTime>lastGetStickTime)?(newTime-lastGetStickTime):(65536-lastGetStickTime+newTime);
+	lostAppTime=(newTime>lastGetAppTime)?(newTime-lastGetAppTime):(65536-lastGetAppTime+newTime);
+	if((lostStickTime > LOST_TIME_MAX) && (lostAppTime > LOST_TIME_MAX))
+	{
+		if(offLandFlag || (0 != FLY_ENABLE))
+		{
 			//飞机已经离地offLandFlag，或者已经开启了怠速旋转FLY_ENABLE
 			altCtrlMode=LANDING;
 		}
-		
+		stickOrAppControl = NO_CTRL;
 		LostRCFlag = 1;
-	}else{
+	}
+	else if(lostStickTime > LOST_TIME_MAX)
+	{
+		if(stickOrAppControl == STICK_CTRL)
+		{
+			if(offLandFlag || (0 != FLY_ENABLE))
+			{
+				//飞机已经离地offLandFlag，或者已经开启了怠速旋转FLY_ENABLE
+				altCtrlMode=LANDING;
+			}
+			stickOrAppControl = NO_CTRL;
+		}
+		
+	}
+	else if(lostAppTime > LOST_TIME_MAX)
+	{
+		if(stickOrAppControl == APP_CTRL)
+		{
+			if(offLandFlag || (0 != FLY_ENABLE))
+			{
+				//飞机已经离地offLandFlag，或者已经开启了怠速旋转FLY_ENABLE
+				altCtrlMode=LANDING;
+			}
+			stickOrAppControl = NO_CTRL;
+		}
+	}
+	if((lostStickTime < LOST_TIME_MAX) || (lostAppTime < LOST_TIME_MAX))
+	{
 		LostRCFlag = 0;
 	}
 }

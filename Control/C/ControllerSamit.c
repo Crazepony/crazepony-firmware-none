@@ -53,10 +53,10 @@ float pidUpdate(PidObject* pid, const float measured, const bool updateError)
 
 void pidReset(PidObject* pid)
 {
-  pid->error     = 0;
-  pid->prevError = 0;
-  pid->integ     = 0;
-  pid->deriv     = 0;
+    pid->error     = 0;
+    pid->prevError = 0;
+    pid->integ     = 0;
+    pid->deriv     = 0;
 }
 
 //----------------------------------------Atti Controller------------------------//
@@ -65,5 +65,5 @@ void AttiCtrlInit()
 {
 
 }
- 
+
 

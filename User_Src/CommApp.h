@@ -31,11 +31,19 @@ enum {DISARMED=0,REQ_ARM,ARMED,REQ_DISARM};
 											else if(x-mid>0) x=x-DB;\
 											else if(x-mid<0) x=x+DB;}
 
+enum
+{
+	NO_CTRL,
+	STICK_CTRL,
+	APP_CTRL
+};
 extern uint16_t rcData[4];
 extern uint8_t appCmdFlag;
-extern uint32_t lastGetRCTime;
+extern uint32_t lastGetStickTime;
+extern uint32_t lastGetAppTime;
 extern uint8_t flyLogApp;
 extern uint8_t armState;
+extern uint8_t stickOrAppControl;
 
 void CommApp(unsigned char ch);
 void CommAppUpload(void);

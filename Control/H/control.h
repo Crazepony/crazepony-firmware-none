@@ -14,8 +14,8 @@
 //#define  Rool_error_init   7      //如果飞机起飞朝左偏，Rool_error_init朝正向增大修改;朝右偏，Rool_error_init朝负向增大修改
 //#define  Pitch_error_init  -5      //如果飞机起飞朝前偏，Pitch_error_init朝负向增大修改;朝后偏，Pitch_error_init朝正向增大修改
 //定高部分
-#define LAND_SPEED						1.2f		//m/s^2
-#define ALT_VEL_MAX 					4.0f
+#define LAND_SPEED						0.9f		//m/s^2
+#define ALT_VEL_MAX 					3.0f
 
 enum {CLIMB_RATE=0,MANUAL,LANDING};
 extern uint8_t altCtrlMode;

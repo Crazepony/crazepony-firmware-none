@@ -231,7 +231,9 @@ void USART1_IRQHandler(void)
 		UartBuf_WD(&UartRxbuf,Udatatmp);               //写串口接收缓冲数组
     
 #ifdef BT_SRC_APP
-  	CommApp(Udatatmp);
+	  
+		CommApp(Udatatmp);
+	  
 #endif
 #ifdef BT_SRC_PC
   	CommPC(Udatatmp);

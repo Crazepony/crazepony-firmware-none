@@ -134,6 +134,4 @@ void AltitudeCombineThread(void)
 	nav.z=z_est[0];
 	nav.vz=z_est[1];
 	nav.az=z_est[2];
-	printf("z:%f\r\n",nav.z);
-	printf("vz:%f\r\n",nav.vz);
 }
