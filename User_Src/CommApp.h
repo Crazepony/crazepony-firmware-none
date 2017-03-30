@@ -33,9 +33,9 @@ enum {DISARMED=0,REQ_ARM,ARMED,REQ_DISARM};
 
 enum
 {
-	NO_CTRL,
-	STICK_CTRL,
-	APP_CTRL
+    NO_CTRL,
+    STICK_CTRL,
+    APP_CTRL
 };
 extern uint16_t rcData[4];
 extern uint8_t appCmdFlag;

@@ -9,8 +9,8 @@
 #define NEW_RC
 
 //#define UART_DEBUG	//开启改宏，则可以使用串口助手打印调试。否则使用Crazepony上位机
+#define S02A
 
- 
 enum {SRC_PC,SRC_APP};
 extern uint8_t btSrc;
 

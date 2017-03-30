@@ -193,4 +193,17 @@ void BT_ATcmdWrite(void)
 	printf("\r\nBT baund check and init end.\r\n");
 	
 }
+void
+BT_init(void) {
 
+	UART1_init(SysClock,9600);//蓝牙模块默认波特率
+	delay_ms(5);
+	Uart1SendaBTCmd("TTM:REN-Crazepony");
+	Uart1SendaBTCmd("TTM:BPS-115200");
+	delay_ms(2000);//修改波特率2s后生效
+	
+	UART1_init(SysClock,115200);//MCU串口波特率设置为115200
+	delay_ms(5);
+	Uart1SendaBTCmd("TTM:REN-Crazepony");
+	Uart1SendaBTCmd("TTM:BPS-115200");
+}

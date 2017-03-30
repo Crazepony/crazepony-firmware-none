@@ -4,8 +4,8 @@
 void AutoLand(void);
 
 void FailSafe(void);
- 
+
 void FlightModeFSMSimple(void);
- 
+
 #endif
 

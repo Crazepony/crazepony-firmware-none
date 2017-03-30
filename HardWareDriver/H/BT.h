@@ -35,6 +35,7 @@ typedef struct
 
 void BT_PowerInit(void);   //蓝牙透传电源初始化
 void BT_ATcmdWrite(void);//蓝牙写参数
+void BT_init(void);//rf-bm-s02a
 
 extern float BTstate;
 
