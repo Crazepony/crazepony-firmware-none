@@ -72,8 +72,8 @@ void AltitudeCombineThread(void)
     dt = (tPre>0)?((t-tPre)/1000000.0f):0;
     tPre=t;
 
-    //if(!paOffsetInited)	//wait baro to init its offset
-    //	return;
+    if(!paOffsetInited)	//wait baro to init its offset
+    	return;
 
     if(!imu.ready)
         return;
