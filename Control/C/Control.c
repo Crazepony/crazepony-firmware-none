@@ -188,6 +188,9 @@ void CtrlAttiRate(void)
 	{
 		gryoYaw = 0;
 	}
+	//printf("p:%f\n",pitch_angle_PID.Output);
+	//printf("r:%f\n",roll_angle_PID.Output);
+	//printf("y:%f\n",yaw_angle_PID.Output);
     PID_Postion_Cal(&pitch_rate_PID,pitch_angle_PID.Output,gryoPitch*180.0f/M_PI_F,dt);
     PID_Postion_Cal(&roll_rate_PID,roll_angle_PID.Output,gryoRoll*180.0f/M_PI_F,dt);//gyroxGloble
     PID_Postion_Cal(&yaw_rate_PID,yawRateTarget,gryoYaw*180.0f/M_PI_F,dt);//DMP_DATA.GYROz

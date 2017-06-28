@@ -15,6 +15,7 @@ Author:		祥 、小马、nieyong
 ------------------------------------
 */
 #include "config.h"
+#include "SysConfig.h"
 #include "Altitude.h"
 #include "imu.h"
 #include "FT.h"
@@ -77,7 +78,7 @@ void AltitudeCombineThread(void)
 
     if(!imu.ready)
         return;
-    //printf("1:%d\r\n",Baro_ALT_Updated);
+
     //store err when sensor update
     if(Baro_ALT_Updated)	//后面应该在sensor数值后加一个timeStamp，判断是否更新
     {
